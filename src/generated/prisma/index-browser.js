@@ -123,15 +123,71 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.UsersScalarFieldEnum = {
   user_uuid: 'user_uuid',
   email: 'email',
+  role: 'role',
   password_hash: 'password_hash',
   full_name: 'full_name',
   avatar_url: 'avatar_url',
   created_at: 'created_at'
 };
 
+exports.Prisma.RenamedclassScalarFieldEnum = {
+  class_id: 'class_id',
+  title: 'title',
+  description: 'description',
+  index_order: 'index_order',
+  fk_module: 'fk_module'
+};
+
+exports.Prisma.Class_fileScalarFieldEnum = {
+  file_id: 'file_id',
+  display_name: 'display_name',
+  storage_path: 'storage_path',
+  file_url: 'file_url',
+  file_type: 'file_type',
+  metadata: 'metadata',
+  class_id: 'class_id'
+};
+
+exports.Prisma.CourseScalarFieldEnum = {
+  id_course: 'id_course',
+  title: 'title',
+  description: 'description',
+  banner_url: 'banner_url',
+  slug: 'slug',
+  fk_teacher: 'fk_teacher'
+};
+
+exports.Prisma.EnrollmentsScalarFieldEnum = {
+  id_enrollment: 'id_enrollment',
+  progress: 'progress',
+  enrolled_at: 'enrolled_at',
+  student_id: 'student_id',
+  course_id: 'course_id'
+};
+
+exports.Prisma.ModuleScalarFieldEnum = {
+  id_module: 'id_module',
+  title: 'title',
+  description: 'description',
+  index_order: 'index_order',
+  fk_course: 'fk_course'
+};
+
+exports.Prisma.Student_progressScalarFieldEnum = {
+  progress_id: 'progress_id',
+  completed_at: 'completed_at',
+  class_id: 'class_id',
+  student_id: 'student_id'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -144,9 +200,24 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.user_role_enum = exports.$Enums.user_role_enum = {
+  prof: 'prof',
+  aluno: 'aluno'
+};
 
 exports.Prisma.ModelName = {
-  users: 'users'
+  users: 'users',
+  Renamedclass: 'Renamedclass',
+  class_file: 'class_file',
+  course: 'course',
+  enrollments: 'enrollments',
+  module: 'module',
+  student_progress: 'student_progress'
 };
 
 /**

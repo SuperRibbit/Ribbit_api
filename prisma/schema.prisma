@@ -1,17 +1,114 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["ribbit"]
 }
 
 model users {
-  user_uuid     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email         String    @unique @db.VarChar(255)
-  password_hash String    @db.VarChar(255)
-  full_name     String    @db.VarChar(255)
-  avatar_url    String?
-  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  user_uuid        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String             @unique @db.VarChar(255)
+  role             user_role_enum
+  password_hash    String             @db.VarChar(255)
+  full_name        String             @db.VarChar(255)
+  avatar_url       String?
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  course           course[]
+  enrollments      enrollments[]
+  student_progress student_progress[]
+
+  @@schema("ribbit")
+}
+
+/// This model has been renamed to 'Renamedclass' during introspection, because the original name 'class' is reserved.
+model Renamedclass {
+  class_id         Int                @id @default(autoincrement())
+  title            String             @db.VarChar(150)
+  description      String
+  index_order      Int
+  fk_module        Int
+  module           module             @relation(fields: [fk_module], references: [id_module], onDelete: Cascade, onUpdate: NoAction, map: "fk_class_module")
+  class_file       class_file[]
+  student_progress student_progress[]
+
+  @@unique([fk_module, index_order])
+  @@map("class")
+  @@schema("ribbit")
+}
+
+model class_file {
+  file_id      Int          @id @default(autoincrement())
+  display_name String       @db.VarChar(255)
+  storage_path String
+  file_url     String?
+  file_type    String?      @db.VarChar(50)
+  metadata     Json?
+  class_id     Int
+  Renamedclass Renamedclass @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_file_class")
+
+  @@schema("ribbit")
+}
+
+model course {
+  id_course   Int           @id @default(autoincrement())
+  title       String        @db.VarChar(150)
+  description String
+  banner_url  String?
+  slug        String        @unique @db.VarChar(255)
+  fk_teacher  String        @db.Uuid
+  users       users         @relation(fields: [fk_teacher], references: [user_uuid], onDelete: NoAction, onUpdate: NoAction, map: "fk_course_teacher")
+  enrollments enrollments[]
+  module      module[]
+
+  @@schema("ribbit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model enrollments {
+  id_enrollment Int       @id @default(autoincrement())
+  progress      Int?      @default(0)
+  enrolled_at   DateTime? @default(now()) @db.Timestamp(6)
+  student_id    String    @db.Uuid
+  course_id     Int
+  course        course    @relation(fields: [course_id], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_course")
+  users         users     @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_student")
+
+  @@unique([student_id, course_id])
+  @@schema("ribbit")
+}
+
+model module {
+  id_module    Int            @id @default(autoincrement())
+  title        String         @db.VarChar(150)
+  description  String
+  index_order  Int
+  fk_course    Int
+  Renamedclass Renamedclass[]
+  course       course         @relation(fields: [fk_course], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_module_course")
+
+  @@unique([fk_course, index_order])
+  @@schema("ribbit")
+}
+
+model student_progress {
+  progress_id  Int          @id @default(autoincrement())
+  completed_at DateTime?    @default(now()) @db.Timestamp(6)
+  class_id     Int
+  student_id   String       @db.Uuid
+  Renamedclass Renamedclass @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_class")
+  users        users        @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_student")
+
+  @@unique([student_id, class_id])
+  @@schema("ribbit")
+}
+
+enum user_role_enum {
+  prof
+  aluno
+
+  @@schema("ribbit")
 }
