@@ -49,6 +49,11 @@ export class UserService{
           throw new Error("Usuário não encontrado");
         }
 
+        if (userData.password_hash && typeof userData.password_hash === 'string') {
+            const salt = await bcrypt.genSalt(10);
+            userData.password_hash = await bcrypt.hash(userData.password_hash, salt);
+        }
+
         return await this.userRepository.updateUser(id, userData);
     }
 
