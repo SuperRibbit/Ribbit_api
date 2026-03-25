@@ -16,8 +16,12 @@ const userController = new UserController();
 
 app.use(express.json());
 app.use(cors());
-
+// Endpoints de Usuarios(Aluno/Professor)
 app.get("/ribbit/users", userController.findAll.bind(userController));
+app.post("/ribbit/users", userController.createUser.bind(userController));
+app.get("/ribbit/users/:id", userController.findById.bind(userController));
+app.put("/ribbit/users/:id", userController.updateUser.bind(userController));
+app.delete("/ribbit/users/:id", userController.deleteById.bind(userController));
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
