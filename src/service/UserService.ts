@@ -1,5 +1,6 @@
 import type { Prisma, users } from "../generated/prisma/index.js";
 import { UserRepository } from "../repository/UserRepository.js";
+import bcrypt from "bcryptjs";
 
 export class UserService{
     private userRepository = UserRepository.getInstance();
@@ -23,10 +24,18 @@ export class UserService{
 
     async createUser(userData: any): Promise<users | null> {
         const { email, password, full_name, role, avatar_url } = userData;    
+
+        const existingUser = await this.userRepository.findByEmail(email);
+        if (existingUser) {
+            throw new Error("Email já cadastrado");
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
     
         const userCreateInput: Prisma.usersCreateInput = {
           email,
-          password_hash: password,
+          password_hash: hashedPassword,
           full_name,
           role,
           avatar_url,
