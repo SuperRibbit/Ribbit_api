@@ -13,7 +13,6 @@ export class UserRepository{
         return this.instance;
     }
 
-
     async findAll(): Promise<users[]> {
         return await prisma.users.findMany();
     }
