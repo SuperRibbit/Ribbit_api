@@ -3,7 +3,11 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { PrismaClient } from "./generated/prisma/index.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+
 import { UserController } from "./controller/UserController.js";
+import { AuthController } from "./controller/AuthController.js";
+import { authMiddleware } from "./middleware/authMiddleware.js";
+import { isProfessor } from "./middleware/roleMiddleware.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
@@ -13,6 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const userController = new UserController();
+const authController = new AuthController();
 
 app.use(express.json());
 app.use(cors());
@@ -21,7 +26,10 @@ app.get("/ribbit/users", userController.findAll.bind(userController));
 app.post("/ribbit/users", userController.createUser.bind(userController));
 app.get("/ribbit/users/:id", userController.findById.bind(userController));
 app.put("/ribbit/users/:id", userController.updateUser.bind(userController));
-app.delete("/ribbit/users/:id", userController.deleteById.bind(userController));
+app.delete("/ribbit/users/:id",authMiddleware,isProfessor, userController.deleteById.bind(userController));
+
+//Endpoint de autenticação
+app.post("/ribbit/login", authController.login.bind(authController));
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
