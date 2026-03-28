@@ -1,5 +1,5 @@
 import { Prisma } from "../generated/prisma/index.js";
-import type { users } from "../generated/prisma/index.js";
+import type { User } from "../generated/prisma/index.js";
 import { prisma } from "../server.js";
 
 
@@ -14,32 +14,32 @@ export class UserRepository{
     }
 
 
-    async findAll(): Promise<users[]> {
-        return await prisma.users.findMany();
+    async findAll(): Promise<User[]> {
+        return await prisma.user.findMany();
     }
 
-    async findById(user_uuid: string): Promise<users | null> {
-        return await prisma.users.findUnique({ where: { user_uuid } });
-    }
-    
-    async findByEmail(email: string): Promise<users | null> {
-      return await prisma.users.findUnique({ where: { email } });
+    async findById(user_uuid: string): Promise<User | null> {
+        return await prisma.user.findUnique({ where: { user_uuid } });
     }
 
-    async createUser(userData: Prisma.usersCreateInput): Promise<users | null> {
-        const user = await prisma.users.create({ data: userData });
+    async findByEmail(email: string): Promise<User | null> {
+      return await prisma.user.findUnique({ where: { email } });
+    }
+
+    async createUser(userData: Prisma.UserCreateInput): Promise<User | null> {
+        const user = await prisma.user.create({ data: userData });
         console.log("Usuário criado com sucesso: ", user);
         return user;
     }
 
-    async updateUser(user_uuid: string, userData: Prisma.usersUpdateInput): Promise<users | null> {
-        const updatedUser = await prisma.users.update({ where: { user_uuid }, data: userData });
+    async updateUser(user_uuid: string, userData: Prisma.UserUpdateInput): Promise<User | null> {
+        const updatedUser = await prisma.user.update({ where: { user_uuid }, data: userData });
         console.log("Usuário atualizado com sucesso: ", updatedUser);
         return updatedUser;
       }
 
-    async deleteById(user_uuid: string): Promise<users | null> {
-        const deletedUser = await prisma.users.delete({ where: { user_uuid } });
+    async deleteById(user_uuid: string): Promise<User | null> {
+        const deletedUser = await prisma.user.delete({ where: { user_uuid } });
         console.log("Usuário removido com sucesso: ", deletedUser);
         return deletedUser;
     }

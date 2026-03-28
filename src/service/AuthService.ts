@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { UserRepository } from "../repository/UserRepository.js";
-import type { users } from "../generated/prisma/index.js";
+import type { User } from "../generated/prisma/index.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supercraft";
 
 interface LoginResponse {
   token: string;
-  user: Omit<users, 'password_hash'>;
+  user: Omit<User, 'password_hash'>;
 }
 
 export class AuthService {

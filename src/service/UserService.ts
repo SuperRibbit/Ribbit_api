@@ -1,15 +1,15 @@
-import type { Prisma, users } from "../generated/prisma/index.js";
+import type { Prisma, User } from "../generated/prisma/index.js";
 import { UserRepository } from "../repository/UserRepository.js";
 import bcrypt from "bcryptjs";
 
 export class UserService{
     private userRepository = UserRepository.getInstance();
 
-    async findAll(): Promise<users[]> {
+    async findAll(): Promise<User[]> {
         return await this.userRepository.findAll();
     }
 
-    async findById(id: string | undefined): Promise<users> {
+    async findById(id: string | undefined): Promise<User> {
         if (!id) {
           throw new Error("Usuário não encontrado");
         }
@@ -22,7 +22,7 @@ export class UserService{
         return user;
     }
 
-    async createUser(userData: any): Promise<users | null> {
+    async createUser(userData: any): Promise<User | null> {
         const { email, password, full_name, role, avatar_url } = userData;    
 
         const existingUser = await this.userRepository.findByEmail(email);
@@ -33,7 +33,7 @@ export class UserService{
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
     
-        const userCreateInput: Prisma.usersCreateInput = {
+        const userCreateInput: Prisma.UserCreateInput = {
           email,
           password_hash: hashedPassword,
           full_name,
@@ -44,7 +44,7 @@ export class UserService{
         return await this.userRepository.createUser(userCreateInput);
     }
     
-    async updateUser(id: string | undefined, userData: Prisma.usersUpdateInput): Promise<users | null> {
+    async updateUser(id: string | undefined, userData: Prisma.UserUpdateInput): Promise<User | null> {
         if (!id) {
           throw new Error("Usuário não encontrado");
         }
@@ -57,7 +57,7 @@ export class UserService{
         return await this.userRepository.updateUser(id, userData);
     }
 
-    async deleteById(id: string | undefined): Promise<users | null> {
+    async deleteById(id: string | undefined): Promise<User | null> {
         if (!id) {
           throw new Error("Usuário não encontrado");
         }
