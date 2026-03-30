@@ -8,6 +8,8 @@ import { UserController } from "./controller/UserController.js";
 import { AuthController } from "./controller/AuthController.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import { isProfessor } from "./middleware/roleMiddleware.js";
+import { ClassFileController } from "./controller/ClassFileController.js";
+import { uploadPDF } from "./config/multerConfig.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
@@ -18,6 +20,7 @@ const PORT = process.env.PORT || 3000;
 
 const userController = new UserController();
 const authController = new AuthController();
+const fileController = new ClassFileController();
 
 app.use(express.json());
 app.use(cors());
@@ -30,6 +33,13 @@ app.delete("/ribbit/users/:id",authMiddleware,isProfessor, userController.delete
 
 //Endpoint de autenticação
 app.post("/ribbit/login", authController.login.bind(authController));
+
+//Endpoint de upload
+app.post(
+  "/ribbit/classes/files/pdf",
+  uploadPDF.single("file"),
+  fileController.uploadClassPDF.bind(fileController)
+);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
