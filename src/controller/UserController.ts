@@ -1,104 +1,64 @@
-import type { Request, Response } from "express";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security } from "tsoa";
 import { UserService } from "../service/UserService.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest } from "../dto/UserDtos.js";
 
-export class UserController {
+@Route("ribbit/users")
+@Tags("Users")
+export class UserController extends Controller {
   private userService = new UserService();
 
-  async findAll(req: Request, res: Response): Promise<void> {
-    try {
-      const users = await this.userService.findAll();
-      res.status(200).json(users);
-    } catch (error: unknown) {
-      let message: string = "Não foi possível listar os usuários!";
-      if (error instanceof Error) {
-        message = error.message;
-      }
-      res.status(400).json({
-        message: message,
-      });
-    }
+  @Get()
+  public async findAll(): Promise<UserResponse[]> {
+    const users = await this.userService.findAll();
+    return users.map(({ password_hash, ...user }) => user);
   }
 
-  async findById(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      const user = await this.userService.findById(id as string);
-      res.status(200).json(user);
-    } catch (error: unknown) {
-      let message = "Não foi possível encontrar usuário com esse id!";
-      if (error instanceof Error) {
-        message = error.message;
-      }
-      res.status(400).json({
-        message: message,
-      });
-    }
+  @Get("{id}")
+  @Response("404", "Usuário não encontrado")
+  public async findById(@Path() id: string): Promise<UserResponse> {
+    const { password_hash, ...user } = await this.userService.findById(id);
+    return user;
   }
 
-  async createUser(req: Request, res: Response): Promise<void> {
-    try {
-      const user = await this.userService.createUser(req.body);
-      
-      if (!user) {
-        throw new Error("Erro ao criar usuário no banco de dados.");
-      }
+  @Post()
+  @SuccessResponse("201", "Criado")
+  @Response("400", "Email já cadastrado")
+  public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserResponse> {
+    const user = await this.userService.createUser(requestBody);
 
-      // Remove a senha do objeto de retorno por segurança
-      const { password_hash, ...userWithoutPassword } = user;
-      
-      res.status(201).json({
-        message: "Usuário cadastrado com sucesso!",
-        user: userWithoutPassword,
-      });
-    } catch (error: unknown) {
-      let message = "Não foi possível cadastrar usuário!";
-      if (error instanceof Error) {
-        message = error.message;
-      }
-      res.status(400).json({
-        message: message,
-      });
+    if (!user) {
+      this.setStatus(404);
+      throw new Error("Usuário não encontrado para atualização.");
     }
+
+    const { password_hash, ...userWithoutPassword } = user;
+    
+    this.setStatus(201); 
+    return userWithoutPassword;
   }
 
+  @Put("{id}")
+  @Security("bearerAuth")
+  public async updateUser(
+    @Path() id: string,
+    @Body() requestBody: UserUpdateRequest
+  ): Promise<UserResponse> {
+    const user = await this.userService.updateUser(id, requestBody);
 
-  async updateUser(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      const user = await this.userService.updateUser(id as string, req.body);
-      
-      res.status(200).json({
-        message: "Usuário atualizado com sucesso!",
-        user: user
-      });
-    } catch (error: unknown) {
-      let message = "Não foi possível atualizar usuário!";
-      if (error instanceof Error) {
-        message = error.message;
-      }
-      res.status(400).json({
-        message: message
-      });
+    if (!user) {
+      this.setStatus(404);
+      throw new Error("Usuário não encontrado para atualização.");
     }
+
+    const { password_hash, ...updatedUser } = user;
+    return updatedUser;
   }
 
-  async deleteById(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      const user = await this.userService.deleteById(id as string);
-      
-      res.status(200).json({
-        message: "Usuário removido com sucesso!",
-        user: user,
-      });
-    } catch (error: unknown) {
-      let message = "Não foi possível excluir usuário!";
-      if (error instanceof Error) {
-        message = error.message;
-      }
-      res.status(400).json({
-        message: message,
-      });
-    }
+  @Delete("{id}")
+  @SuccessResponse("204", "Deletado com sucesso")
+  @Security("bearerAuth", ["prof"])
+  public async deleteById(@Path() id: string): Promise<void> {
+    await this.userService.deleteById(id);
+    this.setStatus(204);
   }
 }
