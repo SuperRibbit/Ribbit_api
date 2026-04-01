@@ -1,40 +1,36 @@
 import "dotenv/config";
-import express, { type Request, type Response } from "express";
+import express from "express";
 import cors from "cors";
 import { PrismaClient } from "./generated/prisma/index.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+import swaggerUi from "swagger-ui-express";
+import { createRequire } from "module";
 
-import { UserController } from "./controller/UserController.js";
 import { AuthController } from "./controller/AuthController.js";
-import { authMiddleware } from "./middleware/authMiddleware.js";
-import { isProfessor } from "./middleware/roleMiddleware.js";
 import { ClassFileController } from "./controller/ClassFileController.js";
 import { uploadPDF } from "./config/multerConfig.js";
+import { RegisterRoutes } from "./generated/routes.js"; 
+
+const require = createRequire(import.meta.url);
+const swaggerDocument = require("./generated/swagger.json");
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-
 export const prisma = new PrismaClient({adapter});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const userController = new UserController();
 const authController = new AuthController();
 const fileController = new ClassFileController();
 
 app.use(express.json());
 app.use(cors());
-// Endpoints de Usuarios(Aluno/Professor)
-app.get("/ribbit/users", userController.findAll.bind(userController));
-app.post("/ribbit/users", userController.createUser.bind(userController));
-app.get("/ribbit/users/:id", userController.findById.bind(userController));
-app.put("/ribbit/users/:id", userController.updateUser.bind(userController));
-app.delete("/ribbit/users/:id",authMiddleware,isProfessor, userController.deleteById.bind(userController));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-//Endpoint de autenticação
+RegisterRoutes(app);
+
 app.post("/ribbit/login", authController.login.bind(authController));
 
-//Endpoint de upload
 app.post(
   "/ribbit/classes/files/pdf",
   uploadPDF.single("file"),
