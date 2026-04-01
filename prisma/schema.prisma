@@ -9,100 +9,98 @@ datasource db {
   schemas  = ["ribbit"]
 }
 
-model users {
-  user_uuid        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email            String             @unique @db.VarChar(255)
-  role             user_role_enum
-  password_hash    String             @db.VarChar(255)
-  full_name        String             @db.VarChar(255)
-  avatar_url       String?
-  created_at       DateTime?          @default(now()) @db.Timestamp(6)
-  course           course[]
-  enrollments      enrollments[]
-  student_progress student_progress[]
-
-  @@schema("ribbit")
-}
-
-/// This model has been renamed to 'Renamedclass' during introspection, because the original name 'class' is reserved.
-model Renamedclass {
-  class_id         Int                @id @default(autoincrement())
-  title            String             @db.VarChar(150)
-  description      String
-  index_order      Int
-  fk_module        Int
-  module           module             @relation(fields: [fk_module], references: [id_module], onDelete: Cascade, onUpdate: NoAction, map: "fk_class_module")
-  class_file       class_file[]
-  student_progress student_progress[]
-
-  @@unique([fk_module, index_order])
-  @@map("class")
-  @@schema("ribbit")
-}
-
-model class_file {
-  file_id      Int          @id @default(autoincrement())
+model Class_file {
+  file_id      Int          @id(map: "class_file_pkey") @default(autoincrement())
   display_name String       @db.VarChar(255)
   storage_path String
   file_url     String?
   file_type    String?      @db.VarChar(50)
   metadata     Json?
   class_id     Int
-  Renamedclass Renamedclass @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_file_class")
+  Course_class Course_class @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_file_class")
 
   @@schema("ribbit")
 }
 
-model course {
-  id_course   Int           @id @default(autoincrement())
-  title       String        @db.VarChar(150)
+model Course {
+  id_course   Int          @id(map: "course_pkey") @default(autoincrement())
+  title       String       @db.VarChar(150)
   description String
   banner_url  String?
-  slug        String        @unique @db.VarChar(255)
-  fk_teacher  String        @db.Uuid
-  users       users         @relation(fields: [fk_teacher], references: [user_uuid], onDelete: NoAction, onUpdate: NoAction, map: "fk_course_teacher")
-  enrollments enrollments[]
-  module      module[]
+  slug        String       @unique(map: "course_slug_key") @db.VarChar(255)
+  fk_teacher  String       @db.Uuid
+  User        User         @relation(fields: [fk_teacher], references: [user_uuid], onDelete: NoAction, onUpdate: NoAction, map: "fk_course_teacher")
+  Enrollment  Enrollment[]
+  Module      Module[]
 
+  @@schema("ribbit")
+}
+
+model Course_class {
+  class_id         Int                @id(map: "class_pkey") @default(autoincrement())
+  title            String             @db.VarChar(150)
+  description      String
+  index_order      Int
+  fk_module        Int
+  Class_file       Class_file[]
+  Module           Module             @relation(fields: [fk_module], references: [id_module], onDelete: Cascade, onUpdate: NoAction, map: "fk_class_module")
+  Student_progress Student_progress[]
+
+  @@unique([fk_module, index_order], map: "class_fk_module_index_order_key")
   @@schema("ribbit")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model enrollments {
-  id_enrollment Int       @id @default(autoincrement())
+model Enrollment {
+  id_enrollment Int       @id(map: "enrollments_pkey") @default(autoincrement())
   progress      Int?      @default(0)
   enrolled_at   DateTime? @default(now()) @db.Timestamp(6)
   student_id    String    @db.Uuid
   course_id     Int
-  course        course    @relation(fields: [course_id], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_course")
-  users         users     @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_student")
+  Course        Course    @relation(fields: [course_id], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_course")
+  User          User      @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_enrollment_student")
 
-  @@unique([student_id, course_id])
+  @@unique([student_id, course_id], map: "enrollments_student_id_course_id_key")
   @@schema("ribbit")
 }
 
-model module {
-  id_module    Int            @id @default(autoincrement())
+model Module {
+  id_module    Int            @id(map: "module_pkey") @default(autoincrement())
   title        String         @db.VarChar(150)
   description  String
   index_order  Int
   fk_course    Int
-  Renamedclass Renamedclass[]
-  course       course         @relation(fields: [fk_course], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_module_course")
+  Course_class Course_class[]
+  Course       Course         @relation(fields: [fk_course], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: "fk_module_course")
 
-  @@unique([fk_course, index_order])
+  @@unique([fk_course, index_order], map: "module_fk_course_index_order_key")
   @@schema("ribbit")
 }
 
-model student_progress {
-  progress_id  Int          @id @default(autoincrement())
+model Student_progress {
+  progress_id  Int          @id(map: "student_progress_pkey") @default(autoincrement())
   completed_at DateTime?    @default(now()) @db.Timestamp(6)
   class_id     Int
   student_id   String       @db.Uuid
-  Renamedclass Renamedclass @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_class")
-  users        users        @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_student")
+  Course_class Course_class @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_class")
+  User         User         @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: "fk_progress_student")
 
-  @@unique([student_id, class_id])
+  @@unique([student_id, class_id], map: "student_progress_student_id_class_id_key")
+  @@schema("ribbit")
+}
+
+model User {
+  user_uuid        String             @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String             @unique(map: "users_email_key") @db.VarChar(255)
+  role             user_role_enum
+  password_hash    String             @db.VarChar(255)
+  full_name        String             @db.VarChar(255)
+  avatar_url       String?
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  Course           Course[]
+  Enrollment       Enrollment[]
+  Student_progress Student_progress[]
+
   @@schema("ribbit")
 }
 
