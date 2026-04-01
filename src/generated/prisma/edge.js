@@ -39,12 +39,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.4.2
- * Query Engine version: 94a226be1cf2967af2541cca5529f0f7ba866919
+ * Prisma Client JS version: 7.6.0
+ * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 Prisma.prismaVersion = {
-  client: "7.4.2",
-  engine: "94a226be1cf2967af2541cca5529f0f7ba866919"
+  client: "7.6.0",
+  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -198,8 +198,8 @@ const config = {
   "previewFeatures": [
     "multiSchema"
   ],
-  "clientVersion": "7.4.2",
-  "engineVersion": "94a226be1cf2967af2541cca5529f0f7ba866919",
+  "clientVersion": "7.6.0",
+  "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  output          = \"../src/generated/prisma\"\n  previewFeatures = [\"multiSchema\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  schemas  = [\"ribbit\"]\n}\n\nmodel Class_file {\n  file_id      Int          @id(map: \"class_file_pkey\") @default(autoincrement())\n  display_name String       @db.VarChar(255)\n  storage_path String\n  file_url     String?\n  file_type    String?      @db.VarChar(50)\n  metadata     Json?\n  class_id     Int\n  Course_class Course_class @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: \"fk_file_class\")\n\n  @@schema(\"ribbit\")\n}\n\nmodel Course {\n  id_course   Int          @id(map: \"course_pkey\") @default(autoincrement())\n  title       String       @db.VarChar(150)\n  description String\n  banner_url  String?\n  slug        String       @unique(map: \"course_slug_key\") @db.VarChar(255)\n  fk_teacher  String       @db.Uuid\n  User        User         @relation(fields: [fk_teacher], references: [user_uuid], onDelete: NoAction, onUpdate: NoAction, map: \"fk_course_teacher\")\n  Enrollment  Enrollment[]\n  Module      Module[]\n\n  @@schema(\"ribbit\")\n}\n\nmodel Course_class {\n  class_id         Int                @id(map: \"class_pkey\") @default(autoincrement())\n  title            String             @db.VarChar(150)\n  description      String\n  index_order      Int\n  fk_module        Int\n  Class_file       Class_file[]\n  Module           Module             @relation(fields: [fk_module], references: [id_module], onDelete: Cascade, onUpdate: NoAction, map: \"fk_class_module\")\n  Student_progress Student_progress[]\n\n  @@unique([fk_module, index_order], map: \"class_fk_module_index_order_key\")\n  @@schema(\"ribbit\")\n}\n\n/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.\nmodel Enrollment {\n  id_enrollment Int       @id(map: \"enrollments_pkey\") @default(autoincrement())\n  progress      Int?      @default(0)\n  enrolled_at   DateTime? @default(now()) @db.Timestamp(6)\n  student_id    String    @db.Uuid\n  course_id     Int\n  Course        Course    @relation(fields: [course_id], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: \"fk_enrollment_course\")\n  User          User      @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: \"fk_enrollment_student\")\n\n  @@unique([student_id, course_id], map: \"enrollments_student_id_course_id_key\")\n  @@schema(\"ribbit\")\n}\n\nmodel Module {\n  id_module    Int            @id(map: \"module_pkey\") @default(autoincrement())\n  title        String         @db.VarChar(150)\n  description  String\n  index_order  Int\n  fk_course    Int\n  Course_class Course_class[]\n  Course       Course         @relation(fields: [fk_course], references: [id_course], onDelete: Cascade, onUpdate: NoAction, map: \"fk_module_course\")\n\n  @@unique([fk_course, index_order], map: \"module_fk_course_index_order_key\")\n  @@schema(\"ribbit\")\n}\n\nmodel Student_progress {\n  progress_id  Int          @id(map: \"student_progress_pkey\") @default(autoincrement())\n  completed_at DateTime?    @default(now()) @db.Timestamp(6)\n  class_id     Int\n  student_id   String       @db.Uuid\n  Course_class Course_class @relation(fields: [class_id], references: [class_id], onDelete: Cascade, onUpdate: NoAction, map: \"fk_progress_class\")\n  User         User         @relation(fields: [student_id], references: [user_uuid], onDelete: Cascade, onUpdate: NoAction, map: \"fk_progress_student\")\n\n  @@unique([student_id, class_id], map: \"student_progress_student_id_class_id_key\")\n  @@schema(\"ribbit\")\n}\n\nmodel User {\n  user_uuid        String             @id(map: \"users_pkey\") @default(dbgenerated(\"gen_random_uuid()\")) @db.Uuid\n  email            String             @unique(map: \"users_email_key\") @db.VarChar(255)\n  role             user_role_enum\n  password_hash    String             @db.VarChar(255)\n  full_name        String             @db.VarChar(255)\n  avatar_url       String?\n  created_at       DateTime?          @default(now()) @db.Timestamp(6)\n  Course           Course[]\n  Enrollment       Enrollment[]\n  Student_progress Student_progress[]\n\n  @@schema(\"ribbit\")\n}\n\nenum user_role_enum {\n  prof\n  aluno\n\n  @@schema(\"ribbit\")\n}\n"
 }
