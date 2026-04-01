@@ -1,8 +1,6 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security } from "tsoa";
 import { UserService } from "../service/UserService.js";
 import type { UserResponse, UserCreateRequest, UserUpdateRequest } from "../dto/UserDtos.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
-import { isProfessor } from "../middleware/roleMiddleware.js";
 
 @Route("ribbit/users")
 @Tags("Users")
@@ -41,7 +39,6 @@ export class UserController extends Controller {
 
   @Put("{id}")
   @Security("bearerAuth")
-  @Middlewares(authMiddleware)
   public async updateUser(
     @Path() id: string,
     @Body() requestBody: UserUpdateRequest
