@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gitconfig": "git config --local user.name \"Jonas Pinheiro\" && git config --local user.email \"jonas.pinheiro@aluno.ifsp.edu.br\"",
-    "dev": "nodemon --exec \"node --no-warnings --loader ts-node/esm\" src/server.ts",
+    "dev": "nodemon --watch src --ext ts --ignore src/generated/ --exec \"tsoa spec-and-routes && node --no-warnings --loader ts-node/esm src/server.ts\"",
     "build": "npx tsc && cp -r src/generated dist/",
     "start": "node dist/server.js"
   },
@@ -45,6 +45,7 @@
     "@types/node": "^25.4.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "concat-map": "^0.0.2",
     "nodemon": "^3.1.14",
     "prisma": "^7.4.2",
     "ts-node": "^10.9.2",
