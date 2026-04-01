@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gitconfig": "git config --local user.name \"Jonas Pinheiro\" && git config --local user.email \"jonas.pinheiro@aluno.ifsp.edu.br\"",
-    "dev": "nodemon --exec \"node --no-warnings --loader ts-node/esm\" src/server.ts"
+    "dev": "nodemon --exec \"node --no-warnings --loader ts-node/esm\" src/server.ts",
+    "build": "npx tsc",
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",
