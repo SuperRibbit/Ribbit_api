@@ -1,22 +1,28 @@
-import type { Request, Response } from "express";
+import { Route, Tags, Controller, Post, Body, SuccessResponse, Response } from "tsoa";
 import { AuthService } from "../service/AuthService.js";
+import type { LoginRequest, LoginResponse } from "../dto/AuthDtos.js";
 
-export class AuthController {
+@Route("ribbit/login")
+@Tags("Auth")
+export class AuthController extends Controller {
   private authService = new AuthService();
 
-  async login(req: Request, res: Response): Promise<void> {
+  @Post()
+  @SuccessResponse("200", "Login realizado com sucesso")
+  @Response("401", "Credenciais inválidas ou erro no login")
+  public async login(@Body() requestBody: LoginRequest): Promise<LoginResponse> {
     try {
-      const { token, user } = await this.authService.login(req.body);
+      const { token, user } = await this.authService.login(requestBody);
       
-      res.status(200).json({
+      this.setStatus(200);
+      return {
         message: "Login realizado com sucesso!",
         token: token,
         user: user
-      });
-    } catch (error: unknown) {
-      let message = "Erro no login";
-      if (error instanceof Error) message = error.message;
-      res.status(401).json({ message });
+      };
+    } catch (error: any) {
+      this.setStatus(401);
+      throw new Error(error.message || "Erro no login");
     }
   }
 }
