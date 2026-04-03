@@ -104,6 +104,73 @@
 					}
 				]
 			},
+			"Pick_Class_file.Exclude_keyofClass_file.metadata__": {
+				"properties": {
+					"file_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"display_name": {
+						"type": "string"
+					},
+					"storage_path": {
+						"type": "string"
+					},
+					"file_url": {
+						"type": "string"
+					},
+					"file_type": {
+						"type": "string"
+					},
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"file_id",
+					"display_name",
+					"storage_path",
+					"file_url",
+					"file_type",
+					"class_id"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_Class_file.metadata_": {
+				"$ref": "#/components/schemas/Pick_Class_file.Exclude_keyofClass_file.metadata__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"Record_string.any_": {
+				"properties": {},
+				"additionalProperties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"ClassFileResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Omit_Class_file.metadata_"
+					},
+					{
+						"properties": {
+							"metadata": {
+								"allOf": [
+									{
+										"$ref": "#/components/schemas/Record_string.any_"
+									}
+								],
+								"nullable": true
+							}
+						},
+						"required": [
+							"metadata"
+						],
+						"type": "object"
+					}
+				]
+			},
 			"Pick_User.email-or-full_name-or-role-or-avatar_url_": {
 				"properties": {
 					"email": {
@@ -211,6 +278,68 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/classes/files/pdf": {
+			"post": {
+				"operationId": "UploadClassPDF",
+				"responses": {
+					"201": {
+						"description": "PDF enviado e salvo com sucesso!",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ClassFileResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro de validação"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"Class Files"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"file": {
+										"type": "string",
+										"format": "binary"
+									},
+									"class_id": {
+										"type": "number",
+										"format": "double"
+									},
+									"display_name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"file",
+									"class_id",
+									"display_name"
+								]
 							}
 						}
 					}

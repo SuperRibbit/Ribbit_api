@@ -1,59 +1,66 @@
-import type { Request, Response } from "express";
+import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security } from "tsoa";
 import { GoogleDriveService } from "../service/GoogleDriveService.js";
 import { ClassFileService } from "../service/ClassFileService.js";
-import fs from "fs";
+import type { ClassFileResponse } from "../dto/ClassFileDtos.js";
 
-export class ClassFileController {
+import fs from "fs";
+import path from "path";
+import os from "os";
+
+@Route("ribbit/classes/files")
+@Tags("Class Files")
+export class ClassFileController extends Controller {
   private driveService = new GoogleDriveService();
   private dbService = new ClassFileService();
 
-  async uploadClassPDF(req: Request, res: Response): Promise<void> {
+  @Post("pdf")
+  @SuccessResponse("201", "PDF enviado e salvo com sucesso!")
+  @Response("400", "Erro de validação")
+  @Response("404", "Aula não encontrada")
+  @Security("bearerAuth", ["prof"]) 
+  public async uploadClassPDF(
+    @UploadedFile() file: Express.Multer.File,
+    @FormField() class_id: number,             
+    @FormField() display_name: string
+  ): Promise<ClassFileResponse> {
+    
+    const tempFilePath = path.join(os.tmpdir(), file.originalname || "upload.pdf");
+    
     try {
-      const file = req.file;
-      const { class_id, display_name } = req.body;
+      fs.writeFileSync(tempFilePath, file.buffer);
 
-      if (!file) {
-         res.status(400).json({ message: "Nenhum arquivo PDF foi enviado." });
-         return;
-      }
       if (!class_id) {
-         fs.unlinkSync(file.path);
-         res.status(400).json({ message: "O class_id é obrigatório." });
-         return;
+        this.setStatus(400);
+        throw new Error("O class_id é obrigatório.");
       }
 
-      const parsedClassId = parseInt(class_id);
-      const classExists = await this.dbService.checkClassExists(parsedClassId);
+      
+      const classExists = await this.dbService.checkClassExists(class_id);
 
       if (!classExists) {
-        fs.unlinkSync(file.path);
-
-        res.status(404).json({ 
-          message: `Nenhuma aula encontrada com o ID ${parsedClassId}. O upload foi cancelado.` 
-        });
-        return;
+        this.setStatus(404);
+        throw new Error(`Nenhuma aula encontrada com o ID ${class_id}. O upload foi cancelado.`);
       }
 
       const finalName = display_name || file.originalname;
-      const driveUrl = await this.driveService.uploadFile(file.path, finalName);
+      const driveUrl = await this.driveService.uploadFile(tempFilePath, finalName);
+      
       const newFileRecord = await this.dbService.saveFileRecord({
         display_name: finalName,
         file_url: driveUrl,
-        class_id: parsedClassId,
+        class_id: class_id,
       });
 
-      fs.unlinkSync(file.path);
+      fs.unlinkSync(tempFilePath);
 
-      res.status(201).json({
-        message: "PDF enviado e salvo com sucesso!",
-        file: newFileRecord,
-      });
+      this.setStatus(201);
+      return newFileRecord as unknown as ClassFileResponse;
 
     } catch (error: any) {
-      if (req.file && fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
+      if (fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath);
       }
-      res.status(500).json({ message: error.message || "Erro interno no servidor." });
+      throw error; 
     }
   }
 }
