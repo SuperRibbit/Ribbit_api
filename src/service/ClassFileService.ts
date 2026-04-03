@@ -1,24 +1,20 @@
-import { prisma } from "../server.js";
+import { ClassFileRepository } from "../repository/ClassFileRepository.js";
 
 export class ClassFileService {
+  private repository = new ClassFileRepository();
 
   async checkClassExists(class_id: number): Promise<boolean> {
-    const courseClass = await prisma.course_class.findUnique({
-      where: { class_id: class_id }
-    });
-    
-    return courseClass !== null; 
+    const courseClass = await this.repository.findCourseClassById(class_id);
+    return courseClass !== null;
   }
 
   async saveFileRecord(data: { display_name: string; file_url: string; class_id: number }) {
-    return await prisma.class_file.create({
-      data: {
-        display_name: data.display_name,
-        storage_path: "google_drive",
-        file_url: data.file_url,
-        file_type: "application/pdf",
-        class_id: data.class_id,
-      },
+    return await this.repository.create({
+      display_name: data.display_name,
+      storage_path: "google_drive",
+      file_url: data.file_url,
+      file_type: "application/pdf",
+      class_id: data.class_id,
     });
   }
 }
