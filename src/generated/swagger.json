@@ -54,6 +54,56 @@
 			"UserResponse": {
 				"$ref": "#/components/schemas/Omit_User.password_hash_"
 			},
+			"LoginResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"token": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserResponse"
+					}
+				},
+				"required": [
+					"message",
+					"token",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_User.email_": {
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"LoginRequest": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Pick_User.email_"
+					},
+					{
+						"properties": {
+							"password": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"password"
+						],
+						"type": "object"
+					}
+				]
+			},
 			"Pick_User.email-or-full_name-or-role-or-avatar_url_": {
 				"properties": {
 					"email": {
@@ -132,6 +182,41 @@
 		"description": "Documentacao da API usando Swagger"
 	},
 	"paths": {
+		"/ribbit/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Login realizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Credenciais inválidas ou erro no login"
+					}
+				},
+				"tags": [
+					"Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/ribbit/users": {
 			"get": {
 				"operationId": "FindAll",

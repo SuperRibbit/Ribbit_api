@@ -34,8 +34,6 @@ app.get("/ribbit/courses/title/:title", courseController.findByTitle.bind(course
 app.post("/ribbit/courses", courseController.createCourse.bind(courseController));
 app.put("/ribbit/courses/:id", courseController.updateCourse.bind(courseController));
 app.delete("/ribbit/courses/:id", courseController.deleteById.bind(courseController));
-const userController = new UserController();
-const authController = new AuthController();
 const fileController = new ClassFileController();
 
 app.use(express.json());
@@ -43,8 +41,6 @@ app.use(cors());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 RegisterRoutes(app);
-
-app.post("/ribbit/login", authController.login.bind(authController));
 
 app.post(
   "/ribbit/classes/files/pdf",
