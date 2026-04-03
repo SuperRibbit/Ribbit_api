@@ -81,6 +81,16 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"intersection","subSchemas":[{"ref":"Omit_Class_file.metadata_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"metadata":{"dataType":"union","subSchemas":[{"ref":"Record_string.any_"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadVideoLinkRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "class_id": {"dataType":"double","required":true},
+            "url": {"dataType":"string","required":true},
+            "display_name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.email-or-full_name-or-role-or-avatar_url_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true}},"validators":{}},
@@ -177,6 +187,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'uploadClassPDF',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassFileController_uploadVideoLink: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
+        };
+        app.post('/ribbit/classes/files/link',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.uploadVideoLink)),
+
+            async function ClassFileController_uploadVideoLink(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassFileController_uploadVideoLink, request, response });
+
+                const controller = new ClassFileController();
+
+              await templateService.apiHandler({
+                methodName: 'uploadVideoLink',
                 controller,
                 response,
                 next,

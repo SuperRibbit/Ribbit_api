@@ -171,6 +171,27 @@
 					}
 				]
 			},
+			"UploadVideoLinkRequest": {
+				"properties": {
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"url": {
+						"type": "string"
+					},
+					"display_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"class_id",
+					"url",
+					"display_name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_User.email-or-full_name-or-role-or-avatar_url_": {
 				"properties": {
 					"email": {
@@ -340,6 +361,50 @@
 									"class_id",
 									"display_name"
 								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/classes/files/link": {
+			"post": {
+				"operationId": "UploadVideoLink",
+				"responses": {
+					"201": {
+						"description": "Link salvo com sucesso!",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ClassFileResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Dados inválidos"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"Class Files"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UploadVideoLinkRequest"
 							}
 						}
 					}

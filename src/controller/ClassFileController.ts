@@ -1,7 +1,7 @@
-import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security } from "tsoa";
+import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body } from "tsoa";
 import { GoogleDriveService } from "../service/GoogleDriveService.js";
 import { ClassFileService } from "../service/ClassFileService.js";
-import type { ClassFileResponse } from "../dto/ClassFileDtos.js";
+import type { ClassFileResponse, UploadVideoLinkRequest } from "../dto/ClassFileDtos.js";
 
 import fs from "fs";
 import path from "path";
@@ -62,5 +62,32 @@ export class ClassFileController extends Controller {
       }
       throw error; 
     }
+  }
+
+  @Post("link")
+  @SuccessResponse("201", "Link salvo com sucesso!")
+  @Response("400", "Dados inválidos")
+  @Response("404", "Aula não encontrada")
+  @Security("bearerAuth", ["prof"]) 
+  public async uploadVideoLink(
+    @Body() requestBody: UploadVideoLinkRequest
+  ): Promise<ClassFileResponse> {
+    
+    const { class_id, url, display_name } = requestBody;
+    const classExists = await this.dbService.checkClassExists(class_id);
+
+    if (!classExists) {
+      this.setStatus(404);
+      throw new Error(`Nenhuma aula encontrada com o ID ${class_id}. O upload do link foi cancelado.`);
+    }
+
+    const newLinkRecord = await this.dbService.saveLinkRecord({
+      display_name: display_name,
+      file_url: url,
+      class_id: class_id,
+    });
+
+    this.setStatus(201);
+    return newLinkRecord as unknown as ClassFileResponse;
   }
 }
