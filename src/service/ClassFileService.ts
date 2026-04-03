@@ -8,6 +8,17 @@ export class ClassFileService {
     return courseClass !== null;
   }
 
+  private isValidVideoUrl(url: string): boolean {
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
+      const videoRegex = /(youtube\.com|youtu\.be|vimeo\.com)|\.(mp4|webm|ogg)$/i;
+      return videoRegex.test(url);
+    } catch (error) {
+      return false; 
+    }
+  }
+
   async saveFileRecord(data: { display_name: string; file_url: string; class_id: number }) {
     return await this.repository.create({
       display_name: data.display_name,
@@ -19,6 +30,11 @@ export class ClassFileService {
   }
 
   async saveLinkRecord(data: { display_name: string; file_url: string; class_id: number }) {
+
+    if (!this.isValidVideoUrl(data.file_url)) {
+      throw new Error("INVALID_URL");
+    }
+    
     return await this.repository.create({
       display_name: data.display_name,
       storage_path: "external_link",

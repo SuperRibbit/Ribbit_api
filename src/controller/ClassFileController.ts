@@ -81,13 +81,22 @@ export class ClassFileController extends Controller {
       throw new Error(`Nenhuma aula encontrada com o ID ${class_id}. O upload do link foi cancelado.`);
     }
 
-    const newLinkRecord = await this.dbService.saveLinkRecord({
-      display_name: display_name,
-      file_url: url,
-      class_id: class_id,
-    });
+   try {
+      const newLinkRecord = await this.dbService.saveLinkRecord({
+        display_name: display_name,
+        file_url: url,
+        class_id: class_id,
+      });
 
-    this.setStatus(201);
-    return newLinkRecord as unknown as ClassFileResponse;
+      this.setStatus(201);
+      return newLinkRecord as unknown as ClassFileResponse;
+
+    } catch (error: any) {
+      if (error.message === "INVALID_URL") {
+        this.setStatus(400);
+        throw new Error("O link fornecido não é uma URL de vídeo válida. Formatos aceitos: YouTube, Vimeo ou links diretos.");
+      }
+      throw error;
+    }
   }
 }
