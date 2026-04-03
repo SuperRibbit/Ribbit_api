@@ -17,4 +17,14 @@ export class ClassFileService {
       class_id: data.class_id,
     });
   }
+
+  async saveLinkRecord(data: { display_name: string; file_url: string; class_id: number }) {
+    return await this.repository.create({
+      display_name: data.display_name,
+      storage_path: "external_link",
+      file_url: data.file_url,
+      file_type: "video_link",
+      class_id: data.class_id,
+    });
+  }
 }
