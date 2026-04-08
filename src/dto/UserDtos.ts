@@ -7,9 +7,14 @@ export type UserCreateRequest = Pick<User, "email" | "full_name" | "role" > & {
   avatar_url?: string | null;
 };
 
-export type UserUpdateRequest = Partial<Omit<UserCreateRequest, "password">>;
+export type UserUpdateRequest = Partial<Pick<User, "full_name" | "avatar_url">>;
 
 export interface UserCreatedResponse {
+  message: string;
+  user: UserResponse;
+}
+
+export interface UserUpdatedResponse {
   message: string;
   user: UserResponse;
 }

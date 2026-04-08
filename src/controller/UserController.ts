@@ -1,6 +1,8 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request } from "tsoa";
+import * as express from "express";
 import { UserService } from "../service/UserService.js";
-import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse } from "../dto/UserDtos.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse, UserUpdatedResponse } from "../dto/UserDtos.js";
+import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/users")
 @Tags("Users")
@@ -49,21 +51,31 @@ export class UserController extends Controller {
     }
   }
 
-  @Put("{id}")
+  @Put("me")
   @Security("bearerAuth")
-  public async updateUser(
-    @Path() id: string,
+  @SuccessResponse("200", "Atualizado com sucesso")
+  public async updateProfile(
+    @Request() req: express.Request,
     @Body() requestBody: UserUpdateRequest
-  ): Promise<UserResponse> {
-    const user = await this.userService.updateUser(id, requestBody);
+  ): Promise<UserUpdatedResponse> {
+    const userId = (req as any).user?.id; 
+
+    if (!userId) {
+      throw new AppError("Não autorizado. Token não encontrado.", 401);
+    }
+
+    const user = await this.userService.updateUser(userId, requestBody);
 
     if (!user) {
-      this.setStatus(404);
-      throw new Error("Usuário não encontrado para atualização.");
+      throw new AppError("Usuário não encontrado.", 404);
     }
 
     const { password_hash, ...updatedUser } = user;
-    return updatedUser;
+    
+    return {
+      message: "Perfil atualizado com sucesso!",
+      user: updatedUser
+    };
   }
 
   @Delete("{id}")
