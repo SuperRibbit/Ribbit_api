@@ -192,6 +192,38 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
+				"properties": {
+					"user_uuid": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.user_role_enum"
+					},
+					"full_name": {
+						"type": "string"
+					},
+					"avatar_url": {
+						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"user_uuid",
+					"role",
+					"full_name",
+					"avatar_url",
+					"created_at"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserPublicResponse": {
+				"$ref": "#/components/schemas/Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_"
+			},
 			"UserCreatedResponse": {
 				"properties": {
 					"message": {
@@ -569,16 +601,16 @@
 				"parameters": []
 			}
 		},
-		"/ribbit/users/{id}": {
+		"/ribbit/users/{user_uuid}": {
 			"get": {
-				"operationId": "FindById",
+				"operationId": "FindPublicProfile",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/UserResponse"
+									"$ref": "#/components/schemas/UserPublicResponse"
 								}
 							}
 						}
@@ -590,11 +622,15 @@
 				"tags": [
 					"Users"
 				],
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "user_uuid",
 						"required": true,
 						"schema": {
 							"type": "string"

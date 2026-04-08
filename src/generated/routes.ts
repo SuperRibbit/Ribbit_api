@@ -91,6 +91,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserPublicResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserCreatedResponse": {
         "dataType": "refObject",
         "properties": {
@@ -307,25 +317,26 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsUserController_findById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        const argsUserController_findPublicProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                user_uuid: {"in":"path","name":"user_uuid","required":true,"dataType":"string"},
         };
-        app.get('/ribbit/users/:id',
+        app.get('/ribbit/users/:user_uuid',
+            authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.findById)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.findPublicProfile)),
 
-            async function UserController_findById(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_findPublicProfile(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_findById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_findPublicProfile, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'findById',
+                methodName: 'findPublicProfile',
                 controller,
                 response,
                 next,

@@ -12,13 +12,17 @@ export class UserService {
 
   async findById(id: string | undefined): Promise<User> {
     if (!id) {
-      throw new Error("Usuário não encontrado");
+      throw new AppError("Usuário não encontrado",404);
     }
 
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!uuidRegex.test(id)) {
+            throw new AppError("Usuário não encontrado.", 404);
+        }
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new Error("Usuário não encontrado");
+      throw new AppError("Usuário não encontrado",404);
     }
     return user;
   }

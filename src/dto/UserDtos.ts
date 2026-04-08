@@ -18,3 +18,5 @@ export interface UserUpdatedResponse {
   message: string;
   user: UserResponse;
 }
+
+export type UserPublicResponse = Pick<User, "user_uuid" | "full_name" | "role" | "avatar_url" | "created_at">;

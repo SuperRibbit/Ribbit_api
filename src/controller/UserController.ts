@@ -1,7 +1,7 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request } from "tsoa";
 import * as express from "express";
 import { UserService } from "../service/UserService.js";
-import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse, UserUpdatedResponse } from "../dto/UserDtos.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse, UserUpdatedResponse, UserPublicResponse } from "../dto/UserDtos.js";
 import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/users")
@@ -34,11 +34,18 @@ export class UserController extends Controller {
     return userProfile;
   }
 
-  @Get("{id}")
+  @Get("{user_uuid}")
+  @Security("bearerAuth")
   @Response("404", "Usuário não encontrado")
-  public async findById(@Path() id: string): Promise<UserResponse> {
-    const { password_hash, ...user } = await this.userService.findById(id);
-    return user;
+  public async findPublicProfile(@Path() user_uuid: string): Promise<UserPublicResponse> {
+    const user = await this.userService.findById(user_uuid);
+    return {
+      user_uuid: user.user_uuid,
+      full_name: user.full_name,
+      role: user.role,
+      avatar_url: user.avatar_url,
+      created_at: user.created_at
+    };
   }
 
   @Post()
