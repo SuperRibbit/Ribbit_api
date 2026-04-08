@@ -35,7 +35,7 @@ export class CourseService {
   }
 
   async createCourse(courseData: any): Promise<Course | null> {
-    const { title, description, banner_url, slug, teacher_id } = courseData;
+    const { title, description, banner_url, slug, fk_teacher } = courseData;
 
     const existingCourse = await this.courseRepository.findByTitle(title);
     if (existingCourse) {
@@ -49,7 +49,7 @@ export class CourseService {
       slug,
       User: {
         connect: {
-          user_uuid: teacher_id,
+          user_uuid: fk_teacher,
         },
       },
     };

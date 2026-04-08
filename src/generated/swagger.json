@@ -7,6 +7,76 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"DefaultSelection_Prisma._36_CoursePayload_": {
+				"properties": {
+					"fk_teacher": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					},
+					"banner_url": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"id_course": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"fk_teacher",
+					"slug",
+					"banner_url",
+					"description",
+					"title",
+					"id_course"
+				],
+				"type": "object"
+			},
+			"Course": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_CoursePayload_",
+				"description": "Model Course"
+			},
+			"CourseResponse": {
+				"$ref": "#/components/schemas/Course"
+			},
+			"Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"banner_url": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					},
+					"fk_teacher": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"banner_url",
+					"slug",
+					"fk_teacher"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"CourseCreateRequest": {
+				"$ref": "#/components/schemas/Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_"
+			},
 			"_36_Enums.user_role_enum": {
 				"type": "string",
 				"enum": [
@@ -270,6 +340,231 @@
 		"description": "Documentacao da API usando Swagger"
 	},
 	"paths": {
+		"/ribbit/courses": {
+			"get": {
+				"operationId": "FindAll",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/CourseResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateCourse",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao criar curso"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/courses/{id}": {
+			"get": {
+				"operationId": "FindById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCourse",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao atualizar curso"
+					},
+					"404": {
+						"description": "Curso não encontrado para atualização"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseCreateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteById",
+				"responses": {
+					"204": {
+						"description": "Deletado com sucesso"
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/ribbit/courses/title/{title}": {
+			"get": {
+				"operationId": "FindByTitle",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "title",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/login": {
 			"post": {
 				"operationId": "Login",
