@@ -19,7 +19,7 @@ export class UserController extends Controller {
   @Security("bearerAuth")
   @SuccessResponse("200", "Perfil do usuário")
   public async getMyProfile(@Request() req: express.Request): Promise<UserResponse> {
-    const userId = (req as any).user?.id; 
+    const userId = (req as any).user?.id;
 
     if (!userId) {
       throw new AppError("Não autorizado. Token não encontrado.", 401);
@@ -30,7 +30,7 @@ export class UserController extends Controller {
       throw new AppError("Usuário não encontrado.", 404);
     }
     const { password_hash, ...userProfile } = user;
-    
+
     return userProfile;
   }
 
@@ -49,9 +49,9 @@ export class UserController extends Controller {
       throw new AppError("Erro ao criar usuário.", 400);
     }
     const { password_hash, ...userWithoutPassword } = user;
-    
-    this.setStatus(201); 
-    
+
+    this.setStatus(201);
+
     return {
       message: "Usuário criado com sucesso!",
       user: userWithoutPassword
@@ -65,7 +65,7 @@ export class UserController extends Controller {
     @Request() req: express.Request,
     @Body() requestBody: UserUpdateRequest
   ): Promise<UserUpdatedResponse> {
-    const userId = (req as any).user?.id; 
+    const userId = (req as any).user?.id;
 
     if (!userId) {
       throw new AppError("Não autorizado. Token não encontrado.", 401);
@@ -78,18 +78,23 @@ export class UserController extends Controller {
     }
 
     const { password_hash, ...updatedUser } = user;
-    
+
     return {
       message: "Perfil atualizado com sucesso!",
       user: updatedUser
     };
   }
 
-  @Delete("{id}")
-  @SuccessResponse("204", "Deletado com sucesso")
-  @Security("bearerAuth", ["prof"])
-  public async deleteById(@Path() id: string): Promise<void> {
-    await this.userService.deleteById(id);
+  @Delete("me")
+  @Security("bearerAuth")
+  @SuccessResponse("204", "No Content")
+  public async deleteMyAccount(@Request() req: express.Request): Promise<void> {
+    const userId = (req as any).user?.id; 
+    if (!userId) {
+      throw new AppError("Sessão inválida. Por favor, faça login novamente para confirmar a eliminação da conta.", 401);
+    }
+    await this.userService.deleteById(userId);
     this.setStatus(204);
+    return; 
   }
 }

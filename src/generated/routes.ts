@@ -399,26 +399,26 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsUserController_deleteById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        const argsUserController_deleteMyAccount: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
-        app.delete('/ribbit/users/:id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+        app.delete('/ribbit/users/me',
+            authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.deleteById)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.deleteMyAccount)),
 
-            async function UserController_deleteById(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_deleteMyAccount(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_deleteById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_deleteMyAccount, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'deleteById',
+                methodName: 'deleteMyAccount',
                 controller,
                 response,
                 next,

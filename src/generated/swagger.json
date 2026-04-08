@@ -550,6 +550,23 @@
 						}
 					}
 				}
+			},
+			"delete": {
+				"operationId": "DeleteMyAccount",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/ribbit/users/{id}": {
@@ -574,34 +591,6 @@
 					"Users"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			},
-			"delete": {
-				"operationId": "DeleteById",
-				"responses": {
-					"204": {
-						"description": "Deletado com sucesso"
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [
-					{
-						"bearerAuth": [
-							"prof"
-						]
-					}
-				],
 				"parameters": [
 					{
 						"in": "path",
