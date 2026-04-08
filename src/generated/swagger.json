@@ -473,9 +473,6 @@
 								}
 							}
 						}
-					},
-					"400": {
-						"description": "Email já cadastrado"
 					}
 				},
 				"tags": [
@@ -489,6 +486,66 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/users/me": {
+			"get": {
+				"operationId": "GetMyProfile",
+				"responses": {
+					"200": {
+						"description": "Perfil do usuário",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateProfile",
+				"responses": {
+					"200": {
+						"description": "Atualizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserUpdatedResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
 							}
 						}
 					}
@@ -555,42 +612,6 @@
 						}
 					}
 				]
-			}
-		},
-		"/ribbit/users/me": {
-			"put": {
-				"operationId": "UpdateProfile",
-				"responses": {
-					"200": {
-						"description": "Atualizado com sucesso",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/UserUpdatedResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/UserUpdateRequest"
-							}
-						}
-					}
-				}
 			}
 		}
 	},

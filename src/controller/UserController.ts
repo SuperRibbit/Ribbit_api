@@ -15,6 +15,25 @@ export class UserController extends Controller {
     return users.map(({ password_hash, ...user }) => user);
   }
 
+  @Get("me")
+  @Security("bearerAuth")
+  @SuccessResponse("200", "Perfil do usuário")
+  public async getMyProfile(@Request() req: express.Request): Promise<UserResponse> {
+    const userId = (req as any).user?.id; 
+
+    if (!userId) {
+      throw new AppError("Não autorizado. Token não encontrado.", 401);
+    }
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado.", 404);
+    }
+    const { password_hash, ...userProfile } = user;
+    
+    return userProfile;
+  }
+
   @Get("{id}")
   @Response("404", "Usuário não encontrado")
   public async findById(@Path() id: string): Promise<UserResponse> {
@@ -24,31 +43,19 @@ export class UserController extends Controller {
 
   @Post()
   @SuccessResponse("201", "Criado")
-  @Response("400", "Email já cadastrado")
   public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserCreatedResponse> {
-    try {
-      const user = await this.userService.createUser(requestBody);
-
-      if (!user) {
-        this.setStatus(404);
-        throw new Error("Usuário não encontrado para atualização.");
-      }
-
-      const { password_hash, ...userWithoutPassword } = user;
-      
-      this.setStatus(201); 
-      
-      return {
-        message: "Usuário criado com sucesso!",
-        user: userWithoutPassword
-      };
-
-    } catch (error: any) {
-      if (error.message === "Este email já está cadastrado em nossa base de dados.") {
-        this.setStatus(400);
-      }
-      throw error;
+    const user = await this.userService.createUser(requestBody);
+    if (!user) {
+      throw new AppError("Erro ao criar usuário.", 400);
     }
+    const { password_hash, ...userWithoutPassword } = user;
+    
+    this.setStatus(201); 
+    
+    return {
+      message: "Usuário criado com sucesso!",
+      user: userWithoutPassword
+    };
   }
 
   @Put("me")
