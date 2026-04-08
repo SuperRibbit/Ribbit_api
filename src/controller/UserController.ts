@@ -1,6 +1,6 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security } from "tsoa";
 import { UserService } from "../service/UserService.js";
-import type { UserResponse, UserCreateRequest, UserUpdateRequest } from "../dto/UserDtos.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse } from "../dto/UserDtos.js";
 
 @Route("ribbit/users")
 @Tags("Users")
@@ -23,18 +23,30 @@ export class UserController extends Controller {
   @Post()
   @SuccessResponse("201", "Criado")
   @Response("400", "Email já cadastrado")
-  public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserResponse> {
-    const user = await this.userService.createUser(requestBody);
+  public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserCreatedResponse> {
+    try {
+      const user = await this.userService.createUser(requestBody);
 
-    if (!user) {
-      this.setStatus(404);
-      throw new Error("Usuário não encontrado para atualização.");
+      if (!user) {
+        this.setStatus(404);
+        throw new Error("Usuário não encontrado para atualização.");
+      }
+
+      const { password_hash, ...userWithoutPassword } = user;
+      
+      this.setStatus(201); 
+      
+      return {
+        message: "Usuário criado com sucesso!",
+        user: userWithoutPassword
+      };
+
+    } catch (error: any) {
+      if (error.message === "Este email já está cadastrado em nossa base de dados.") {
+        this.setStatus(400);
+      }
+      throw error;
     }
-
-    const { password_hash, ...userWithoutPassword } = user;
-    
-    this.setStatus(201); 
-    return userWithoutPassword;
   }
 
   @Put("{id}")

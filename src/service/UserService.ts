@@ -1,6 +1,7 @@
 import type { Prisma, User } from "../generated/prisma/index.js";
 import { UserRepository } from "../repository/UserRepository.js";
 import bcrypt from "bcryptjs";
+import { AppError } from "../utils/AppError.js";
 
 export class UserService{
     private userRepository = UserRepository.getInstance();
@@ -27,7 +28,7 @@ export class UserService{
 
         const existingUser = await this.userRepository.findByEmail(email);
         if (existingUser) {
-            throw new Error("Email já cadastrado");
+            throw new AppError("Este email já está cadastrado em nossa base de dados.", 409);
         }
 
         const salt = await bcrypt.genSalt(10);

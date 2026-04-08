@@ -192,7 +192,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_User.email-or-full_name-or-role-or-avatar_url_": {
+			"UserCreatedResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserResponse"
+					}
+				},
+				"required": [
+					"message",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_User.email-or-full_name-or-role_": {
 				"properties": {
 					"email": {
 						"type": "string"
@@ -202,16 +218,12 @@
 					},
 					"full_name": {
 						"type": "string"
-					},
-					"avatar_url": {
-						"type": "string"
 					}
 				},
 				"required": [
 					"email",
 					"role",
-					"full_name",
-					"avatar_url"
+					"full_name"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -219,10 +231,14 @@
 			"UserCreateRequest": {
 				"allOf": [
 					{
-						"$ref": "#/components/schemas/Pick_User.email-or-full_name-or-role-or-avatar_url_"
+						"$ref": "#/components/schemas/Pick_User.email-or-full_name-or-role_"
 					},
 					{
 						"properties": {
+							"avatar_url": {
+								"type": "string",
+								"nullable": true
+							},
 							"password": {
 								"type": "string"
 							}
@@ -270,7 +286,7 @@
 		"description": "Documentacao da API usando Swagger"
 	},
 	"paths": {
-		"/ribbit/login": {
+		"/ribbit/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -443,7 +459,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/UserResponse"
+									"$ref": "#/components/schemas/UserCreatedResponse"
 								}
 							}
 						}
