@@ -1,44 +1,102 @@
 import type { Prisma } from "../generated/prisma/index.js";
-import type { Course } from "../generated/prisma/index.js";
 import { prisma } from "../server.js";
 
-export class CourseRepository{
-    private static instance: CourseRepository;
+export class CourseRepository {
+  private static instance: CourseRepository;
 
-    static getInstance(): CourseRepository {
-        if (!this.instance) {
-          this.instance = new CourseRepository();
+  static getInstance(): CourseRepository {
+    if (!this.instance) {
+      this.instance = new CourseRepository();
+    }
+    return this.instance;
+  }
+
+  async findAll(search?: string) {
+    const where: Prisma.CourseWhereInput = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
+          ],
         }
-        return this.instance;
-    }
+      : {};
 
-    async findAll(): Promise<Course[]> {
-        return await prisma.course.findMany();
-    }
+    const courses = await prisma.course.findMany({
+      where,
+      select: {
+        id_course: true,
+        title: true,
+        description: true,
+        banner_url: true,
+        slug: true,
+        User: { select: { full_name: true, avatar_url: true } },
+      },
+    });
 
-    async findById(id: number): Promise<Course | null> {
-        return await prisma.course.findUnique({ where: { id_course: id } });
-    }
+    return { total_courses: courses.length, courses };
+  }
 
-    async findByTitle(title: string): Promise<Course | null> {
-        return await prisma.course.findFirst({ where: { title }})
-    }
+  async findById(courseId: number, studentId?: string) {
+    return await prisma.course.findUnique({
+      where: { id_course: courseId },
+      select: {
+        id_course: true,
+        title: true,
+        description: true,
+        banner_url: true,
+        slug: true,
+        User: { select: { full_name: true } },
+        Enrollment: studentId
+          ? { where: { student_id: studentId }, select: { progress: true } }
+          : false,
+        Module: {
+          orderBy: { index_order: "asc" },
+          select: {
+            id_module: true,
+            title: true,
+            index_order: true,
+            Course_class: {
+              orderBy: { index_order: "asc" },
+              select: {
+                class_id: true,
+                title: true,
+                Student_progress: studentId
+                  ? {
+                      where: { student_id: studentId },
+                      select: { progress_id: true },
+                    }
+                  : false,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
-    async createCourse(courseData: Prisma.CourseCreateInput): Promise<Course | null> {
-        const course = await prisma.course.create({ data: courseData });
-        console.log("Curso criado com sucesso: ", course);
-        return course;
-    }
+  async findBySlug(slug: string) {
+    return await prisma.course.findFirst({ where: { slug } });
+  }
 
-    async updateCourse(id: number, courseData: Prisma.CourseUpdateInput): Promise<Course | null> {
-        const updatedCourse = await prisma.course.update({ where: { id_course: id }, data: courseData });
-        console.log("Curso atualizado com sucesso: ", updatedCourse);
-        return updatedCourse;
-    }
+  async createCourse(data: Prisma.CourseCreateInput) {
+    return await prisma.course.create({ data, select: { id_course: true } });
+  }
 
-    async deleteById(id: number): Promise<Course | null> {
-        const deletedCourse = await prisma.course.delete({ where: { id_course: id } });
-        console.log("Curso removido com sucesso: ", deletedCourse);
-        return deletedCourse;
-    }
+  async updateCourse(courseId: number, data: Prisma.CourseUpdateInput) {
+    return await prisma.course.update({
+      where: { id_course: courseId },
+      data,
+      select: {
+        id_course: true,
+        title: true,
+        description: true,
+        banner_url: true,
+        slug: true,
+      },
+    });
+  }
+
+  async deleteById(courseId: number): Promise<void> {
+    await prisma.course.delete({ where: { id_course: courseId } });
+  }
 }
