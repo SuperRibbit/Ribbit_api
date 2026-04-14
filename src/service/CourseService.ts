@@ -4,75 +4,67 @@ import { CourseRepository } from "../repository/CourseRepository.js";
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
 
-  async findAll(): Promise<Course[]> {
-    return await this.courseRepository.findAll();
+  async findAll(search?: string) {
+    return await this.courseRepository.findAll(search);
   }
 
-  async findById(id: number | undefined): Promise<Course> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
-    }
-
-    const course = await this.courseRepository.findById(id);
+  async findById(courseId: number, studentId: string) {
+    const course = await this.courseRepository.findById(courseId, studentId);
 
     if (!course) {
       throw new Error("Curso não encontrado");
     }
+
     return course;
   }
 
-  async findByTitle(title: string | undefined): Promise<Course> {
-    if (!title) {
-      throw new Error("Curso não encontrado");
-    }
+  async createCourse(courseData: Prisma.CourseCreateInput, teacherUuid: string) {
+    try {
+      const course = await this.courseRepository.createCourse({
+        ...courseData,
+        User: { connect: { user_uuid: teacherUuid } },
+      });
 
-    const course = await this.courseRepository.findByTitle(title);
-
-    if (!course) {
-      throw new Error("Curso não encontrado");
+      return {
+        message: "Curso criado com sucesso! Agora você pode adicionar módulos.",
+        course_id: course.id_course,
+      };
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new Error(
+          `O link (slug) '${courseData.slug}' já está em uso por outro curso. Escolha outro.`,
+        );
+      }
+      throw error;
     }
-    return course;
   }
 
-  async createCourse(courseData: any): Promise<Course | null> {
-    const { title, description, banner_url, slug, fk_teacher } = courseData;
-
-    const existingCourse = await this.courseRepository.findByTitle(title);
-    if (existingCourse) {
-      throw new Error("Curso já cadastrado");
+  async updateCourse(courseId: number, courseData: Prisma.CourseUpdateInput) {
+    try {
+      const updated = await this.courseRepository.updateCourse(
+        courseId,
+        courseData,
+      );
+      return {
+        message: "Informações do curso atualizadas com sucesso!",
+        course: updated,
+      };
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Curso não encontrado.");
+      }
+      throw error;
     }
-
-    const courseCreateInput: Prisma.CourseCreateInput = {
-      title,
-      description,
-      banner_url,
-      slug,
-      User: {
-        connect: {
-          user_uuid: fk_teacher,
-        },
-      },
-    };
-
-    return await this.courseRepository.createCourse(courseCreateInput);
   }
 
-  async updateCourse(
-    id: number | undefined,
-    courseData: Prisma.CourseUpdateInput
-  ): Promise<Course | null> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
+  async deleteById(courseId: number): Promise<void> {
+    try {
+      await this.courseRepository.deleteById(courseId);
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Curso não encontrado.");
+      }
+      throw error;
     }
-
-    return await this.courseRepository.updateCourse(id, courseData);
-  }
-
-  async deleteById(id: number | undefined): Promise<Course | null> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
-    }
-
-    return await this.courseRepository.deleteById(id);
   }
 }
