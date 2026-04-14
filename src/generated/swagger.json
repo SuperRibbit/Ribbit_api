@@ -326,18 +326,15 @@
 				"$ref": "#/components/schemas/Partial_Omit_UserCreateRequest.password__"
 			}
 		},
-		"securitySchemes": {
-			"bearerAuth": {
-				"type": "http",
-				"scheme": "bearer",
-				"bearerFormat": "JWT"
-			}
-		}
+		"securitySchemes": {}
 	},
 	"info": {
-		"title": "API Documentacao",
+		"title": "ribbit_api",
 		"version": "1.0.0",
-		"description": "Documentacao da API usando Swagger"
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
 	},
 	"paths": {
 		"/ribbit/courses": {
@@ -361,7 +358,11 @@
 				"tags": [
 					"Courses"
 				],
-				"security": [],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -872,8 +873,7 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:8080",
-			"description": "Servidor de Desenvolvimento"
+			"url": "/"
 		}
 	]
 }
