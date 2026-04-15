@@ -100,14 +100,18 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Pick_Class_file.Exclude_keyofClass_file.metadata__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Record_string.any_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ClassFileResponse": {
         "dataType": "refAlias",
-        "type": {"dataType":"intersection","subSchemas":[{"ref":"Omit_Class_file.metadata_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"metadata":{"dataType":"union","subSchemas":[{"ref":"Record_string.any_"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
+        "type": {"ref":"Omit_Class_file.metadata_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ClassFileActionResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "file": {"ref":"ClassFileResponse","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UploadVideoLinkRequest": {
@@ -432,7 +436,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 class_id: {"in":"formData","name":"class_id","required":true,"dataType":"double"},
                 display_name: {"in":"formData","name":"display_name","required":true,"dataType":"string"},
         };
-        app.post('/ribbit/classes/files/pdf',
+        app.post('/ribbit/files/pdf',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             upload.fields([
                 {
@@ -469,7 +473,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsClassFileController_uploadVideoLink: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
         };
-        app.post('/ribbit/classes/files/link',
+        app.post('/ribbit/files/link',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.uploadVideoLink)),
