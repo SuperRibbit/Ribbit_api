@@ -9,7 +9,14 @@
       "title": "API Documentacao",
       "version": "1.0.0",
       "description": "Documentacao da API usando Swagger"
-    }
+    },
+    "securityDefinitions": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
   },
   "routes": {
     "routesDir": "src/generated",

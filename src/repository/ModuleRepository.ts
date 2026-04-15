@@ -2,12 +2,12 @@ import type { Prisma } from "../generated/prisma/index.js";
 import type { Module } from "../generated/prisma/index.js";
 import { prisma } from "../server.js";
 
-export class ModulesRepository {
-    private static instance: ModulesRepository;
+export class ModuleRepository {
+    private static instance: ModuleRepository;
     
-    static getInstance(): ModulesRepository {
+    static getInstance(): ModuleRepository {
         if (!this.instance) {
-          this.instance = new ModulesRepository();
+          this.instance = new ModuleRepository();
         }
         return this.instance;
     }

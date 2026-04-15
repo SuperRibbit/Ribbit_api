@@ -1,13 +1,13 @@
-import { ModulesRepository } from "../repository/ModuleRepository.js";
+import { ModuleRepository } from "../repository/ModuleRepository.js";
 import type { Prisma } from "../generated/prisma/index.js";
 import type { Module } from "../generated/prisma/index.js";
 
-export class ModulesService {
-    private modulesRepository = ModulesRepository.getInstance();
+export class ModuleService {
+    private moduleRepository = ModuleRepository.getInstance();
 
     async createModule(moduleData: any): Promise<Module | null> {
         const { title, description, fk_course, index_order } = moduleData;
-        const orderConstraint = await this.modulesRepository.findByCourseAndOrder(fk_course, index_order);
+        const orderConstraint = await this.moduleRepository.findByCourseAndOrder(fk_course, index_order);
         if (orderConstraint) {
             throw new Error("Já existe um módulo com essa ordem para este curso");
         }
@@ -23,6 +23,6 @@ export class ModulesService {
             },
         };
 
-        return await this.modulesRepository.save(moduleCreateInput);
+        return await this.moduleRepository.save(moduleCreateInput);
     }
 }
