@@ -328,9 +328,9 @@
 			"ModuleCreateRequest": {
 				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
 			},
-			"Pick_User.email-or-full_name-or-role-or-avatar_url_": {
+			"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
 				"properties": {
-					"email": {
+					"user_uuid": {
 						"type": "string"
 					},
 					"role": {
@@ -341,13 +341,57 @@
 					},
 					"avatar_url": {
 						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"user_uuid",
+					"role",
+					"full_name",
+					"avatar_url",
+					"created_at"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserPublicResponse": {
+				"$ref": "#/components/schemas/Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_"
+			},
+			"UserCreatedResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"user": {
+						"$ref": "#/components/schemas/UserResponse"
+					}
+				},
+				"required": [
+					"message",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_User.email-or-full_name-or-role_": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.user_role_enum"
+					},
+					"full_name": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"email",
 					"role",
-					"full_name",
-					"avatar_url"
+					"full_name"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -355,10 +399,14 @@
 			"UserCreateRequest": {
 				"allOf": [
 					{
-						"$ref": "#/components/schemas/Pick_User.email-or-full_name-or-role-or-avatar_url_"
+						"$ref": "#/components/schemas/Pick_User.email-or-full_name-or-role_"
 					},
 					{
 						"properties": {
+							"avatar_url": {
+								"type": "string",
+								"nullable": true
+							},
 							"password": {
 								"type": "string"
 							}
@@ -370,14 +418,24 @@
 					}
 				]
 			},
-			"Partial_Omit_UserCreateRequest.password__": {
+			"UserUpdatedResponse": {
 				"properties": {
-					"email": {
+					"message": {
 						"type": "string"
 					},
-					"role": {
-						"$ref": "#/components/schemas/_36_Enums.user_role_enum"
-					},
+					"user": {
+						"$ref": "#/components/schemas/UserResponse"
+					}
+				},
+				"required": [
+					"message",
+					"user"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_Pick_User.full_name-or-avatar_url__": {
+				"properties": {
 					"full_name": {
 						"type": "string"
 					},
@@ -389,7 +447,7 @@
 				"description": "Make all properties in T optional"
 			},
 			"UserUpdateRequest": {
-				"$ref": "#/components/schemas/Partial_Omit_UserCreateRequest.password__"
+				"$ref": "#/components/schemas/Partial_Pick_User.full_name-or-avatar_url__"
 			}
 		},
 		"securitySchemes": {
@@ -638,7 +696,7 @@
 				]
 			}
 		},
-		"/ribbit/login": {
+		"/ribbit/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -852,13 +910,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/UserResponse"
+									"$ref": "#/components/schemas/UserCreatedResponse"
 								}
 							}
 						}
-					},
-					"400": {
-						"description": "Email já cadastrado"
 					}
 				},
 				"tags": [
@@ -878,44 +933,12 @@
 				}
 			}
 		},
-		"/ribbit/users/{id}": {
+		"/ribbit/users/me": {
 			"get": {
-				"operationId": "FindById",
+				"operationId": "GetMyProfile",
 				"responses": {
 					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/UserResponse"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Usuário não encontrado"
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			},
-			"put": {
-				"operationId": "UpdateUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
+						"description": "Perfil do usuário",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -933,16 +956,31 @@
 						"bearerAuth": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateProfile",
+				"responses": {
+					"200": {
+						"description": "Atualizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserUpdatedResponse"
+								}
+							}
 						}
 					}
+				},
+				"tags": [
+					"Users"
 				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [],
 				"requestBody": {
 					"required": true,
 					"content": {
@@ -955,10 +993,10 @@
 				}
 			},
 			"delete": {
-				"operationId": "DeleteById",
+				"operationId": "DeleteMyAccount",
 				"responses": {
 					"204": {
-						"description": "Deletado com sucesso"
+						"description": "No Content"
 					}
 				},
 				"tags": [
@@ -966,15 +1004,42 @@
 				],
 				"security": [
 					{
-						"bearerAuth": [
-							"prof"
-						]
+						"bearerAuth": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/ribbit/users/{user_uuid}": {
+			"get": {
+				"operationId": "FindPublicProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserPublicResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuário não encontrado"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": []
 					}
 				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "user_uuid",
 						"required": true,
 						"schema": {
 							"type": "string"

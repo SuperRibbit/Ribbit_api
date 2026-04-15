@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express from "express";
+import express, { type NextFunction } from "express";
 import cors from "cors";
 import { PrismaClient } from "./generated/prisma/index.js";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -7,6 +7,8 @@ import { createRequire } from "module";
 import { CourseController } from "./controller/CourseController.js";
 import { RegisterRoutes } from "./generated/routes.js"; 
 import { setupSwagger } from "./config/swagger.js";
+import { ValidateError } from "tsoa";
+import { AppError } from "./utils/AppError.js";
 
 const require = createRequire(import.meta.url);
 
@@ -36,11 +38,32 @@ app.use(cors());
 setupSwagger(app);
 RegisterRoutes(app);
 
-// app.post(
-//   "/ribbit/classes/files/pdf",
-//   uploadPDF.single("file"),
-//   fileController.uploadClassPDF.bind(fileController)
-// );
+app.use(function errorHandler(
+  err: unknown,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): express.Response | void {
+  
+  if (err instanceof ValidateError) {
+    return res.status(422).json({ message: "Erro de validação.", details: err?.fields });
+  }
+
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      message: err.message,
+    });
+  }
+
+  if (err instanceof Error) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Erro interno no servidor.",
+    });
+  }
+
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

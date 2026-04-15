@@ -145,24 +145,52 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Pick_Module.title-or-description-or-index_order-or-fk_course_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_User.email-or-full_name-or-role-or-avatar_url_": {
+    "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserPublicResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserCreatedResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "user": {"ref":"UserResponse","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.email-or-full_name-or-role_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserCreateRequest": {
         "dataType": "refAlias",
-        "type": {"dataType":"intersection","subSchemas":[{"ref":"Pick_User.email-or-full_name-or-role-or-avatar_url_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"password":{"dataType":"string","required":true}}}],"validators":{}},
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"Pick_User.email-or-full_name-or-role_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"avatar_url":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"password":{"dataType":"string","required":true}}}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Partial_Omit_UserCreateRequest.password__": {
+    "UserUpdatedResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "user": {"ref":"UserResponse","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_Pick_User.full_name-or-avatar_url__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string"},"role":{"ref":"_36_Enums.user_role_enum"},"full_name":{"dataType":"string"},"avatar_url":{"dataType":"string"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"full_name":{"dataType":"string"},"avatar_url":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserUpdateRequest": {
         "dataType": "refAlias",
-        "type": {"ref":"Partial_Omit_UserCreateRequest.password__","validators":{}},
+        "type": {"ref":"Partial_Pick_User.full_name-or-avatar_url__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -372,7 +400,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsAuthController_login: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"LoginRequest"},
         };
-        app.post('/ribbit/login',
+        app.post('/ribbit/auth/login',
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
             ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.login)),
 
@@ -529,25 +557,57 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsUserController_findById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        const argsUserController_getMyProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
-        app.get('/ribbit/users/:id',
+        app.get('/ribbit/users/me',
+            authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.findById)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getMyProfile)),
 
-            async function UserController_findById(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_getMyProfile(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_findById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getMyProfile, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'findById',
+                methodName: 'getMyProfile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_findPublicProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                user_uuid: {"in":"path","name":"user_uuid","required":true,"dataType":"string"},
+        };
+        app.get('/ribbit/users/:user_uuid',
+            authenticateMiddleware([{"bearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.findPublicProfile)),
+
+            async function UserController_findPublicProfile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_findPublicProfile, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'findPublicProfile',
                 controller,
                 response,
                 next,
@@ -589,58 +649,58 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsUserController_updateUser: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        const argsUserController_updateProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UserUpdateRequest"},
         };
-        app.put('/ribbit/users/:id',
+        app.put('/ribbit/users/me',
             authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.updateUser)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.updateProfile)),
 
-            async function UserController_updateUser(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_updateProfile(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_updateUser, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_updateProfile, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'updateUser',
+                methodName: 'updateProfile',
                 controller,
                 response,
                 next,
                 validatedArgs,
-                successStatus: undefined,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsUserController_deleteById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        const argsUserController_deleteMyAccount: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
-        app.delete('/ribbit/users/:id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+        app.delete('/ribbit/users/me',
+            authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
-            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.deleteById)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.deleteMyAccount)),
 
-            async function UserController_deleteById(request: ExRequest, response: ExResponse, next: any) {
+            async function UserController_deleteMyAccount(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_deleteById, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_deleteMyAccount, request, response });
 
                 const controller = new UserController();
 
               await templateService.apiHandler({
-                methodName: 'deleteById',
+                methodName: 'deleteMyAccount',
                 controller,
                 response,
                 next,

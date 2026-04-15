@@ -1,6 +1,8 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request } from "tsoa";
+import * as express from "express";
 import { UserService } from "../service/UserService.js";
-import type { UserResponse, UserCreateRequest, UserUpdateRequest } from "../dto/UserDtos.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse, UserUpdatedResponse, UserPublicResponse } from "../dto/UserDtos.js";
+import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/users")
 @Tags("Users")
@@ -13,52 +15,93 @@ export class UserController extends Controller {
     return users.map(({ password_hash, ...user }) => user);
   }
 
-  @Get("{id}")
+  @Get("me")
+  @Security("bearerAuth")
+  @SuccessResponse("200", "Perfil do usuário")
+  public async getMyProfile(@Request() req: express.Request): Promise<UserResponse> {
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      throw new AppError("Não autorizado. Token não encontrado.", 401);
+    }
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado.", 404);
+    }
+    const { password_hash, ...userProfile } = user;
+
+    return userProfile;
+  }
+
+  @Get("{user_uuid}")
+  @Security("bearerAuth")
   @Response("404", "Usuário não encontrado")
-  public async findById(@Path() id: string): Promise<UserResponse> {
-    const { password_hash, ...user } = await this.userService.findById(id);
-    return user;
+  public async findPublicProfile(@Path() user_uuid: string): Promise<UserPublicResponse> {
+    const user = await this.userService.findById(user_uuid);
+    return {
+      user_uuid: user.user_uuid,
+      full_name: user.full_name,
+      role: user.role,
+      avatar_url: user.avatar_url,
+      created_at: user.created_at
+    };
   }
 
   @Post()
   @SuccessResponse("201", "Criado")
-  @Response("400", "Email já cadastrado")
-  public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserResponse> {
+  public async createUser(@Body() requestBody: UserCreateRequest): Promise<UserCreatedResponse> {
     const user = await this.userService.createUser(requestBody);
-
     if (!user) {
-      this.setStatus(404);
-      throw new Error("Usuário não encontrado para atualização.");
+      throw new AppError("Erro ao criar usuário.", 400);
     }
-
     const { password_hash, ...userWithoutPassword } = user;
-    
-    this.setStatus(201); 
-    return userWithoutPassword;
+
+    this.setStatus(201);
+
+    return {
+      message: "Usuário criado com sucesso!",
+      user: userWithoutPassword
+    };
   }
 
-  @Put("{id}")
+  @Put("me")
   @Security("bearerAuth")
-  public async updateUser(
-    @Path() id: string,
+  @SuccessResponse("200", "Atualizado com sucesso")
+  public async updateProfile(
+    @Request() req: express.Request,
     @Body() requestBody: UserUpdateRequest
-  ): Promise<UserResponse> {
-    const user = await this.userService.updateUser(id, requestBody);
+  ): Promise<UserUpdatedResponse> {
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      throw new AppError("Não autorizado. Token não encontrado.", 401);
+    }
+
+    const user = await this.userService.updateUser(userId, requestBody);
 
     if (!user) {
-      this.setStatus(404);
-      throw new Error("Usuário não encontrado para atualização.");
+      throw new AppError("Usuário não encontrado.", 404);
     }
 
     const { password_hash, ...updatedUser } = user;
-    return updatedUser;
+
+    return {
+      message: "Perfil atualizado com sucesso!",
+      user: updatedUser
+    };
   }
 
-  @Delete("{id}")
-  @SuccessResponse("204", "Deletado com sucesso")
-  @Security("bearerAuth", ["prof"])
-  public async deleteById(@Path() id: string): Promise<void> {
-    await this.userService.deleteById(id);
+  @Delete("me")
+  @Security("bearerAuth")
+  @SuccessResponse("204", "No Content")
+  public async deleteMyAccount(@Request() req: express.Request): Promise<void> {
+    const userId = (req as any).user?.id; 
+    if (!userId) {
+      throw new AppError("Sessão inválida. Por favor, faça login novamente para confirmar a eliminação da conta.", 401);
+    }
+    await this.userService.deleteById(userId);
     this.setStatus(204);
+    return; 
   }
 }
