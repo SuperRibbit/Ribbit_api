@@ -13,12 +13,7 @@ export class CourseRepository {
 
   async findAll(search?: string) {
     const where: Prisma.CourseWhereInput = search
-      ? {
-          OR: [
-            { title: { contains: search, mode: "insensitive" } },
-            { description: { contains: search, mode: "insensitive" } },
-          ],
-        }
+      ? { title: { contains: search, mode: "insensitive" } }
       : {};
 
     const courses = await prisma.course.findMany({
@@ -33,7 +28,10 @@ export class CourseRepository {
       },
     });
 
-    return { total_courses: courses.length, courses };
+    return {
+      total_courses: courses.length,
+      courses: courses.map(({ User, ...rest }) => ({ ...rest, teacher: User })),
+    };
   }
 
   async findById(courseId: number, studentId?: string) {

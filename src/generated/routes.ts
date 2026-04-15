@@ -23,31 +23,6 @@ const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "DefaultSelection_Prisma._36_CoursePayload_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_teacher":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true},"banner_url":{"dataType":"string","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id_course":{"dataType":"double","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Course": {
-        "dataType": "refAlias",
-        "type": {"ref":"DefaultSelection_Prisma._36_CoursePayload_","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CourseResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Course","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"title":{"dataType":"string","required":true},"description":{"dataType":"string","required":true},"banner_url":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true},"fk_teacher":{"dataType":"string","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CourseCreateRequest": {
-        "dataType": "refAlias",
-        "type": {"ref":"Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.user_role_enum": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]}],"validators":{}},
@@ -90,7 +65,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_Class_file.Exclude_keyofClass_file.metadata__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"file_id":{"dataType":"double","required":true},"display_name":{"dataType":"string","required":true},"storage_path":{"dataType":"string","required":true},"file_url":{"dataType":"string","required":true},"file_type":{"dataType":"string","required":true},"class_id":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"class_id":{"dataType":"double","required":true},"file_id":{"dataType":"double","required":true},"display_name":{"dataType":"string","required":true},"storage_path":{"dataType":"string","required":true},"file_url":{"dataType":"string","required":true},"file_type":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Omit_Class_file.metadata_": {
@@ -157,6 +132,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
     
         const argsCourseController_findAll: Record<string, TsoaRoute.ParameterSchema> = {
+                search: {"in":"query","name":"search","dataType":"string"},
         };
         app.get('/ribbit/courses',
             authenticateMiddleware([{"bearerAuth":[]}]),
@@ -187,9 +163,10 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_findById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
-        app.get('/ribbit/courses/:id',
+        app.get('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.findById)),
@@ -217,39 +194,9 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsCourseController_findByTitle: Record<string, TsoaRoute.ParameterSchema> = {
-                title: {"in":"path","name":"title","required":true,"dataType":"string"},
-        };
-        app.get('/ribbit/courses/title/:title',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(CourseController)),
-            ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.findByTitle)),
-
-            async function CourseController_findByTitle(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsCourseController_findByTitle, request, response });
-
-                const controller = new CourseController();
-
-              await templateService.apiHandler({
-                methodName: 'findByTitle',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_createCourse: Record<string, TsoaRoute.ParameterSchema> = {
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseCreateRequest"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string","required":true},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string","required":true}}},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/ribbit/courses',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
@@ -280,10 +227,10 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_updateCourse: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseCreateRequest"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string"},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string"}}},
         };
-        app.put('/ribbit/courses/:id',
+        app.put('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.updateCourse)),
@@ -312,9 +259,9 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_deleteById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
         };
-        app.delete('/ribbit/courses/:id',
+        app.delete('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.deleteById)),
