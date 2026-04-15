@@ -7,6 +7,76 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"DefaultSelection_Prisma._36_CoursePayload_": {
+				"properties": {
+					"fk_teacher": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					},
+					"banner_url": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"id_course": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"fk_teacher",
+					"slug",
+					"banner_url",
+					"description",
+					"title",
+					"id_course"
+				],
+				"type": "object"
+			},
+			"Course": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_CoursePayload_",
+				"description": "Model Course"
+			},
+			"CourseResponse": {
+				"$ref": "#/components/schemas/Course"
+			},
+			"Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"banner_url": {
+						"type": "string"
+					},
+					"slug": {
+						"type": "string"
+					},
+					"fk_teacher": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"banner_url",
+					"slug",
+					"fk_teacher"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"CourseCreateRequest": {
+				"$ref": "#/components/schemas/Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_"
+			},
 			"_36_Enums.user_role_enum": {
 				"type": "string",
 				"enum": [
@@ -314,18 +384,15 @@
 				"$ref": "#/components/schemas/Partial_Pick_User.full_name-or-avatar_url__"
 			}
 		},
-		"securitySchemes": {
-			"bearerAuth": {
-				"type": "http",
-				"scheme": "bearer",
-				"bearerFormat": "JWT"
-			}
-		}
+		"securitySchemes": {}
 	},
 	"info": {
-		"title": "API Documentacao",
+		"title": "ribbit_api",
 		"version": "1.0.0",
-		"description": "Documentacao da API usando Swagger"
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
 	},
 	"paths": {
 		"/ribbit/auth/login": {
@@ -642,8 +709,7 @@
 	},
 	"servers": [
 		{
-			"url": "http://localhost:8080",
-			"description": "Servidor de Desenvolvimento"
+			"url": "/"
 		}
 	]
 }

@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "gitconfig": "git config --local user.name \"Jonas Pinheiro\" && git config --local user.email \"jonas.pinheiro@aluno.ifsp.edu.br\"",
     "dev": "nodemon --watch src --ext ts --ignore src/generated/ --exec \"tsoa spec-and-routes && node --no-warnings --loader ts-node/esm src/server.ts\"",
-    "build": "npx tsc && cp -r src/generated dist/",
+    "build": "npx tsc && cpy \"src/generated/**/*\" dist/generated/",
     "start": "node dist/server.js"
   },
   "repository": {
@@ -40,14 +40,18 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.4.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "concat-map": "^0.0.2",
+    "cpy-cli": "^7.0.0",
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "prisma": "^7.4.2",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"

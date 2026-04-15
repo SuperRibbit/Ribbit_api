@@ -5,26 +5,11 @@
   "spec": {
     "outputDirectory": "src/generated",
     "specVersion": 3,
-     "spec": {
-            "info": {
-                "title": "API Documentacao",
-                "version": "1.0.0",
-                "description": "Documentacao da API usando Swagger"
-            },
-             "servers": [
-                {
-                    "url": "http://localhost:8080",
-                    "description": "Servidor de Desenvolvimento"
-                }
-            ]
-        },
-        "securityDefinitions": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
-        }
+    "info": {
+      "title": "API Documentacao",
+      "version": "1.0.0",
+      "description": "Documentacao da API usando Swagger"
+    }
   },
   "routes": {
     "routesDir": "src/generated",
