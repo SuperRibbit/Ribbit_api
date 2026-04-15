@@ -7,76 +7,6 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"DefaultSelection_Prisma._36_CoursePayload_": {
-				"properties": {
-					"fk_teacher": {
-						"type": "string"
-					},
-					"slug": {
-						"type": "string"
-					},
-					"banner_url": {
-						"type": "string"
-					},
-					"description": {
-						"type": "string"
-					},
-					"title": {
-						"type": "string"
-					},
-					"id_course": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"fk_teacher",
-					"slug",
-					"banner_url",
-					"description",
-					"title",
-					"id_course"
-				],
-				"type": "object"
-			},
-			"Course": {
-				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_CoursePayload_",
-				"description": "Model Course"
-			},
-			"CourseResponse": {
-				"$ref": "#/components/schemas/Course"
-			},
-			"Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_": {
-				"properties": {
-					"title": {
-						"type": "string"
-					},
-					"description": {
-						"type": "string"
-					},
-					"banner_url": {
-						"type": "string"
-					},
-					"slug": {
-						"type": "string"
-					},
-					"fk_teacher": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"title",
-					"description",
-					"banner_url",
-					"slug",
-					"fk_teacher"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"CourseCreateRequest": {
-				"$ref": "#/components/schemas/Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_"
-			},
 			"_36_Enums.user_role_enum": {
 				"type": "string",
 				"enum": [
@@ -176,6 +106,10 @@
 			},
 			"Pick_Class_file.Exclude_keyofClass_file.metadata__": {
 				"properties": {
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					},
 					"file_id": {
 						"type": "number",
 						"format": "double"
@@ -191,19 +125,15 @@
 					},
 					"file_type": {
 						"type": "string"
-					},
-					"class_id": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
+					"class_id",
 					"file_id",
 					"display_name",
 					"storage_path",
 					"file_url",
-					"file_type",
-					"class_id"
+					"file_type"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -476,10 +406,64 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/CourseResponse"
+									"properties": {
+										"courses": {
+											"items": {
+												"properties": {
+													"slug": {
+														"type": "string"
+													},
+													"banner_url": {
+														"type": "string"
+													},
+													"description": {
+														"type": "string"
+													},
+													"title": {
+														"type": "string"
+													},
+													"id_course": {
+														"type": "number",
+														"format": "double"
+													},
+													"teacher": {
+														"properties": {
+															"avatar_url": {
+																"type": "string"
+															},
+															"full_name": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"avatar_url",
+															"full_name"
+														],
+														"type": "object"
+													}
+												},
+												"required": [
+													"slug",
+													"banner_url",
+													"description",
+													"title",
+													"id_course",
+													"teacher"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"total_courses": {
+											"type": "number",
+											"format": "double"
+										}
 									},
-									"type": "array"
+									"required": [
+										"courses",
+										"total_courses"
+									],
+									"type": "object"
 								}
 							}
 						}
@@ -493,7 +477,16 @@
 						"bearerAuth": []
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			},
 			"post": {
 				"operationId": "CreateCourse",
@@ -503,13 +496,26 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CourseResponse"
+									"properties": {
+										"course_id": {
+											"type": "number",
+											"format": "double"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"course_id",
+										"message"
+									],
+									"type": "object"
 								}
 							}
 						}
 					},
-					"400": {
-						"description": "Erro ao criar curso"
+					"409": {
+						"description": "Slug já em uso"
 					}
 				},
 				"tags": [
@@ -528,14 +534,32 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CourseCreateRequest"
+								"properties": {
+									"slug": {
+										"type": "string"
+									},
+									"banner_url": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"slug",
+									"title"
+								],
+								"type": "object"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/ribbit/courses/{id}": {
+		"/ribbit/courses/{courseId}": {
 			"get": {
 				"operationId": "FindById",
 				"responses": {
@@ -544,7 +568,90 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CourseResponse"
+									"properties": {
+										"slug": {
+											"type": "string"
+										},
+										"banner_url": {
+											"type": "string"
+										},
+										"description": {
+											"type": "string"
+										},
+										"title": {
+											"type": "string"
+										},
+										"id_course": {
+											"type": "number",
+											"format": "double"
+										},
+										"modules": {
+											"items": {
+												"properties": {
+													"classes": {
+														"items": {
+															"properties": {
+																"is_completed": {
+																	"type": "boolean"
+																},
+																"title": {
+																	"type": "string"
+																},
+																"class_id": {
+																	"type": "number",
+																	"format": "double"
+																}
+															},
+															"required": [
+																"is_completed",
+																"title",
+																"class_id"
+															],
+															"type": "object"
+														},
+														"type": "array"
+													},
+													"index_order": {
+														"type": "number",
+														"format": "double"
+													},
+													"title": {
+														"type": "string"
+													},
+													"module_id": {
+														"type": "number",
+														"format": "double"
+													}
+												},
+												"required": [
+													"classes",
+													"index_order",
+													"title",
+													"module_id"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"progress": {
+											"type": "number",
+											"format": "double"
+										},
+										"teacher_name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"slug",
+										"banner_url",
+										"description",
+										"title",
+										"id_course",
+										"modules",
+										"progress",
+										"teacher_name"
+									],
+									"type": "object"
 								}
 							}
 						}
@@ -564,7 +671,7 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "courseId",
 						"required": true,
 						"schema": {
 							"format": "double",
@@ -581,16 +688,53 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/CourseResponse"
+									"properties": {
+										"course": {
+											"properties": {
+												"slug": {
+													"type": "string"
+												},
+												"banner_url": {
+													"type": "string"
+												},
+												"description": {
+													"type": "string"
+												},
+												"title": {
+													"type": "string"
+												},
+												"id_course": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"slug",
+												"banner_url",
+												"description",
+												"title",
+												"id_course"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"course",
+										"message"
+									],
+									"type": "object"
 								}
 							}
 						}
 					},
-					"400": {
-						"description": "Erro ao atualizar curso"
-					},
 					"404": {
-						"description": "Curso não encontrado para atualização"
+						"description": "Curso não encontrado"
+					},
+					"409": {
+						"description": "Slug já em uso"
 					}
 				},
 				"tags": [
@@ -606,7 +750,7 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "courseId",
 						"required": true,
 						"schema": {
 							"format": "double",
@@ -619,7 +763,21 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CourseCreateRequest"
+								"properties": {
+									"slug": {
+										"type": "string"
+									},
+									"banner_url": {
+										"type": "string"
+									},
+									"description": {
+										"type": "string"
+									},
+									"title": {
+										"type": "string"
+									}
+								},
+								"type": "object"
 							}
 						}
 					}
@@ -648,7 +806,7 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "id",
+						"name": "courseId",
 						"required": true,
 						"schema": {
 							"format": "double",
@@ -658,45 +816,7 @@
 				]
 			}
 		},
-		"/ribbit/courses/title/{title}": {
-			"get": {
-				"operationId": "FindByTitle",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/CourseResponse"
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Curso não encontrado"
-					}
-				},
-				"tags": [
-					"Courses"
-				],
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "title",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/ribbit/auth/login": {
+		"/ribbit/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
