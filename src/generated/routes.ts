@@ -10,6 +10,8 @@ import { AuthController } from './../controller/AuthController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ClassFileController } from './../controller/ClassFileController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { ModulesController } from './../controller/ModuleController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../controller/UserController.js';
 import { expressAuthentication } from './../middleware/tsoaAuth.js';
 // @ts-ignore - no great way to install types from subpackage
@@ -116,6 +118,31 @@ const models: TsoaRoute.Models = {
             "display_name": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_ModulePayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_course":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"id_module":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Module": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_ModulePayload_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ModuleResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Module","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_Module.title-or-description-or-index_order-or-fk_course_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"title":{"dataType":"string","required":true},"description":{"dataType":"string","required":true},"index_order":{"dataType":"double","required":true},"fk_course":{"dataType":"double","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ModuleCreateRequest": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_Module.title-or-description-or-index_order-or-fk_course_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
@@ -459,6 +486,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'uploadVideoLink',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsModulesController_createModule: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
+        };
+        app.post('/ribbit/modules',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController)),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.createModule)),
+
+            async function ModulesController_createModule(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsModulesController_createModule, request, response });
+
+                const controller = new ModulesController();
+
+              await templateService.apiHandler({
+                methodName: 'createModule',
                 controller,
                 response,
                 next,
