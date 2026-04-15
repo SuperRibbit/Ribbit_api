@@ -12,12 +12,17 @@ export class ModulesController extends Controller {
     @Response("400", "Erro ao criar módulo")
     @Security("bearerAuth", ["prof"])
     public async createModule(@Body() requestBody: ModuleCreateRequest): Promise<ModuleResponse> {
-        const module = await this.moduleService.createModule(requestBody);
-        if (!module) {
+        try {
+            const module = await this.moduleService.createModule(requestBody);
+            if (!module) {
+                this.setStatus(400);
+                throw new Error("Erro ao criar módulo");
+            }
+            this.setStatus(201);
+            return module;
+        } catch (error: any) {
             this.setStatus(400);
-            throw new Error("Erro ao criar módulo");
+            throw new Error(error.message || "Erro ao criar módulo");
         }
-        this.setStatus(201);
-        return module;
     }
 }
