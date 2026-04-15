@@ -198,11 +198,11 @@
 						"type": "number",
 						"format": "double"
 					},
-					"index_order": {
+					"id_module": {
 						"type": "number",
 						"format": "double"
 					},
-					"id_module": {
+					"index_order": {
 						"type": "number",
 						"format": "double"
 					},
@@ -215,8 +215,8 @@
 				},
 				"required": [
 					"fk_course",
-					"index_order",
 					"id_module",
+					"index_order",
 					"description",
 					"title"
 				],
@@ -816,7 +816,7 @@
 				]
 			}
 		},
-		"/ribbit/login": {
+		"/ribbit/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
