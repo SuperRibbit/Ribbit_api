@@ -1,5 +1,5 @@
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
-import type { User } from "../../../src/generated/prisma/index.js";
+import type { User } from "../../../generated/prisma/index.js";
 
 const repoMocks = {
   findByEmail: jest.fn(),
@@ -30,7 +30,7 @@ await jest.unstable_mockModule("jsonwebtoken", () => ({
   },
 }));
 
-const { AuthService } = await import("../../../src/service/AuthService.js");
+const { AuthService } = await import("../../../service/AuthService.js");
 
 describe("AuthService", () => {
   beforeEach(() => {

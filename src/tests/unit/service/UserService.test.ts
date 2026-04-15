@@ -1,5 +1,5 @@
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
-import type { User } from "../../../src/generated/prisma/index.js";
+import type { User } from "../../../generated/prisma/index.js";
 
 const repoMocks = {
   findAll: jest.fn(),
@@ -29,7 +29,7 @@ await jest.unstable_mockModule("bcryptjs", () => ({
   },
 }));
 
-const { UserService } = await import("../../../src/service/UserService.js");
+const { UserService } = await import("../../../service/UserService.js");
 
 describe("UserService", () => {
   let userService: any;

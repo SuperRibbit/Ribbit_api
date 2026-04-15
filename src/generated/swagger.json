@@ -395,6 +395,235 @@
 		"contact": {}
 	},
 	"paths": {
+		"/ribbit/courses": {
+			"get": {
+				"operationId": "FindAll",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/CourseResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateCourse",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao criar curso"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/courses/{id}": {
+			"get": {
+				"operationId": "FindById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCourse",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao atualizar curso"
+					},
+					"404": {
+						"description": "Curso não encontrado para atualização"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseCreateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteById",
+				"responses": {
+					"204": {
+						"description": "Deletado com sucesso"
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/ribbit/courses/title/{title}": {
+			"get": {
+				"operationId": "FindByTitle",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "title",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/auth/login": {
 			"post": {
 				"operationId": "Login",
