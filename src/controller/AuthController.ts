@@ -2,7 +2,7 @@ import { Route, Tags, Controller, Post, Body, SuccessResponse, Response } from "
 import { AuthService } from "../service/AuthService.js";
 import type { LoginRequest, LoginResponse } from "../dto/AuthDtos.js";
 
-@Route("ribbit/login")
+@Route("ribbit/auth/login")
 @Tags("Auth")
 export class AuthController extends Controller {
   private authService = new AuthService();
