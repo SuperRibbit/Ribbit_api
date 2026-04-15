@@ -2,17 +2,17 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import type { User } from "../../../generated/prisma/index.js";
 
 const repoMocks = {
-  findAll: jest.fn(),
-  findById: jest.fn(),
-  findByEmail: jest.fn(),
-  createUser: jest.fn(),
-  updateUser: jest.fn(),
-  deleteById: jest.fn(),
+  findAll: jest.fn<() => Promise<User[]>>(),
+  findById: jest.fn<(id: string) => Promise<User | null>>(),
+  findByEmail: jest.fn<(email: string) => Promise<User | null>>(),
+  createUser: jest.fn<(data: any) => Promise<User | null>>(),
+  updateUser: jest.fn<(id: string, data: any) => Promise<User | null>>(),
+  deleteById: jest.fn<(id: string) => Promise<User | null>>(),
 };
 
 const bcryptMocks = {
-  genSalt: jest.fn(),
-  hash: jest.fn(),
+  genSalt: jest.fn<(rounds: number) => Promise<string>>(),
+  hash: jest.fn<(s: string, salt: string) => Promise<string>>(),
 };
 
 await jest.unstable_mockModule("../../../src/repository/UserRepository.js", () => ({
@@ -57,7 +57,8 @@ describe("UserService", () => {
 
   describe("findById", () => {
     it("deve retornar um usuário quando o id é válido", async () => {
-      const mockUser = { user_uuid: "1", email: "u1@test.com" };
+      // Usamos 'as User' para o TS aceitar um objeto parcial no teste
+      const mockUser = { user_uuid: "1", email: "u1@test.com" } as User;
       repoMocks.findById.mockResolvedValue(mockUser);
       const result = await userService.findById("1");
       expect(result).toEqual(mockUser);
@@ -80,7 +81,18 @@ describe("UserService", () => {
       repoMocks.findByEmail.mockResolvedValue(null);
       bcryptMocks.genSalt.mockResolvedValue("s");
       bcryptMocks.hash.mockResolvedValue("hp");
-      repoMocks.createUser.mockResolvedValue({ ...userData, password_hash: "hp" });
+
+      const mockCreatedUser: User = {
+        user_uuid: "simulated-uuid-1234",
+        email: userData.email,
+        full_name: userData.full_name,
+        role: userData.role as any,
+        password_hash: "hp",
+        avatar_url: null,
+        created_at: new Date()
+      };
+
+      repoMocks.createUser.mockResolvedValue(mockCreatedUser);
 
       const result = await userService.createUser(userData);
       expect(bcryptMocks.hash).toHaveBeenCalledWith("p1", "s");
@@ -88,8 +100,8 @@ describe("UserService", () => {
     });
 
     it("deve lançar erro se o email já existe", async () => {
-      repoMocks.findByEmail.mockResolvedValue({ email: "n@t.com" });
-      await expect(userService.createUser(userData)).rejects.toThrow("Email já cadastrado");
+      repoMocks.findByEmail.mockResolvedValue({ email: "n@t.com" } as User);
+      await expect(userService.createUser(userData)).rejects.toThrow("Email já cadastrado"); // Nota: ajuste este texto caso tenha alterado no AppError!
     });
 
     it("deve propagar erro se o bcrypt falhar", async () => {
@@ -112,21 +124,20 @@ describe("UserService", () => {
     it("deve fazer hash da senha se fornecida como string", async () => {
       bcryptMocks.genSalt.mockResolvedValue("s");
       bcryptMocks.hash.mockResolvedValue("hp");
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" });
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" } as User);
 
       await userService.updateUser("1", { password_hash: "new" });
       expect(bcryptMocks.hash).toHaveBeenCalledWith("new", "s");
     });
 
     it("não deve fazer hash se password_hash não for uma string (ex: objeto do Prisma)", async () => {
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" });
-      // Simula uma operação do Prisma como { set: '...' }
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" } as User);
       await userService.updateUser("1", { password_hash: { set: "something" } as any });
       expect(bcryptMocks.hash).not.toHaveBeenCalled();
     });
 
     it("deve atualizar outros campos sem mexer no bcrypt", async () => {
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1", full_name: "X" });
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1", full_name: "X" } as User);
       const result = await userService.updateUser("1", { full_name: "X" });
       expect(bcryptMocks.hash).not.toHaveBeenCalled();
       expect(result.full_name).toBe("X");
@@ -144,7 +155,7 @@ describe("UserService", () => {
 
   describe("deleteById", () => {
     it("deve deletar com sucesso", async () => {
-      repoMocks.deleteById.mockResolvedValue({ user_uuid: "1" });
+      repoMocks.deleteById.mockResolvedValue({ user_uuid: "1" } as User);
       const result = await userService.deleteById("1");
       expect(result.user_uuid).toBe("1");
     });

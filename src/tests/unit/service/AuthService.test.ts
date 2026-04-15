@@ -2,11 +2,11 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import type { User } from "../../../generated/prisma/index.js";
 
 const repoMocks = {
-  findByEmail: jest.fn(),
+  findByEmail: jest.fn<(email: string) => Promise<User | null>>(),
 };
 
-const bcryptCompare = jest.fn();
-const jwtSign = jest.fn();
+const bcryptCompare = jest.fn<(s: string, hash: string) => Promise<boolean>>();
+const jwtSign = jest.fn<(payload: any, secret: string, options: any) => string>();
 
 await jest.unstable_mockModule("../../../src/repository/UserRepository.js", () => ({
   UserRepository: {
@@ -42,7 +42,7 @@ describe("AuthService", () => {
       const mockUser: User = {
         user_uuid: "550e8400-e29b-41d4-a716-446655440000",
         email: "a@b.com",
-        role: "aluno",
+        role: "aluno" as any,
         password_hash: "hashed",
         full_name: "Test User",
         avatar_url: null,
@@ -87,7 +87,7 @@ describe("AuthService", () => {
       const mockUser: User = {
         user_uuid: "550e8400-e29b-41d4-a716-446655440000",
         email: "a@b.com",
-        role: "aluno",
+        role: "aluno" as any,
         password_hash: "hashed",
         full_name: "Test User",
         avatar_url: null,
