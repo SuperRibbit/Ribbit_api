@@ -142,34 +142,24 @@
 				"$ref": "#/components/schemas/Pick_Class_file.Exclude_keyofClass_file.metadata__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
-			"Record_string.any_": {
-				"properties": {},
-				"additionalProperties": {},
-				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
-			},
 			"ClassFileResponse": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/Omit_Class_file.metadata_"
+				"$ref": "#/components/schemas/Omit_Class_file.metadata_"
+			},
+			"ClassFileActionResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
 					},
-					{
-						"properties": {
-							"metadata": {
-								"allOf": [
-									{
-										"$ref": "#/components/schemas/Record_string.any_"
-									}
-								],
-								"nullable": true
-							}
-						},
-						"required": [
-							"metadata"
-						],
-						"type": "object"
+					"file": {
+						"$ref": "#/components/schemas/ClassFileResponse"
 					}
-				]
+				},
+				"required": [
+					"message",
+					"file"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"UploadVideoLinkRequest": {
 				"properties": {
@@ -851,7 +841,7 @@
 				}
 			}
 		},
-		"/ribbit/classes/files/pdf": {
+		"/ribbit/files/pdf": {
 			"post": {
 				"operationId": "UploadClassPDF",
 				"responses": {
@@ -860,7 +850,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ClassFileResponse"
+									"$ref": "#/components/schemas/ClassFileActionResponse"
 								}
 							}
 						}
@@ -913,7 +903,7 @@
 				}
 			}
 		},
-		"/ribbit/classes/files/link": {
+		"/ribbit/files/link": {
 			"post": {
 				"operationId": "UploadVideoLink",
 				"responses": {
@@ -922,7 +912,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ClassFileResponse"
+									"$ref": "#/components/schemas/ClassFileActionResponse"
 								}
 							}
 						}
@@ -955,6 +945,40 @@
 						}
 					}
 				}
+			}
+		},
+		"/ribbit/files/{file_id}": {
+			"delete": {
+				"operationId": "DeleteFile",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"404": {
+						"description": "Arquivo não encontrado"
+					}
+				},
+				"tags": [
+					"Class Files"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "file_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/ribbit/modules": {

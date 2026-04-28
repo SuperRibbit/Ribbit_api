@@ -1,13 +1,14 @@
-import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body } from "tsoa";
+import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body, Delete, Path } from "tsoa";
 import { GoogleDriveService } from "../service/GoogleDriveService.js";
 import { ClassFileService } from "../service/ClassFileService.js";
-import type { ClassFileResponse, UploadVideoLinkRequest } from "../dto/ClassFileDtos.js";
+import type { ClassFileResponse, UploadVideoLinkRequest, ClassFileActionResponse } from "../dto/ClassFileDtos.js";
+import { AppError } from "../utils/AppError.js";
 
 import fs from "fs";
 import path from "path";
 import os from "os";
 
-@Route("ribbit/classes/files")
+@Route("ribbit/files")
 @Tags("Class Files")
 export class ClassFileController extends Controller {
   private driveService = new GoogleDriveService();
@@ -22,45 +23,43 @@ export class ClassFileController extends Controller {
     @UploadedFile() file: Express.Multer.File,
     @FormField() class_id: number,             
     @FormField() display_name: string
-  ): Promise<ClassFileResponse> {
+  ): Promise<ClassFileActionResponse> {
     
+    if (!class_id) {
+      throw new AppError("O class_id é obrigatório.", 400);
+    }
+
+    const classExists = await this.dbService.checkClassExists(class_id);
+    if (!classExists) {
+      throw new AppError(`Nenhuma aula encontrada com o ID ${class_id}. O upload foi cancelado.`, 404);
+    }
+
     const tempFilePath = path.join(os.tmpdir(), file.originalname || "upload.pdf");
     
     try {
       fs.writeFileSync(tempFilePath, file.buffer);
-
-      if (!class_id) {
-        this.setStatus(400);
-        throw new Error("O class_id é obrigatório.");
-      }
-
-      
-      const classExists = await this.dbService.checkClassExists(class_id);
-
-      if (!classExists) {
-        this.setStatus(404);
-        throw new Error(`Nenhuma aula encontrada com o ID ${class_id}. O upload foi cancelado.`);
-      }
-
       const finalName = display_name || file.originalname;
       const driveUrl = await this.driveService.uploadFile(tempFilePath, finalName);
-      
+
       const newFileRecord = await this.dbService.saveFileRecord({
         display_name: finalName,
         file_url: driveUrl,
         class_id: class_id,
       });
 
-      fs.unlinkSync(tempFilePath);
-
       this.setStatus(201);
-      return newFileRecord as unknown as ClassFileResponse;
+      return {
+        message: "Arquivo enviado com sucesso!",
+        file: newFileRecord as unknown as ClassFileResponse
+      };
 
     } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      throw new AppError("Ocorreu um erro ao processar e salvar o seu PDF. Tente novamente.", 500);
+    } finally {
       if (fs.existsSync(tempFilePath)) {
         fs.unlinkSync(tempFilePath);
       }
-      throw error; 
     }
   }
 
@@ -71,14 +70,13 @@ export class ClassFileController extends Controller {
   @Security("bearerAuth", ["prof"]) 
   public async uploadVideoLink(
     @Body() requestBody: UploadVideoLinkRequest
-  ): Promise<ClassFileResponse> {
+  ): Promise<ClassFileActionResponse> {
     
     const { class_id, url, display_name } = requestBody;
     const classExists = await this.dbService.checkClassExists(class_id);
 
     if (!classExists) {
-      this.setStatus(404);
-      throw new Error(`Nenhuma aula encontrada com o ID ${class_id}. O upload do link foi cancelado.`);
+      throw new AppError(`Nenhuma aula encontrada com o ID ${class_id}. O upload do link foi cancelado.`, 404);
     }
 
    try {
@@ -89,14 +87,25 @@ export class ClassFileController extends Controller {
       });
 
       this.setStatus(201);
-      return newLinkRecord as unknown as ClassFileResponse;
+      return {
+        message: "Link de vídeo salvo com sucesso!",
+        file: newLinkRecord as unknown as ClassFileResponse
+      };
 
     } catch (error: any) {
-      if (error.message === "INVALID_URL") {
-        this.setStatus(400);
-        throw new Error("O link fornecido não é uma URL de vídeo válida. Formatos aceitos: YouTube, Vimeo ou links diretos.");
-      }
-      throw error;
+      if (error instanceof AppError) throw error;
+      throw new AppError("Erro inesperado ao salvar o link do vídeo.", 500);
     }
+  }
+
+  @Delete("{file_id}")
+  @SuccessResponse("204", "No Content")
+  @Response("404", "Arquivo não encontrado")
+  @Security("bearerAuth", ["prof"]) 
+  public async deleteFile(
+    @Path() file_id: number
+  ): Promise<void> {
+    await this.dbService.deleteFileRecord(file_id);
+    this.setStatus(204);
   }
 }
