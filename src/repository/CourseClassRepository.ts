@@ -11,11 +11,11 @@ export class CourseClassRepository {
         return this.instance;
     }
 
-    async findByID(class_id: number): Promise<Course_class | null> {
+    async findById(class_id: number): Promise<Course_class | null> {
         return await prisma.course_class.findUnique({ where: { class_id } });
     }
 
-    async findById(title: string): Promise<Course_class | null>{
+    async findByTitle(title: string): Promise<Course_class | null>{
         return await prisma.course_class.findFirst({ where: { title }})
     }
 
