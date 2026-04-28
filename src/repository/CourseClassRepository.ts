@@ -15,13 +15,13 @@ export class CourseClassRepository {
         return await prisma.course_class.findUnique({ where: { class_id } });
     }
 
-    async create(data: Prisma.Course_classCreateInput): Promise<Course_class> {
+    async createCourseClass(data: Prisma.Course_classCreateInput): Promise<Course_class> {
         const created = await prisma.course_class.create({ data });
         console.log("Aula criada com sucesso: ", created);
         return created;
     }
 
-    async update(class_id: number, data: Prisma.Course_classUpdateInput): Promise<Course_class> {
+    async updateCourseClass(class_id: number, data: Prisma.Course_classUpdateInput): Promise<Course_class> {
         const update = await prisma.course_class.update({ where: { class_id }, data});
         console.log("Aula atualizada com sucesso: ", update);
         return update;
