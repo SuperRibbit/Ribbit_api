@@ -8,7 +8,7 @@ const repoMocks = {
 const bcryptCompare = jest.fn<(s: string, hash: string) => Promise<boolean>>();
 const jwtSign = jest.fn<(payload: any, secret: string, options: any) => string>();
 
-await jest.unstable_mockModule("../../../src/repository/UserRepository.js", () => ({
+await jest.unstable_mockModule("../../../repository/UserRepository.js", () => ({
   UserRepository: {
     getInstance: () => ({
       findByEmail: repoMocks.findByEmail,

@@ -12,17 +12,17 @@ export class UserService {
 
   async findById(id: string | undefined): Promise<User> {
     if (!id) {
-      throw new AppError("Usuário não encontrado",404);
+      throw new AppError("Usuário não encontrado", 404);
     }
 
     const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-        if (!uuidRegex.test(id)) {
-            throw new AppError("Usuário não encontrado.", 404);
-        }
+    if (!uuidRegex.test(id)) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new AppError("Usuário não encontrado",404);
+      throw new AppError("Usuário não encontrado", 404);
     }
     return user;
   }
@@ -51,7 +51,12 @@ export class UserService {
 
   async updateUser(id: string | undefined, userData: Prisma.UserUpdateInput): Promise<User | null> {
     if (!id) {
-      throw new Error("Usuário não encontrado");
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidRegex.test(id)) {
+      throw new AppError("Usuário não encontrado", 404);
     }
 
     if (userData.password_hash && typeof userData.password_hash === 'string') {
@@ -62,7 +67,16 @@ export class UserService {
     return await this.userRepository.updateUser(id, userData);
   }
 
-  async deleteById(id: string): Promise<User | null> {
+  async deleteById(id: string | undefined): Promise<User | null> {
+    if (!id) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidRegex.test(id)) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
     try {
       return await this.userRepository.deleteById(id);
     } catch (error: any) {
