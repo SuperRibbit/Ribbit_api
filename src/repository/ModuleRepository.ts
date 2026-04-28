@@ -26,4 +26,22 @@ export class ModuleRepository {
             },
         });
     }
+
+    async findById(module_id: number): Promise<Module | null> {
+        return await prisma.module.findUnique({
+            where: {
+                id_module: module_id,
+            },
+        });
+    }
+
+    async deleteById(module_id: number): Promise<void> {
+        await prisma.module.delete({
+            where: {
+                id_module: module_id,
+            },
+        });
+        console.log("Módulo removido com sucesso: ", module_id);
+        return;
+    }
 }

@@ -262,42 +262,21 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"DefaultSelection_Prisma._36_ModulePayload_": {
+			"ModuleResponsePost": {
 				"properties": {
-					"fk_course": {
+					"moduleId": {
 						"type": "number",
 						"format": "double"
 					},
-					"index_order": {
-						"type": "number",
-						"format": "double"
-					},
-					"id_module": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
-						"type": "string"
-					},
-					"title": {
+					"message": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"fk_course",
-					"index_order",
-					"id_module",
-					"description",
-					"title"
+					"moduleId",
+					"message"
 				],
 				"type": "object"
-			},
-			"Module": {
-				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ModulePayload_",
-				"description": "Model Module"
-			},
-			"ModuleResponse": {
-				"$ref": "#/components/schemas/Module"
 			},
 			"Pick_Module.title-or-description-or-index_order-or-fk_course_": {
 				"properties": {
@@ -846,7 +825,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ModuleResponse"
+									"$ref": "#/components/schemas/ModuleResponsePost"
 								}
 							}
 						}
@@ -876,6 +855,40 @@
 						}
 					}
 				}
+			}
+		},
+		"/ribbit/modules/{module_id}": {
+			"delete": {
+				"operationId": "DeleteModule",
+				"responses": {
+					"204": {
+						"description": "Deletado"
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/ribbit/users": {
