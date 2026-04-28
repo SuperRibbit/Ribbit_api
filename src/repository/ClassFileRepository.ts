@@ -19,4 +19,16 @@ export class ClassFileRepository {
             data
         });
     }
+    
+    async findById(file_id: number) {
+        return await prisma.class_file.findUnique({
+            where: { file_id }
+        });
+    }
+
+    async deleteById(file_id: number) {
+        return await prisma.class_file.delete({
+            where: { file_id }
+        });
+    }
 }

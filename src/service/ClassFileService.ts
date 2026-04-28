@@ -44,4 +44,14 @@ export class ClassFileService {
       class_id: data.class_id,
     });
   }
+
+  async deleteFileRecord(file_id: number): Promise<void> {
+    const file = await this.repository.findById(file_id);
+
+    if (!file) {
+      throw new AppError("O arquivo solicitado não existe ou já foi excluído.", 404);
+    }
+
+    await this.repository.deleteById(file_id);
+  }
 }

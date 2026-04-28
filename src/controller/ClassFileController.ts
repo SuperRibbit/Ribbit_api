@@ -1,4 +1,4 @@
-import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body } from "tsoa";
+import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body, Delete, Path } from "tsoa";
 import { GoogleDriveService } from "../service/GoogleDriveService.js";
 import { ClassFileService } from "../service/ClassFileService.js";
 import type { ClassFileResponse, UploadVideoLinkRequest, ClassFileActionResponse } from "../dto/ClassFileDtos.js";
@@ -96,5 +96,16 @@ export class ClassFileController extends Controller {
       if (error instanceof AppError) throw error;
       throw new AppError("Erro inesperado ao salvar o link do vídeo.", 500);
     }
+  }
+
+  @Delete("{file_id}")
+  @SuccessResponse("204", "No Content")
+  @Response("404", "Arquivo não encontrado")
+  @Security("bearerAuth", ["prof"]) 
+  public async deleteFile(
+    @Path() file_id: number
+  ): Promise<void> {
+    await this.dbService.deleteFileRecord(file_id);
+    this.setStatus(204);
   }
 }

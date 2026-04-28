@@ -448,6 +448,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassFileController_deleteFile: Record<string, TsoaRoute.ParameterSchema> = {
+                file_id: {"in":"path","name":"file_id","required":true,"dataType":"double"},
+        };
+        app.delete('/ribbit/files/:file_id',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.deleteFile)),
+
+            async function ClassFileController_deleteFile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassFileController_deleteFile, request, response });
+
+                const controller = new ClassFileController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteFile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsModulesController_createModule: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
         };

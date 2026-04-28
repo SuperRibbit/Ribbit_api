@@ -947,6 +947,40 @@
 				}
 			}
 		},
+		"/ribbit/files/{file_id}": {
+			"delete": {
+				"operationId": "DeleteFile",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"404": {
+						"description": "Arquivo não encontrado"
+					}
+				},
+				"tags": [
+					"Class Files"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "file_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/modules": {
 			"post": {
 				"operationId": "CreateModule",
