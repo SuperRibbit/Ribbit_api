@@ -307,6 +307,55 @@
 			"ModuleCreateRequest": {
 				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
 			},
+			"DefaultSelection_Prisma._36_ModulePayload_": {
+				"properties": {
+					"fk_course": {
+						"type": "number",
+						"format": "double"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"id_module": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"fk_course",
+					"index_order",
+					"id_module",
+					"description",
+					"title"
+				],
+				"type": "object"
+			},
+			"Module": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ModulePayload_",
+				"description": "Model Module"
+			},
+			"ModuleResponsePut": {
+				"properties": {
+					"module": {
+						"$ref": "#/components/schemas/Module"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"module",
+					"message"
+				],
+				"type": "object"
+			},
 			"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
 				"properties": {
 					"user_uuid": {
@@ -889,6 +938,58 @@
 						}
 					}
 				]
+			},
+			"put": {
+				"operationId": "UpdateModule",
+				"responses": {
+					"200": {
+						"description": "Atualizado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModuleResponsePut"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao atualizar módulo"
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ModuleCreateRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/ribbit/users": {

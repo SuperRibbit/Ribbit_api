@@ -5,4 +5,9 @@ export type ModuleResponsePost = {
     moduleId: number;
 };
 
+export type ModuleResponsePut = {
+    message: string;
+    module: Module; 
+}
+
 export type ModuleCreateRequest = Pick<Module, "title" | "description" | "index_order" | "fk_course">;

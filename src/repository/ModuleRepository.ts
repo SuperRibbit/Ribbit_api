@@ -44,4 +44,15 @@ export class ModuleRepository {
         console.log("Módulo removido com sucesso: ", module_id);
         return;
     }
+
+    async updateById(module_id: number, moduleData: Prisma.ModuleUncheckedUpdateInput): Promise<Module> {
+        const module = await prisma.module.update({
+            where: {
+                id_module: module_id,
+            },
+            data: moduleData,
+        });
+        console.log("Módulo atualizado com sucesso: ", module);
+        return module;
+    }
 }

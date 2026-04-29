@@ -1,6 +1,6 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, type TsoaResponse } from "tsoa";
 import { ModuleService } from "../service/ModuleService.js";
-import { type ModuleCreateRequest, type ModuleResponsePost } from "../dto/ModuleDtos.js";
+import { type ModuleCreateRequest, type ModuleResponsePost, type ModuleResponsePut } from "../dto/ModuleDtos.js";
 
 @Route("ribbit/modules")
 @Tags("Modules")
@@ -40,6 +40,29 @@ export class ModulesController extends Controller {
         } catch (error: any) {
             this.setStatus(404);
             throw new Error(error.message || "Módulo nao encontrado");
+        }
+    }
+
+    @Put("{module_id}")
+    @SuccessResponse("200", "Atualizado")
+    @Response("404", "Módulo não encontrado")
+    @Response("400", "Erro ao atualizar módulo")
+    @Security("bearerAuth", ["prof"])
+    public async updateModule(@Path() module_id: number, @Body() requestBody: ModuleCreateRequest): Promise<ModuleResponsePut> {
+        try {
+            const module = await this.moduleService.updateModule(module_id, requestBody);
+            if (!module) {
+                this.setStatus(404);
+                throw new Error("Módulo não encontrado");
+            }
+            this.setStatus(200);
+            return {
+                message: "Módulo atualizado com sucesso",
+                module: module
+            };
+        } catch (error: any) {
+            this.setStatus(400);
+            throw new Error(error.message || "Erro ao atualizar módulo");
         }
     }
 }
