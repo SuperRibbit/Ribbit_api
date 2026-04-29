@@ -30,19 +30,14 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_User.Exclude_keyofUser.password_hash__": {
+    "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit_User.password_hash_": {
+    "LoginUserResponse": {
         "dataType": "refAlias",
-        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Omit_User.password_hash_","validators":{}},
+        "type": {"ref":"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LoginResponse": {
@@ -50,7 +45,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "message": {"dataType":"string","required":true},
             "token": {"dataType":"string","required":true},
-            "user": {"ref":"UserResponse","required":true},
+            "user": {"ref":"LoginUserResponse","required":true},
         },
         "additionalProperties": false,
     },
@@ -122,6 +117,21 @@ const models: TsoaRoute.Models = {
     "ModuleCreateRequest": {
         "dataType": "refAlias",
         "type": {"ref":"Pick_Module.title-or-description-or-index_order-or-fk_course_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.Exclude_keyofUser.password_hash__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_User.password_hash_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Omit_User.password_hash_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
