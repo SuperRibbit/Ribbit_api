@@ -4,75 +4,97 @@ import { CourseRepository } from "../repository/CourseRepository.js";
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
 
-  async findAll(): Promise<Course[]> {
-    return await this.courseRepository.findAll();
+  async findAll(search?: string) {
+    return await this.courseRepository.findAll(search);
   }
 
-  async findById(id: number | undefined): Promise<Course> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
-    }
+  async findById(courseId: number, studentId?: string) {
+  const course = await this.courseRepository.findById(courseId, studentId);
 
-    const course = await this.courseRepository.findById(id);
-
-    if (!course) {
-      throw new Error("Curso não encontrado");
-    }
-    return course;
+  if (!course) {
+    throw new Error("Curso não encontrado.");
   }
 
-  async findByTitle(title: string | undefined): Promise<Course> {
-    if (!title) {
-      throw new Error("Curso não encontrado");
-    }
+  const { User, Enrollment, Module, ...rest } = course;
 
-    const course = await this.courseRepository.findByTitle(title);
+  let totalClasses = 0;
+  let completedClasses = 0;
 
-    if (!course) {
-      throw new Error("Curso não encontrado");
+  const modules = Module.map((mod) => ({
+    module_id: mod.id_module,
+    title: mod.title,
+    index_order: mod.index_order,
+    classes: mod.Course_class.map((cls) => {
+      totalClasses++;
+      const is_completed = Array.isArray(cls.Student_progress)
+        ? cls.Student_progress.length > 0
+        : false;
+      if (is_completed) completedClasses++;
+      return {
+        class_id: cls.class_id,
+        title: cls.title,
+        is_completed,
+      };
+    }),
+  }));
+
+  const progress = totalClasses > 0 ? Math.round((completedClasses / totalClasses) * 100) : 0;
+
+  return {
+    ...rest,
+    teacher_name: User.full_name,
+    progress,
+    modules,
+  };
+}
+
+  async createCourse(courseData: Prisma.CourseCreateInput, teacherUuid: string) {
+    try {
+      const course = await this.courseRepository.createCourse({
+        ...courseData,
+        User: { connect: { user_uuid: teacherUuid } },
+      });
+
+      return {
+        message: "Curso criado com sucesso! Agora você pode adicionar módulos.",
+        course_id: course.id_course,
+      };
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new Error(
+          `O link (slug) '${courseData.slug}' já está em uso por outro curso. Escolha outro.`,
+        );
+      }
+      throw error;
     }
-    return course;
   }
 
-  async createCourse(courseData: any): Promise<Course | null> {
-    const { title, description, banner_url, slug, fk_teacher } = courseData;
-
-    const existingCourse = await this.courseRepository.findByTitle(title);
-    if (existingCourse) {
-      throw new Error("Curso já cadastrado");
+  async updateCourse(courseId: number, courseData: Prisma.CourseUpdateInput) {
+    try {
+      const updated = await this.courseRepository.updateCourse(
+        courseId,
+        courseData,
+      );
+      return {
+        message: "Informações do curso atualizadas com sucesso!",
+        course: updated,
+      };
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Curso não encontrado.");
+      }
+      throw error;
     }
-
-    const courseCreateInput: Prisma.CourseCreateInput = {
-      title,
-      description,
-      banner_url,
-      slug,
-      User: {
-        connect: {
-          user_uuid: fk_teacher,
-        },
-      },
-    };
-
-    return await this.courseRepository.createCourse(courseCreateInput);
   }
 
-  async updateCourse(
-    id: number | undefined,
-    courseData: Prisma.CourseUpdateInput
-  ): Promise<Course | null> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
+  async deleteById(courseId: number): Promise<void> {
+    try {
+      await this.courseRepository.deleteById(courseId);
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new Error("Curso não encontrado.");
+      }
+      throw error;
     }
-
-    return await this.courseRepository.updateCourse(id, courseData);
-  }
-
-  async deleteById(id: number | undefined): Promise<Course | null> {
-    if (!id) {
-      throw new Error("Curso não encontrado");
-    }
-
-    return await this.courseRepository.deleteById(id);
   }
 }

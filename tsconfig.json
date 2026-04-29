@@ -7,7 +7,7 @@
     "outDir": "./dist",
     "module": "nodenext",
     "target": "esnext",
-    "types": ["jest"],
+    "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

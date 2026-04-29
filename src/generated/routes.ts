@@ -25,49 +25,19 @@ const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "DefaultSelection_Prisma._36_CoursePayload_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_teacher":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true},"banner_url":{"dataType":"string","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id_course":{"dataType":"double","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Course": {
-        "dataType": "refAlias",
-        "type": {"ref":"DefaultSelection_Prisma._36_CoursePayload_","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CourseResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Course","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"title":{"dataType":"string","required":true},"description":{"dataType":"string","required":true},"banner_url":{"dataType":"string","required":true},"slug":{"dataType":"string","required":true},"fk_teacher":{"dataType":"string","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CourseCreateRequest": {
-        "dataType": "refAlias",
-        "type": {"ref":"Pick_Course.title-or-description-or-banner_url-or-slug-or-fk_teacher_","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.user_role_enum": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_User.Exclude_keyofUser.password_hash__": {
+    "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit_User.password_hash_": {
+    "LoginUserResponse": {
         "dataType": "refAlias",
-        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Omit_User.password_hash_","validators":{}},
+        "type": {"ref":"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LoginResponse": {
@@ -75,7 +45,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "message": {"dataType":"string","required":true},
             "token": {"dataType":"string","required":true},
-            "user": {"ref":"UserResponse","required":true},
+            "user": {"ref":"LoginUserResponse","required":true},
         },
         "additionalProperties": false,
     },
@@ -92,7 +62,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_Class_file.Exclude_keyofClass_file.metadata__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"file_id":{"dataType":"double","required":true},"display_name":{"dataType":"string","required":true},"storage_path":{"dataType":"string","required":true},"file_url":{"dataType":"string","required":true},"file_type":{"dataType":"string","required":true},"class_id":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"class_id":{"dataType":"double","required":true},"file_id":{"dataType":"double","required":true},"display_name":{"dataType":"string","required":true},"storage_path":{"dataType":"string","required":true},"file_url":{"dataType":"string","required":true},"file_type":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Omit_Class_file.metadata_": {
@@ -100,14 +70,18 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Pick_Class_file.Exclude_keyofClass_file.metadata__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Record_string.any_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ClassFileResponse": {
         "dataType": "refAlias",
-        "type": {"dataType":"intersection","subSchemas":[{"ref":"Omit_Class_file.metadata_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"metadata":{"dataType":"union","subSchemas":[{"ref":"Record_string.any_"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
+        "type": {"ref":"Omit_Class_file.metadata_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ClassFileActionResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "file": {"ref":"ClassFileResponse","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UploadVideoLinkRequest": {
@@ -148,6 +122,20 @@ const models: TsoaRoute.Models = {
     "ModuleResponsePut": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"module":{"ref":"Module","required":true},"message":{"dataType":"string","required":true}},"validators":{}},
+    },
+    "Pick_User.Exclude_keyofUser.password_hash__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_User.password_hash_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Omit_User.password_hash_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
@@ -217,6 +205,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
     
         const argsCourseController_findAll: Record<string, TsoaRoute.ParameterSchema> = {
+                search: {"in":"query","name":"search","dataType":"string"},
         };
         app.get('/ribbit/courses',
             authenticateMiddleware([{"bearerAuth":[]}]),
@@ -247,9 +236,10 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_findById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
-        app.get('/ribbit/courses/:id',
+        app.get('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.findById)),
@@ -277,39 +267,9 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsCourseController_findByTitle: Record<string, TsoaRoute.ParameterSchema> = {
-                title: {"in":"path","name":"title","required":true,"dataType":"string"},
-        };
-        app.get('/ribbit/courses/title/:title',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(CourseController)),
-            ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.findByTitle)),
-
-            async function CourseController_findByTitle(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsCourseController_findByTitle, request, response });
-
-                const controller = new CourseController();
-
-              await templateService.apiHandler({
-                methodName: 'findByTitle',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_createCourse: Record<string, TsoaRoute.ParameterSchema> = {
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseCreateRequest"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string","required":true},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string","required":true}}},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.post('/ribbit/courses',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
@@ -340,10 +300,10 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_updateCourse: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
-                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseCreateRequest"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string"},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string"}}},
         };
-        app.put('/ribbit/courses/:id',
+        app.put('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.updateCourse)),
@@ -372,9 +332,9 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_deleteById: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
         };
-        app.delete('/ribbit/courses/:id',
+        app.delete('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.deleteById)),
@@ -437,7 +397,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 class_id: {"in":"formData","name":"class_id","required":true,"dataType":"double"},
                 display_name: {"in":"formData","name":"display_name","required":true,"dataType":"string"},
         };
-        app.post('/ribbit/classes/files/pdf',
+        app.post('/ribbit/files/pdf',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             upload.fields([
                 {
@@ -474,7 +434,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsClassFileController_uploadVideoLink: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
         };
-        app.post('/ribbit/classes/files/link',
+        app.post('/ribbit/files/link',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.uploadVideoLink)),
@@ -496,6 +456,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassFileController_deleteFile: Record<string, TsoaRoute.ParameterSchema> = {
+                file_id: {"in":"path","name":"file_id","required":true,"dataType":"double"},
+        };
+        app.delete('/ribbit/files/:file_id',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.deleteFile)),
+
+            async function ClassFileController_deleteFile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassFileController_deleteFile, request, response });
+
+                const controller = new ClassFileController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteFile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
               });
             } catch (err) {
                 return next(err);
