@@ -12,6 +12,8 @@ import { ClassFileController } from './../controller/ClassFileController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ModulesController } from './../controller/ModuleController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { ProgressController } from './../controller/ProgressController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../controller/UserController.js';
 import { expressAuthentication } from './../middleware/tsoaAuth.js';
 // @ts-ignore - no great way to install types from subpackage
@@ -117,6 +119,23 @@ const models: TsoaRoute.Models = {
     "ModuleCreateRequest": {
         "dataType": "refAlias",
         "type": {"ref":"Pick_Module.title-or-description-or-index_order-or-fk_course_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ProgressResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "new_course_progress": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CompleteClassRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "classId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.Exclude_keyofUser.password_hash__": {
@@ -509,6 +528,38 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'createModule',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsProgressController_completeClass: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CompleteClassRequest"},
+        };
+        app.post('/ribbit/progress',
+            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController)),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.completeClass)),
+
+            async function ProgressController_completeClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsProgressController_completeClass, request, response });
+
+                const controller = new ProgressController();
+
+              await templateService.apiHandler({
+                methodName: 'completeClass',
                 controller,
                 response,
                 next,

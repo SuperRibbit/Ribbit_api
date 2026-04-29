@@ -235,6 +235,36 @@
 			"ModuleCreateRequest": {
 				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
 			},
+			"ProgressResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"new_course_progress": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"message",
+					"new_course_progress"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CompleteClassRequest": {
+				"properties": {
+					"classId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"classId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_User.Exclude_keyofUser.password_hash__": {
 				"properties": {
 					"user_uuid": {
@@ -1043,6 +1073,51 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/ModuleCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/progress": {
+			"post": {
+				"operationId": "CompleteClass",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProgressResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro de validação"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"Progress"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CompleteClassRequest"
 							}
 						}
 					}
