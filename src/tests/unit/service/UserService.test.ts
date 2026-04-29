@@ -15,7 +15,7 @@ const bcryptMocks = {
   hash: jest.fn<(s: string, salt: string) => Promise<string>>(),
 };
 
-await jest.unstable_mockModule("../../../src/repository/UserRepository.js", () => ({
+await jest.unstable_mockModule("../../../repository/UserRepository.js", () => ({
   UserRepository: {
     getInstance: () => repoMocks,
   },
@@ -31,18 +31,20 @@ await jest.unstable_mockModule("bcryptjs", () => ({
 
 const { UserService } = await import("../../../service/UserService.js");
 
+const VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
+
 describe("UserService", () => {
   let userService: any;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
     userService = new UserService();
   });
 
   describe("findAll", () => {
     it("deve retornar uma lista de usuários", async () => {
       const mockUsers: User[] = [
-        { user_uuid: "1", email: "u1@test.com", full_name: "U1", role: "aluno", avatar_url: null, password_hash: "h1", created_at: new Date() },
+        { user_uuid: VALID_UUID, email: "u1@test.com", full_name: "U1", role: "aluno", avatar_url: null, password_hash: "h1", created_at: new Date() },
       ];
       repoMocks.findAll.mockResolvedValue(mockUsers);
       const result = await userService.findAll();
@@ -57,10 +59,9 @@ describe("UserService", () => {
 
   describe("findById", () => {
     it("deve retornar um usuário quando o id é válido", async () => {
-      // Usamos 'as User' para o TS aceitar um objeto parcial no teste
-      const mockUser = { user_uuid: "1", email: "u1@test.com" } as User;
+      const mockUser = { user_uuid: VALID_UUID, email: "u1@test.com" } as User;
       repoMocks.findById.mockResolvedValue(mockUser);
-      const result = await userService.findById("1");
+      const result = await userService.findById(VALID_UUID);
       expect(result).toEqual(mockUser);
     });
 
@@ -68,9 +69,13 @@ describe("UserService", () => {
       await expect(userService.findById(undefined)).rejects.toThrow("Usuário não encontrado");
     });
 
+    it("deve lançar erro quando o id é inválido (não UUID)", async () => {
+      await expect(userService.findById("invalid-id")).rejects.toThrow("Usuário não encontrado");
+    });
+
     it("deve lançar erro quando o usuário não é encontrado", async () => {
       repoMocks.findById.mockResolvedValue(null);
-      await expect(userService.findById("non-existent")).rejects.toThrow("Usuário não encontrado");
+      await expect(userService.findById(VALID_UUID)).rejects.toThrow("Usuário não encontrado");
     });
   });
 
@@ -83,7 +88,7 @@ describe("UserService", () => {
       bcryptMocks.hash.mockResolvedValue("hp");
 
       const mockCreatedUser: User = {
-        user_uuid: "simulated-uuid-1234",
+        user_uuid: VALID_UUID,
         email: userData.email,
         full_name: userData.full_name,
         role: userData.role as any,
@@ -101,7 +106,7 @@ describe("UserService", () => {
 
     it("deve lançar erro se o email já existe", async () => {
       repoMocks.findByEmail.mockResolvedValue({ email: "n@t.com" } as User);
-      await expect(userService.createUser(userData)).rejects.toThrow("Email já cadastrado"); // Nota: ajuste este texto caso tenha alterado no AppError!
+      await expect(userService.createUser(userData)).rejects.toThrow("Este email já está cadastrado em nossa base de dados.");
     });
 
     it("deve propagar erro se o bcrypt falhar", async () => {
@@ -124,49 +129,57 @@ describe("UserService", () => {
     it("deve fazer hash da senha se fornecida como string", async () => {
       bcryptMocks.genSalt.mockResolvedValue("s");
       bcryptMocks.hash.mockResolvedValue("hp");
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" } as User);
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: VALID_UUID } as User);
 
-      await userService.updateUser("1", { password_hash: "new" });
+      await userService.updateUser(VALID_UUID, { password_hash: "new" });
       expect(bcryptMocks.hash).toHaveBeenCalledWith("new", "s");
     });
 
     it("não deve fazer hash se password_hash não for uma string (ex: objeto do Prisma)", async () => {
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1" } as User);
-      await userService.updateUser("1", { password_hash: { set: "something" } as any });
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: VALID_UUID } as User);
+      await userService.updateUser(VALID_UUID, { password_hash: { set: "something" } as any });
       expect(bcryptMocks.hash).not.toHaveBeenCalled();
     });
 
     it("deve atualizar outros campos sem mexer no bcrypt", async () => {
-      repoMocks.updateUser.mockResolvedValue({ user_uuid: "1", full_name: "X" } as User);
-      const result = await userService.updateUser("1", { full_name: "X" });
+      repoMocks.updateUser.mockResolvedValue({ user_uuid: VALID_UUID, full_name: "X" } as User);
+      const result = await userService.updateUser(VALID_UUID, { full_name: "X" });
       expect(bcryptMocks.hash).not.toHaveBeenCalled();
       expect(result.full_name).toBe("X");
     });
 
     it("deve propagar erro se o repositório falhar", async () => {
       repoMocks.updateUser.mockRejectedValue(new Error("Update failed"));
-      await expect(userService.updateUser("1", { full_name: "X" })).rejects.toThrow("Update failed");
+      await expect(userService.updateUser(VALID_UUID, { full_name: "X" })).rejects.toThrow("Update failed");
     });
 
     it("deve lançar erro se o id for indefinido", async () => {
       await expect(userService.updateUser(undefined, {})).rejects.toThrow("Usuário não encontrado");
     });
+
+    it("deve lançar erro se o id for inválido", async () => {
+      await expect(userService.updateUser("invalid", {})).rejects.toThrow("Usuário não encontrado");
+    });
   });
 
   describe("deleteById", () => {
     it("deve deletar com sucesso", async () => {
-      repoMocks.deleteById.mockResolvedValue({ user_uuid: "1" } as User);
-      const result = await userService.deleteById("1");
-      expect(result.user_uuid).toBe("1");
+      repoMocks.deleteById.mockResolvedValue({ user_uuid: VALID_UUID } as User);
+      const result = await userService.deleteById(VALID_UUID);
+      expect(result.user_uuid).toBe(VALID_UUID);
     });
 
     it("deve propagar erro se o repositório falhar", async () => {
       repoMocks.deleteById.mockRejectedValue(new Error("Delete failed"));
-      await expect(userService.deleteById("1")).rejects.toThrow("Delete failed");
+      await expect(userService.deleteById(VALID_UUID)).rejects.toThrow("Delete failed");
     });
 
     it("deve lançar erro se o id for indefinido", async () => {
       await expect(userService.deleteById(undefined)).rejects.toThrow("Usuário não encontrado");
+    });
+
+    it("deve lançar erro se o id for inválido", async () => {
+      await expect(userService.deleteById("invalid")).rejects.toThrow("Usuário não encontrado");
     });
   });
 });
