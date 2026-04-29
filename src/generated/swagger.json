@@ -169,6 +169,51 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ModuleResponsePost": {
+				"properties": {
+					"moduleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"moduleId",
+					"message"
+				],
+				"type": "object"
+			},
+			"Pick_Module.title-or-description-or-index_order-or-fk_course_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"fk_course": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"index_order",
+					"fk_course"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"ModuleCreateRequest": {
+				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
+			},
 			"DefaultSelection_Prisma._36_ModulePayload_": {
 				"properties": {
 					"fk_course": {
@@ -203,37 +248,20 @@
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ModulePayload_",
 				"description": "Model Module"
 			},
-			"ModuleResponse": {
-				"$ref": "#/components/schemas/Module"
-			},
-			"Pick_Module.title-or-description-or-index_order-or-fk_course_": {
+			"ModuleResponsePut": {
 				"properties": {
-					"title": {
+					"module": {
+						"$ref": "#/components/schemas/Module"
+					},
+					"message": {
 						"type": "string"
-					},
-					"description": {
-						"type": "string"
-					},
-					"index_order": {
-						"type": "number",
-						"format": "double"
-					},
-					"fk_course": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"title",
-					"description",
-					"index_order",
-					"fk_course"
+					"module",
+					"message"
 				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"ModuleCreateRequest": {
-				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
+				"type": "object"
 			},
 			"Pick_User.Exclude_keyofUser.password_hash__": {
 				"properties": {
@@ -1017,7 +1045,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ModuleResponse"
+									"$ref": "#/components/schemas/ModuleResponsePost"
 								}
 							}
 						}
@@ -1037,6 +1065,92 @@
 					}
 				],
 				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ModuleCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/modules/{module_id}": {
+			"delete": {
+				"operationId": "DeleteModule",
+				"responses": {
+					"204": {
+						"description": "Deletado"
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateModule",
+				"responses": {
+					"200": {
+						"description": "Atualizado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModuleResponsePut"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao atualizar módulo"
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {

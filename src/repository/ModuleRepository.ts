@@ -26,4 +26,33 @@ export class ModuleRepository {
             },
         });
     }
+
+    async findById(module_id: number): Promise<Module | null> {
+        return await prisma.module.findUnique({
+            where: {
+                id_module: module_id,
+            },
+        });
+    }
+
+    async deleteById(module_id: number): Promise<void> {
+        await prisma.module.delete({
+            where: {
+                id_module: module_id,
+            },
+        });
+        console.log("Módulo removido com sucesso: ", module_id);
+        return;
+    }
+
+    async updateById(module_id: number, moduleData: Prisma.ModuleUncheckedUpdateInput): Promise<Module> {
+        const module = await prisma.module.update({
+            where: {
+                id_module: module_id,
+            },
+            data: moduleData,
+        });
+        console.log("Módulo atualizado com sucesso: ", module);
+        return module;
+    }
 }
