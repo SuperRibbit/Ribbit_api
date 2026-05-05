@@ -9,4 +9,9 @@ export type CourseClassCreateRequest = {
     fk_module: number;
 };
 
+export type CourseClassCreatedResponse = {
+  message: string;
+  class_id: number;
+}
+
 export type CourseClassUpdateRequest = Partial<CourseClassCreateRequest>;
