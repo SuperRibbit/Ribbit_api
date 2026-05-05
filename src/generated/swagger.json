@@ -263,6 +263,36 @@
 				],
 				"type": "object"
 			},
+			"ProgressResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"new_course_progress": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"message",
+					"new_course_progress"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CompleteClassRequest": {
+				"properties": {
+					"classId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"classId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_User.Exclude_keyofUser.password_hash__": {
 				"properties": {
 					"user_uuid": {
@@ -1161,6 +1191,93 @@
 						}
 					}
 				}
+			}
+		},
+		"/ribbit/progress": {
+			"post": {
+				"operationId": "CompleteClass",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProgressResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro de validação"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"Progress"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CompleteClassRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/progress/{class_id}": {
+			"delete": {
+				"operationId": "RemoveClassCompletion",
+				"responses": {
+					"200": {
+						"description": "Conclusão removida com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProgressResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Registro não encontrado"
+					}
+				},
+				"tags": [
+					"Progress"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "class_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/ribbit/users": {
