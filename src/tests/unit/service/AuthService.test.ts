@@ -78,7 +78,7 @@ describe("AuthService", () => {
 
       const service = new AuthService();
       await expect(service.login({ email: "missing@b.com", password: "x" })).rejects.toThrow(
-        "Email ou senha inválidos",
+        "Email ou senha incorretos.",
       );
       expect(bcryptCompare).not.toHaveBeenCalled();
     });
@@ -101,7 +101,7 @@ describe("AuthService", () => {
     
       await expect(
         service.login({ email: "a@b.com", password: "senha_errada" })
-      ).rejects.toThrow("Email ou senha inválidos");
+      ).rejects.toThrow("Email ou senha incorretos.");
     
       expect(bcryptCompare).toHaveBeenCalledWith("senha_errada", "hashed");
       expect(jwtSign).not.toHaveBeenCalled();
