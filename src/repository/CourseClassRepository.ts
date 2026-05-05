@@ -19,8 +19,8 @@ export class CourseClassRepository {
         return await prisma.course_class.findFirst({ where: { title }})
     }
 
-    async createCourseClass(data: Prisma.Course_classCreateInput): Promise<Course_class> {
-        const created = await prisma.course_class.create({ data });
+    async createCourseClass(courseClassData: Prisma.Course_classCreateInput): Promise<Course_class> {
+        const created = await prisma.course_class.create({ data: courseClassData });
         console.log("Aula criada com sucesso: ", created);
         return created;
     }
