@@ -25,8 +25,8 @@ export class CourseClassRepository {
         return created;
     }
 
-    async updateCourseClass(class_id: number, data: Prisma.Course_classUpdateInput): Promise<Course_class> {
-        const update = await prisma.course_class.update({ where: { class_id }, data});
+    async updateCourseClass(class_id: number, courseClassData: Prisma.Course_classUpdateInput): Promise<Course_class> {
+        const update = await prisma.course_class.update({ where: { class_id }, data: courseClassData});
         console.log("Aula atualizada com sucesso: ", update);
         return update;
     }
