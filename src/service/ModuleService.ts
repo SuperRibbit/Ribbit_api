@@ -48,8 +48,8 @@ export class ModuleService {
             throw new Error("Módulo com ID " + module_id + " não encontrado.");
         }
 
-        const targetCourseId = moduleData.fk_course;
-        const targetOrder = moduleData.index_order;
+        const targetCourseId = moduleData.fk_course ?? existingModule.fk_course;
+        const targetOrder = moduleData.index_order ?? existingModule.index_order;
 
         await this.courseService.findById(targetCourseId);
 
@@ -59,10 +59,10 @@ export class ModuleService {
         }
 
         const moduleUpdateInput: Prisma.ModuleUncheckedUpdateInput = {
-            title: moduleData.title,
-            description: moduleData.description,
-            index_order: moduleData.index_order,
-            fk_course: moduleData.fk_course
+            title: moduleData.title ?? existingModule.title,
+            description: moduleData.description ?? existingModule.description,
+            index_order: targetOrder,
+            fk_course: targetCourseId
         };
 
         return await this.moduleRepository.updateById(module_id, moduleUpdateInput);
