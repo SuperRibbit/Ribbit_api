@@ -21,7 +21,7 @@ export class CourseClassService {
 
     async createCourseClass(courseClassData: any): Promise<Course_class | null>{
         const { title, description, index_order, fk_module} = courseClassData;
-        const existingCourseClass = await this.courseClassRepository.findByTitle(courseClassData.id);
+        const existingCourseClass = await this.courseClassRepository.findByTitle(title);
         if (existingCourseClass != null) {
             throw new Error("Aula já cadastrada")
         }
@@ -44,14 +44,14 @@ export class CourseClassService {
         id: number | undefined,
         courseClassData: any
     ): Promise<Course_class | null>{
-        if(!id || await this.courseClassRepository.findById(id)){
+        if(!id || !(await this.courseClassRepository.findById(id))){
             throw new Error("Aula não encontrada");
         }
         return await this.courseClassRepository.updateCourseClass(id, courseClassData);
     }
 
     async deleteCourseClass(id: number | undefined): Promise<Course_class | null> {
-        if(!id || await this.courseClassRepository.findById(id)){
+        if(!id || !(await this.courseClassRepository.findById(id))){
             throw new Error("Aula não encontrada")
         }
 
