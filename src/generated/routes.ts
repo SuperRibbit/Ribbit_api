@@ -639,6 +639,38 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsProgressController_removeClassCompletion: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                class_id: {"in":"path","name":"class_id","required":true,"dataType":"double"},
+        };
+        app.delete('/ribbit/progress/:class_id',
+            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController)),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.removeClassCompletion)),
+
+            async function ProgressController_removeClassCompletion(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsProgressController_removeClassCompletion, request, response });
+
+                const controller = new ProgressController();
+
+              await templateService.apiHandler({
+                methodName: 'removeClassCompletion',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsUserController_findAll: Record<string, TsoaRoute.ParameterSchema> = {
         };
         app.get('/ribbit/users',

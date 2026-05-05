@@ -1238,6 +1238,48 @@
 				}
 			}
 		},
+		"/ribbit/progress/{class_id}": {
+			"delete": {
+				"operationId": "RemoveClassCompletion",
+				"responses": {
+					"200": {
+						"description": "Conclusão removida com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProgressResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Registro não encontrado"
+					}
+				},
+				"tags": [
+					"Progress"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "class_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/users": {
 			"get": {
 				"operationId": "FindAll",

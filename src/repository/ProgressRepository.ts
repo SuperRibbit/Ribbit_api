@@ -66,4 +66,10 @@ export class ProgressRepository {
       });
     }
   }
+
+  async deleteProgress(progress_id: number) {
+    return await prisma.student_progress.delete({
+      where: { progress_id }
+    });
+  }
 }
