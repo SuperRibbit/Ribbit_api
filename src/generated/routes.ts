@@ -12,7 +12,7 @@ import { ClassFileController } from './../controller/ClassFileController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ModulesController } from './../controller/ModuleController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { EnrollmentController } from './../controller/EnrollmentController.js';
+import { ProgressController } from './../controller/ProgressController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../controller/UserController.js';
 import { expressAuthentication } from './../middleware/tsoaAuth.js';
@@ -32,19 +32,14 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_User.Exclude_keyofUser.password_hash__": {
+    "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit_User.password_hash_": {
+    "LoginUserResponse": {
         "dataType": "refAlias",
-        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Omit_User.password_hash_","validators":{}},
+        "type": {"ref":"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LoginResponse": {
@@ -52,7 +47,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "message": {"dataType":"string","required":true},
             "token": {"dataType":"string","required":true},
-            "user": {"ref":"UserResponse","required":true},
+            "user": {"ref":"LoginUserResponse","required":true},
         },
         "additionalProperties": false,
     },
@@ -77,14 +72,18 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Pick_Class_file.Exclude_keyofClass_file.metadata__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Record_string.any_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ClassFileResponse": {
         "dataType": "refAlias",
-        "type": {"dataType":"intersection","subSchemas":[{"ref":"Omit_Class_file.metadata_"},{"dataType":"nestedObjectLiteral","nestedProperties":{"metadata":{"dataType":"union","subSchemas":[{"ref":"Record_string.any_"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
+        "type": {"ref":"Omit_Class_file.metadata_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ClassFileActionResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "file": {"ref":"ClassFileResponse","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UploadVideoLinkRequest": {
@@ -97,19 +96,9 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DefaultSelection_Prisma._36_ModulePayload_": {
+    "ModuleResponsePost": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_course":{"dataType":"double","required":true},"id_module":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Module": {
-        "dataType": "refAlias",
-        "type": {"ref":"DefaultSelection_Prisma._36_ModulePayload_","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ModuleResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"Module","validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"moduleId":{"dataType":"double","required":true},"message":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_Module.title-or-description-or-index_order-or-fk_course_": {
@@ -120,6 +109,53 @@ const models: TsoaRoute.Models = {
     "ModuleCreateRequest": {
         "dataType": "refAlias",
         "type": {"ref":"Pick_Module.title-or-description-or-index_order-or-fk_course_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_ModulePayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_course":{"dataType":"double","required":true},"id_module":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Module": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_ModulePayload_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ModuleResponsePut": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"module":{"ref":"Module","required":true},"message":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ProgressResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+            "new_course_progress": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CompleteClassRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "classId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.Exclude_keyofUser.password_hash__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"user_uuid":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.user_role_enum","required":true},"full_name":{"dataType":"string","required":true},"avatar_url":{"dataType":"string","required":true},"created_at":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_User.password_hash_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.Exclude_keyofUser.password_hash__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"Omit_User.password_hash_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
@@ -381,7 +417,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 class_id: {"in":"formData","name":"class_id","required":true,"dataType":"double"},
                 display_name: {"in":"formData","name":"display_name","required":true,"dataType":"string"},
         };
-        app.post('/ribbit/classes/files/pdf',
+        app.post('/ribbit/files/pdf',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             upload.fields([
                 {
@@ -418,7 +454,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsClassFileController_uploadVideoLink: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
         };
-        app.post('/ribbit/classes/files/link',
+        app.post('/ribbit/files/link',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.uploadVideoLink)),
@@ -440,6 +476,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassFileController_deleteFile: Record<string, TsoaRoute.ParameterSchema> = {
+                file_id: {"in":"path","name":"file_id","required":true,"dataType":"double"},
+        };
+        app.delete('/ribbit/files/:file_id',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.deleteFile)),
+
+            async function ClassFileController_deleteFile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassFileController_deleteFile, request, response });
+
+                const controller = new ClassFileController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteFile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
               });
             } catch (err) {
                 return next(err);
@@ -477,27 +544,90 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsEnrollmentController_enroll: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"course_id":{"dataType":"double","required":true}}},
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        const argsModulesController_deleteModule: Record<string, TsoaRoute.ParameterSchema> = {
+                module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
         };
-        app.post('/ribbit/enrollments',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.enroll)),
+        app.delete('/ribbit/modules/:module_id',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController)),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.deleteModule)),
 
-            async function EnrollmentController_enroll(request: ExRequest, response: ExResponse, next: any) {
+            async function ModulesController_deleteModule(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_enroll, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsModulesController_deleteModule, request, response });
 
-                const controller = new EnrollmentController();
+                const controller = new ModulesController();
 
               await templateService.apiHandler({
-                methodName: 'enroll',
+                methodName: 'deleteModule',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsModulesController_updateModule: Record<string, TsoaRoute.ParameterSchema> = {
+                module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
+        };
+        app.put('/ribbit/modules/:module_id',
+            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController)),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.updateModule)),
+
+            async function ModulesController_updateModule(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsModulesController_updateModule, request, response });
+
+                const controller = new ModulesController();
+
+              await templateService.apiHandler({
+                methodName: 'updateModule',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsProgressController_completeClass: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CompleteClassRequest"},
+        };
+        app.post('/ribbit/progress',
+            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController)),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.completeClass)),
+
+            async function ProgressController_completeClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsProgressController_completeClass, request, response });
+
+                const controller = new ProgressController();
+
+              await templateService.apiHandler({
+                methodName: 'completeClass',
                 controller,
                 response,
                 next,
@@ -509,95 +639,32 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsEnrollmentController_findByUser: Record<string, TsoaRoute.ParameterSchema> = {
+        const argsProgressController_removeClassCompletion: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                class_id: {"in":"path","name":"class_id","required":true,"dataType":"double"},
         };
-        app.get('/ribbit/enrollments/my-courses',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.findByUser)),
+        app.delete('/ribbit/progress/:class_id',
+            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController)),
+            ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.removeClassCompletion)),
 
-            async function EnrollmentController_findByUser(request: ExRequest, response: ExResponse, next: any) {
+            async function ProgressController_removeClassCompletion(request: ExRequest, response: ExResponse, next: any) {
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_findByUser, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsProgressController_removeClassCompletion, request, response });
 
-                const controller = new EnrollmentController();
+                const controller = new ProgressController();
 
               await templateService.apiHandler({
-                methodName: 'findByUser',
+                methodName: 'removeClassCompletion',
                 controller,
                 response,
                 next,
                 validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsEnrollmentController_findEnrollmentStatus: Record<string, TsoaRoute.ParameterSchema> = {
-                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-        };
-        app.get('/ribbit/enrollments/status/course/:courseId',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.findEnrollmentStatus)),
-
-            async function EnrollmentController_findEnrollmentStatus(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_findEnrollmentStatus, request, response });
-
-                const controller = new EnrollmentController();
-
-              await templateService.apiHandler({
-                methodName: 'findEnrollmentStatus',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsEnrollmentController_unenrollStudent: Record<string, TsoaRoute.ParameterSchema> = {
-                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-        };
-        app.delete('/ribbit/enrollments/course/:courseId',
-            authenticateMiddleware([{"bearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
-            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.unenrollStudent)),
-
-            async function EnrollmentController_unenrollStudent(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_unenrollStudent, request, response });
-
-                const controller = new EnrollmentController();
-
-              await templateService.apiHandler({
-                methodName: 'unenrollStudent',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);

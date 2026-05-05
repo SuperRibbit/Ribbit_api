@@ -1,4 +1,5 @@
 import { ClassFileRepository } from "../repository/ClassFileRepository.js";
+import { AppError } from "../utils/AppError.js";
 
 export class ClassFileService {
   private repository = new ClassFileRepository();
@@ -32,7 +33,7 @@ export class ClassFileService {
   async saveLinkRecord(data: { display_name: string; file_url: string; class_id: number }) {
 
     if (!this.isValidVideoUrl(data.file_url)) {
-      throw new Error("INVALID_URL");
+      throw new AppError("O link fornecido não é uma URL de vídeo válida. Formatos aceitos: YouTube ou Vimeo.", 400);
     }
     
     return await this.repository.create({
@@ -42,5 +43,15 @@ export class ClassFileService {
       file_type: "video_link",
       class_id: data.class_id,
     });
+  }
+
+  async deleteFileRecord(file_id: number): Promise<void> {
+    const file = await this.repository.findById(file_id);
+
+    if (!file) {
+      throw new AppError("O arquivo solicitado não existe ou já foi excluído.", 404);
+    }
+
+    await this.repository.deleteById(file_id);
   }
 }

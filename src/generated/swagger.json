@@ -14,12 +14,9 @@
 					"aluno"
 				]
 			},
-			"Pick_User.Exclude_keyofUser.password_hash__": {
+			"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_": {
 				"properties": {
 					"user_uuid": {
-						"type": "string"
-					},
-					"email": {
 						"type": "string"
 					},
 					"role": {
@@ -30,29 +27,19 @@
 					},
 					"avatar_url": {
 						"type": "string"
-					},
-					"created_at": {
-						"type": "string",
-						"format": "date-time"
 					}
 				},
 				"required": [
 					"user_uuid",
-					"email",
 					"role",
 					"full_name",
-					"avatar_url",
-					"created_at"
+					"avatar_url"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"Omit_User.password_hash_": {
-				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.password_hash__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"UserResponse": {
-				"$ref": "#/components/schemas/Omit_User.password_hash_"
+			"LoginUserResponse": {
+				"$ref": "#/components/schemas/Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_"
 			},
 			"LoginResponse": {
 				"properties": {
@@ -63,7 +50,7 @@
 						"type": "string"
 					},
 					"user": {
-						"$ref": "#/components/schemas/UserResponse"
+						"$ref": "#/components/schemas/LoginUserResponse"
 					}
 				},
 				"required": [
@@ -142,34 +129,24 @@
 				"$ref": "#/components/schemas/Pick_Class_file.Exclude_keyofClass_file.metadata__",
 				"description": "Construct a type with the properties of T except for those in type K."
 			},
-			"Record_string.any_": {
-				"properties": {},
-				"additionalProperties": {},
-				"type": "object",
-				"description": "Construct a type with a set of properties K of type T"
-			},
 			"ClassFileResponse": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/Omit_Class_file.metadata_"
+				"$ref": "#/components/schemas/Omit_Class_file.metadata_"
+			},
+			"ClassFileActionResponse": {
+				"properties": {
+					"message": {
+						"type": "string"
 					},
-					{
-						"properties": {
-							"metadata": {
-								"allOf": [
-									{
-										"$ref": "#/components/schemas/Record_string.any_"
-									}
-								],
-								"nullable": true
-							}
-						},
-						"required": [
-							"metadata"
-						],
-						"type": "object"
+					"file": {
+						"$ref": "#/components/schemas/ClassFileResponse"
 					}
-				]
+				},
+				"required": [
+					"message",
+					"file"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"UploadVideoLinkRequest": {
 				"properties": {
@@ -191,6 +168,51 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"ModuleResponsePost": {
+				"properties": {
+					"moduleId": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"moduleId",
+					"message"
+				],
+				"type": "object"
+			},
+			"Pick_Module.title-or-description-or-index_order-or-fk_course_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"fk_course": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"index_order",
+					"fk_course"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"ModuleCreateRequest": {
+				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
 			},
 			"DefaultSelection_Prisma._36_ModulePayload_": {
 				"properties": {
@@ -226,37 +248,90 @@
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ModulePayload_",
 				"description": "Model Module"
 			},
-			"ModuleResponse": {
-				"$ref": "#/components/schemas/Module"
-			},
-			"Pick_Module.title-or-description-or-index_order-or-fk_course_": {
+			"ModuleResponsePut": {
 				"properties": {
-					"title": {
+					"module": {
+						"$ref": "#/components/schemas/Module"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"module",
+					"message"
+				],
+				"type": "object"
+			},
+			"ProgressResponse": {
+				"properties": {
+					"message": {
 						"type": "string"
 					},
-					"description": {
-						"type": "string"
-					},
-					"index_order": {
-						"type": "number",
-						"format": "double"
-					},
-					"fk_course": {
+					"new_course_progress": {
 						"type": "number",
 						"format": "double"
 					}
 				},
 				"required": [
-					"title",
-					"description",
-					"index_order",
-					"fk_course"
+					"message",
+					"new_course_progress"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CompleteClassRequest": {
+				"properties": {
+					"classId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"classId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_User.Exclude_keyofUser.password_hash__": {
+				"properties": {
+					"user_uuid": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.user_role_enum"
+					},
+					"full_name": {
+						"type": "string"
+					},
+					"avatar_url": {
+						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"user_uuid",
+					"email",
+					"role",
+					"full_name",
+					"avatar_url",
+					"created_at"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
-			"ModuleCreateRequest": {
-				"$ref": "#/components/schemas/Pick_Module.title-or-description-or-index_order-or-fk_course_"
+			"Omit_User.password_hash_": {
+				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.password_hash__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"UserResponse": {
+				"$ref": "#/components/schemas/Omit_User.password_hash_"
 			},
 			"Pick_User.user_uuid-or-full_name-or-role-or-avatar_url-or-created_at_": {
 				"properties": {
@@ -821,7 +896,7 @@
 				"operationId": "Login",
 				"responses": {
 					"200": {
-						"description": "Login realizado com sucesso",
+						"description": "Login realizado com sucesso!",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -831,7 +906,7 @@
 						}
 					},
 					"401": {
-						"description": "Credenciais inválidas ou erro no login"
+						"description": "Email ou senha incorretos."
 					}
 				},
 				"tags": [
@@ -851,7 +926,7 @@
 				}
 			}
 		},
-		"/ribbit/classes/files/pdf": {
+		"/ribbit/files/pdf": {
 			"post": {
 				"operationId": "UploadClassPDF",
 				"responses": {
@@ -860,7 +935,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ClassFileResponse"
+									"$ref": "#/components/schemas/ClassFileActionResponse"
 								}
 							}
 						}
@@ -913,7 +988,7 @@
 				}
 			}
 		},
-		"/ribbit/classes/files/link": {
+		"/ribbit/files/link": {
 			"post": {
 				"operationId": "UploadVideoLink",
 				"responses": {
@@ -922,7 +997,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ClassFileResponse"
+									"$ref": "#/components/schemas/ClassFileActionResponse"
 								}
 							}
 						}
@@ -957,6 +1032,40 @@
 				}
 			}
 		},
+		"/ribbit/files/{file_id}": {
+			"delete": {
+				"operationId": "DeleteFile",
+				"responses": {
+					"204": {
+						"description": "No Content"
+					},
+					"404": {
+						"description": "Arquivo não encontrado"
+					}
+				},
+				"tags": [
+					"Class Files"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "file_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/modules": {
 			"post": {
 				"operationId": "CreateModule",
@@ -966,7 +1075,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ModuleResponse"
+									"$ref": "#/components/schemas/ModuleResponsePost"
 								}
 							}
 						}
@@ -998,43 +1107,122 @@
 				}
 			}
 		},
-		"/ribbit/enrollments": {
-			"post": {
-				"operationId": "Enroll",
+		"/ribbit/modules/{module_id}": {
+			"delete": {
+				"operationId": "DeleteModule",
 				"responses": {
-					"201": {
-						"description": "Matrícula realizada com sucesso",
+					"204": {
+						"description": "Deletado"
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateModule",
+				"responses": {
+					"200": {
+						"description": "Atualizado",
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"enrollment_id": {
-											"type": "number",
-											"format": "double"
-										},
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"enrollment_id",
-										"message"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/ModuleResponsePut"
 								}
 							}
 						}
 					},
+					"400": {
+						"description": "Erro ao atualizar módulo"
+					},
 					"404": {
-						"description": "Curso não encontrado"
+						"description": "Módulo não encontrado"
 					}
 				},
 				"tags": [
-					"Enrollments"
+					"Modules"
 				],
 				"security": [
 					{
-						"bearerAuth": []
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ModuleCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/progress": {
+			"post": {
+				"operationId": "CompleteClass",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProgressResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro de validação"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"Progress"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
 					}
 				],
 				"parameters": [],
@@ -1043,200 +1231,46 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"course_id": {
-										"type": "number",
-										"format": "double"
-									}
-								},
-								"required": [
-									"course_id"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/CompleteClassRequest"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/ribbit/enrollments/my-courses": {
-			"get": {
-				"operationId": "FindByUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"courses": {
-											"items": {
-												"properties": {
-													"enrollment_id": {
-														"type": "number",
-														"format": "double"
-													},
-													"enrolled_at": {
-														"type": "string",
-														"format": "date-time"
-													},
-													"progress": {
-														"type": "number",
-														"format": "double"
-													},
-													"course": {
-														"properties": {
-															"slug": {
-																"type": "string"
-															},
-															"banner_url": {
-																"type": "string"
-															},
-															"title": {
-																"type": "string"
-															},
-															"course_id": {
-																"type": "number",
-																"format": "double"
-															}
-														},
-														"required": [
-															"slug",
-															"banner_url",
-															"title",
-															"course_id"
-														],
-														"type": "object"
-													}
-												},
-												"required": [
-													"enrollment_id",
-													"enrolled_at",
-													"progress",
-													"course"
-												],
-												"type": "object"
-											},
-											"type": "array"
-										},
-										"total_enrollments": {
-											"type": "number",
-											"format": "double"
-										}
-									},
-									"required": [
-										"courses",
-										"total_enrollments"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Enrollments"
-				],
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/ribbit/enrollments/status/course/{courseId}": {
-			"get": {
-				"operationId": "FindEnrollmentStatus",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"enrollment_date": {
-											"type": "string",
-											"format": "date-time"
-										},
-										"progress": {
-											"type": "number",
-											"format": "double"
-										},
-										"is_enrolled": {
-											"type": "boolean"
-										}
-									},
-									"required": [
-										"enrollment_date",
-										"progress",
-										"is_enrolled"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Enrollments"
-				],
-				"security": [
-					{
-						"bearerAuth": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "courseId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/ribbit/enrollments/course/{courseId}": {
+		"/ribbit/progress/{class_id}": {
 			"delete": {
-				"operationId": "UnenrollStudent",
+				"operationId": "RemoveClassCompletion",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Conclusão removida com sucesso",
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
+									"$ref": "#/components/schemas/ProgressResponse"
 								}
 							}
 						}
 					},
 					"404": {
-						"description": "Matrícula não encontrada"
+						"description": "Registro não encontrado"
 					}
 				},
 				"tags": [
-					"Enrollments"
+					"Progress"
 				],
 				"security": [
 					{
-						"bearerAuth": []
+						"bearerAuth": [
+							"aluno",
+							"prof"
+						]
 					}
 				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "courseId",
+						"name": "class_id",
 						"required": true,
 						"schema": {
 							"format": "double",
