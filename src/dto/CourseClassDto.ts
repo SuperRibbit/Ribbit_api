@@ -10,8 +10,8 @@ export type CourseClassCreateRequest = {
 };
 
 export type CourseClassCreatedResponse = {
-  message: string;
-  class_id: number;
+    message: string;
+    class_id: number;
 }
 
 export type CourseClassUpdateRequest = Partial<CourseClassCreateRequest>;

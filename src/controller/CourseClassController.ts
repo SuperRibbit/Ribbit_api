@@ -1,5 +1,5 @@
 import { Body, Post, Route, Security, SuccessResponse, Response, Tags, Controller, Get, Path, Put, Delete } from "tsoa";
-import type { CourseClassCreateRequest, CourseClassResponse, CourseClassUpdateRequest } from "../dto/CourseClassDto.js";
+import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassResponse, CourseClassUpdateRequest } from "../dto/CourseClassDto.js";
 import { CourseClassService } from "../service/CourseClassService.js";
 
 
@@ -12,7 +12,7 @@ export class CourseClassController extends Controller{
     @SuccessResponse(201, "Criado")
     @Response("400", "Erro ao criar aula")
     @Security("bearerAuth", ["prof"])
-    public async createCourseClass(@Body() requestBody: CourseClassCreateRequest): Promise<CourseClassResponse> {
+    public async createCourseClass(@Body() requestBody: CourseClassCreateRequest): Promise<CourseClassCreatedResponse> {
         const courseClass = await this.courseClassService.createCourseClass(requestBody);
 
         if (!courseClass) {
@@ -20,7 +20,10 @@ export class CourseClassController extends Controller{
             throw new Error("Erro ao criar aula");
         }
         this.setStatus(201);
-        return courseClass;
+        return {
+            message: "Aula criada com sucesso!",
+            class_id: courseClass.class_id
+        };
     }
 
     @Get("{id}")
