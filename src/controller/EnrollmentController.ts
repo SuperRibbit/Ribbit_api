@@ -1,4 +1,7 @@
-import {Route, Tags, Controller, Get, Post, Delete, Path, Request, SuccessResponse, Response,Security} from "tsoa";
+import {
+  Route, Tags, Controller, Get, Post, Delete,
+  Body, Path, Request, SuccessResponse, Response, Security,
+} from "tsoa";
 import type { AuthRequest } from "../types/express.js";
 import { EnrollmentService } from "../service/EnrollmentService.js";
 
@@ -7,47 +10,46 @@ import { EnrollmentService } from "../service/EnrollmentService.js";
 export class EnrollmentController extends Controller {
   private enrollmentService = new EnrollmentService();
 
-  @Post("{courseId}")
+  @Post()
   @SuccessResponse("201", "Matrícula realizada com sucesso")
   @Response("404", "Curso não encontrado")
   @Security("bearerAuth")
-  public async enroll(@Path() courseId: number, @Request() req: AuthRequest) {
+  public async enroll(
+    @Body() body: { course_id: number },
+    @Request() req: AuthRequest,
+  ) {
     const studentId = req.user!.id;
-    const result = await this.enrollmentService.enroll(studentId, courseId);
+    const result = await this.enrollmentService.enroll(studentId, body.course_id);
     this.setStatus(201);
     return result;
   }
 
-  @Get()
+  @Get("my-courses")
   @Security("bearerAuth")
   public async findByUser(@Request() req: AuthRequest) {
     const userId = req.user!.id;
     return await this.enrollmentService.findByUser(userId);
   }
 
-  @Get("{courseId}/status")
+  @Get("status/course/{courseId}")
   @Security("bearerAuth")
   public async findEnrollmentStatus(
     @Path() courseId: number,
     @Request() req: AuthRequest,
   ) {
     const studentId = req.user!.id;
-    return await this.enrollmentService.findEnrollmentStatus(
-      studentId,
-      courseId,
-    );
+    return await this.enrollmentService.findEnrollmentStatus(studentId, courseId);
   }
 
-  @Delete("{courseId}")
-  @SuccessResponse("204", "Desmatriculado com sucesso")
+  @Delete("course/{courseId}")
   @Response("404", "Matrícula não encontrada")
   @Security("bearerAuth")
   public async unenrollStudent(
     @Path() courseId: number,
     @Request() req: AuthRequest,
-  ): Promise<void> {
+  ) {
     const studentId = req.user!.id;
     await this.enrollmentService.unenrollStudent(studentId, courseId);
-    this.setStatus(204);
+    return { message: "Matrícula cancelada com sucesso. O curso foi removido da sua lista." };
   }
 }

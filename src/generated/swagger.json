@@ -998,6 +998,254 @@
 				}
 			}
 		},
+		"/ribbit/enrollments": {
+			"post": {
+				"operationId": "Enroll",
+				"responses": {
+					"201": {
+						"description": "Matrícula realizada com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"enrollment_id": {
+											"type": "number",
+											"format": "double"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"enrollment_id",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Curso não encontrado"
+					}
+				},
+				"tags": [
+					"Enrollments"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"course_id": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"course_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/enrollments/my-courses": {
+			"get": {
+				"operationId": "FindByUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"courses": {
+											"items": {
+												"properties": {
+													"enrollment_id": {
+														"type": "number",
+														"format": "double"
+													},
+													"enrolled_at": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"progress": {
+														"type": "number",
+														"format": "double"
+													},
+													"course": {
+														"properties": {
+															"slug": {
+																"type": "string"
+															},
+															"banner_url": {
+																"type": "string"
+															},
+															"title": {
+																"type": "string"
+															},
+															"course_id": {
+																"type": "number",
+																"format": "double"
+															}
+														},
+														"required": [
+															"slug",
+															"banner_url",
+															"title",
+															"course_id"
+														],
+														"type": "object"
+													}
+												},
+												"required": [
+													"enrollment_id",
+													"enrolled_at",
+													"progress",
+													"course"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"total_enrollments": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"courses",
+										"total_enrollments"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Enrollments"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/ribbit/enrollments/status/course/{courseId}": {
+			"get": {
+				"operationId": "FindEnrollmentStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"enrollment_date": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"progress": {
+											"type": "number",
+											"format": "double"
+										},
+										"is_enrolled": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"enrollment_date",
+										"progress",
+										"is_enrolled"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Enrollments"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "courseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/ribbit/enrollments/course/{courseId}": {
+			"delete": {
+				"operationId": "UnenrollStudent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Matrícula não encontrada"
+					}
+				},
+				"tags": [
+					"Enrollments"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "courseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/users": {
 			"get": {
 				"operationId": "FindAll",

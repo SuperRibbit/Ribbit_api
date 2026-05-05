@@ -1,4 +1,5 @@
 import { EnrollmentRepository } from "../repository/EnrollmentRepository.js";
+import { AppError } from "../utils/AppError.js";
 
 export class EnrollmentService {
     private enrollmentRepository = EnrollmentRepository.getInstance();
@@ -15,7 +16,7 @@ export class EnrollmentService {
             }
         } catch (error: any) {
             if (error.code === "P2003") {
-              throw new Error(`Curso com ID ${courseId} não encontrado.`);
+              throw new AppError(`Curso com ID ${courseId} não encontrado.`);
             }
             throw error;
         }
@@ -43,7 +44,7 @@ export class EnrollmentService {
           );
         } catch (error: any) {
           if (error.code === "P2025") {
-            throw new Error("Você não possui matrícula ativa neste curso.");
+            throw new AppError("Você não possui matrícula ativa neste curso.");
           }
           throw error;
         }
