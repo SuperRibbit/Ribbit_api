@@ -1,5 +1,6 @@
 import type { Course, Prisma } from "../generated/prisma/index.js";
 import { CourseRepository } from "../repository/CourseRepository.js";
+import { AppError } from "../utils/AppError.js";
 
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
@@ -12,7 +13,7 @@ export class CourseService {
   const course = await this.courseRepository.findById(courseId, studentId);
 
   if (!course) {
-    throw new Error("Curso não encontrado.");
+    throw new AppError("Curso não encontrado.", 404);
   }
 
   const { User, Enrollment, Module, ...rest } = course;
@@ -61,7 +62,7 @@ export class CourseService {
       };
     } catch (error: any) {
       if (error.code === "P2002") {
-        throw new Error(
+        throw new AppError(
           `O link (slug) '${courseData.slug}' já está em uso por outro curso. Escolha outro.`,
         );
       }
@@ -81,7 +82,7 @@ export class CourseService {
       };
     } catch (error: any) {
       if (error.code === "P2025") {
-        throw new Error("Curso não encontrado.");
+        throw new AppError("Curso não encontrado.", 404);
       }
       throw error;
     }
@@ -92,7 +93,7 @@ export class CourseService {
       await this.courseRepository.deleteById(courseId);
     } catch (error: any) {
       if (error.code === "P2025") {
-        throw new Error("Curso não encontrado.");
+        throw new AppError("Curso não encontrado.", 404);
       }
       throw error;
     }

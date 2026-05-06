@@ -2,6 +2,7 @@ import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, Query, Suc
 import type { AuthRequest } from "../types/express.js";
 import { CourseService } from "../service/CourseService.js";
 import type { Prisma } from "../generated/prisma/index.js";
+import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/courses")
 @Tags("Courses")
