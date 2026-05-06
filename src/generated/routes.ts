@@ -15,6 +15,8 @@ import { ModulesController } from './../controller/ModuleController.js';
 import { ProgressController } from './../controller/ProgressController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../controller/UserController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { EnrollmentController } from './../controller/EnrollmentController.js';
 import { expressAuthentication } from './../middleware/tsoaAuth.js';
 // @ts-ignore - no great way to install types from subpackage
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
@@ -849,6 +851,133 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 next,
                 validatedArgs,
                 successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEnrollmentController_enroll: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"course_id":{"dataType":"double","required":true}}},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.post('/ribbit/enrollments',
+            authenticateMiddleware([{"bearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.enroll)),
+
+            async function EnrollmentController_enroll(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_enroll, request, response });
+
+                const controller = new EnrollmentController();
+
+              await templateService.apiHandler({
+                methodName: 'enroll',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEnrollmentController_findByUser: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.get('/ribbit/enrollments/my-courses',
+            authenticateMiddleware([{"bearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.findByUser)),
+
+            async function EnrollmentController_findByUser(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_findByUser, request, response });
+
+                const controller = new EnrollmentController();
+
+              await templateService.apiHandler({
+                methodName: 'findByUser',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEnrollmentController_findEnrollmentStatus: Record<string, TsoaRoute.ParameterSchema> = {
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.get('/ribbit/enrollments/status/course/:courseId',
+            authenticateMiddleware([{"bearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.findEnrollmentStatus)),
+
+            async function EnrollmentController_findEnrollmentStatus(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_findEnrollmentStatus, request, response });
+
+                const controller = new EnrollmentController();
+
+              await templateService.apiHandler({
+                methodName: 'findEnrollmentStatus',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsEnrollmentController_unenrollStudent: Record<string, TsoaRoute.ParameterSchema> = {
+                courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.delete('/ribbit/enrollments/course/:courseId',
+            authenticateMiddleware([{"bearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController)),
+            ...(fetchMiddlewares<RequestHandler>(EnrollmentController.prototype.unenrollStudent)),
+
+            async function EnrollmentController_unenrollStudent(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsEnrollmentController_unenrollStudent, request, response });
+
+                const controller = new EnrollmentController();
+
+              await templateService.apiHandler({
+                methodName: 'unenrollStudent',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
               });
             } catch (err) {
                 return next(err);
