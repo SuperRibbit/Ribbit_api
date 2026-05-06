@@ -14,4 +14,20 @@ export type CourseClassCreatedResponse = {
     class_id: number;
 }
 
+export type ClassMaterial = {
+    file_id: number;
+    display_name: string;
+    file_url: string | null;
+    file_type: string | null;
+}
+
+export type CourseClassGetResponse = {
+    class_id: number;
+    title: string;
+    description: string;
+    index_order: number;
+    fk_module: number;
+    materials: ClassMaterial[];
+}
+
 export type CourseClassUpdateRequest = Partial<CourseClassCreateRequest>;

@@ -1,5 +1,5 @@
 import { Body, Post, Route, Security, SuccessResponse, Response, Tags, Controller, Get, Path, Put, Delete } from "tsoa";
-import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassResponse, CourseClassUpdateRequest } from "../dto/CourseClassDto.js";
+import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassGetResponse, CourseClassResponse, CourseClassUpdateRequest } from "../dto/CourseClassDto.js";
 import { CourseClassService } from "../service/CourseClassService.js";
 
 
@@ -29,7 +29,7 @@ export class CourseClassController extends Controller{
     @Get("{id}")
     @Response("404", "Aula não encontrada")
     @Security("bearerAuth")
-    public async findById(@Path() id: number): Promise<CourseClassResponse>{
+    public async findById(@Path() id: number): Promise<CourseClassGetResponse>{
         const courseClass = await this.courseClassService.findById(id);
         return courseClass;
     }

@@ -1,22 +1,32 @@
 import { connect } from "node:http2";
 import type { Course_class, Prisma } from "../generated/prisma/index.js";
 import { CourseClassRepository } from "../repository/CourseClassRepository.js";
+import type { CourseClassGetResponse } from "../dto/CourseClassDto.js";
 
 export class CourseClassService {
     private courseClassRepository = CourseClassRepository.getInstance();
 
-    async findById(id: number | undefined): Promise<Course_class> {
+    async findById(id: number | undefined): Promise<CourseClassGetResponse> {
         if(!id){
             throw new Error("Insira um curso válido");
         }
 
         const courseClass = await this.courseClassRepository.findById(id);
-
+        
         if(!courseClass){
             throw new Error("Curso não encontrado");
         }
 
-        return courseClass;
+        const materials = await this.courseClassRepository.findMaterialsById(id);
+
+        return {
+            class_id: courseClass.class_id,
+            title: courseClass.title,
+            description: courseClass.description,
+            index_order: courseClass.index_order,
+            fk_module: courseClass.fk_module,
+            materials: materials
+        };
     }
 
     async createCourseClass(courseClassData: any): Promise<Course_class | null>{
