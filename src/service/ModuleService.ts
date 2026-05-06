@@ -2,6 +2,7 @@ import { ModuleRepository } from "../repository/ModuleRepository.js";
 import type { Prisma } from "../generated/prisma/index.js";
 import type { Module } from "../generated/prisma/index.js";
 import { CourseService } from "./CourseService.js";
+import { AppError } from "../utils/AppError.js";
 
 export class ModuleService {
     private moduleRepository = ModuleRepository.getInstance();
@@ -11,13 +12,13 @@ export class ModuleService {
         const { title, description, fk_course, index_order } = moduleData;
         const orderConstraint = await this.moduleRepository.findByCourseAndOrder(fk_course, index_order);
         if (orderConstraint) {
-            throw new Error("Já existe um módulo na posição"  + index_order + 
-                "deste curso. Escolha outra ordem");
+            throw new AppError("Já existe um módulo na posição"  + index_order + 
+                "deste curso. Escolha outra ordem", 400);
         }
 
         const course = await this.courseService.findById(fk_course);
         if (!course) {
-            throw new Error("Curso com ID " + fk_course + " não encontrado");
+            throw new AppError("Curso com ID " + fk_course + " não encontrado", 404);
         }
 
         const moduleCreateInput: Prisma.ModuleCreateInput = {
@@ -37,7 +38,7 @@ export class ModuleService {
     async deleteModule(module_id: number): Promise<void> {
         const module = await this.moduleRepository.findById(module_id);
         if (!module) {
-            throw new Error("Módulo com ID " + module_id + " não encontrado ou já foi deletado.");
+            throw new AppError("Módulo com ID " + module_id + " não encontrado ou já foi deletado.", 404);
         }
         await this.moduleRepository.deleteById(module_id);
     }
@@ -45,7 +46,7 @@ export class ModuleService {
     async updateModule(module_id: number, moduleData: any): Promise<Module> {
         const existingModule = await this.moduleRepository.findById(module_id);
         if (!existingModule) {
-            throw new Error("Módulo com ID " + module_id + " não encontrado.");
+            throw new AppError("Módulo com ID " + module_id + " não encontrado.", 404);
         }
 
         const targetCourseId = moduleData.fk_course ?? existingModule.fk_course;
@@ -55,7 +56,7 @@ export class ModuleService {
 
         const orderConstraint = await this.moduleRepository.findByCourseAndOrder(targetCourseId, targetOrder);
         if (orderConstraint && orderConstraint.id_module !== module_id) {
-            throw new Error(`A posição ${targetOrder} já está ocupada por outro módulo neste curso.`);
+            throw new AppError("A posição " + targetOrder + " já está ocupada por outro módulo neste curso.", 400);
         }
 
         const moduleUpdateInput: Prisma.ModuleUncheckedUpdateInput = {

@@ -1,6 +1,7 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, type TsoaResponse } from "tsoa";
 import { ModuleService } from "../service/ModuleService.js";
 import { type ModuleCreateRequest, type ModuleResponsePost, type ModuleResponsePut } from "../dto/ModuleDtos.js";
+import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/modules")
 @Tags("Modules")
@@ -16,7 +17,7 @@ export class ModulesController extends Controller {
             const module = await this.moduleService.createModule(requestBody);
             if (!module) {
                 this.setStatus(400);
-                throw new Error("Erro ao criar módulo");
+                throw new AppError("Erro ao criar módulo", 400);
             }
             this.setStatus(201);
             return {
@@ -24,8 +25,7 @@ export class ModulesController extends Controller {
                 moduleId: module.id_module
             };
         } catch (error: any) {
-            this.setStatus(400);
-            throw new Error(error.message || "Erro ao criar módulo");
+            throw new AppError(error.message || "Erro ao criar módulo", 400);
         }
     }
 
@@ -39,7 +39,7 @@ export class ModulesController extends Controller {
             this.setStatus(204);
         } catch (error: any) {
             this.setStatus(404);
-            throw new Error(error.message || "Módulo nao encontrado");
+            throw new AppError(error.message || "Módulo nao encontrado", 404);
         }
     }
 
@@ -53,7 +53,7 @@ export class ModulesController extends Controller {
             const module = await this.moduleService.updateModule(module_id, requestBody);
             if (!module) {
                 this.setStatus(404);
-                throw new Error("Módulo não encontrado");
+                throw new AppError("Módulo não encontrado", 404);
             }
             this.setStatus(200);
             return {
@@ -62,7 +62,7 @@ export class ModulesController extends Controller {
             };
         } catch (error: any) {
             this.setStatus(400);
-            throw new Error(error.message || "Erro ao atualizar módulo");
+            throw new AppError(error.message || "Erro ao atualizar módulo", 400);
         }
     }
 }
