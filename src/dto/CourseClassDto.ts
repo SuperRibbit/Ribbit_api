@@ -30,4 +30,9 @@ export type CourseClassGetResponse = {
     materials: ClassMaterial[];
 }
 
+export type CourseClassUpdateResponse = {
+    message: string;
+    class: Course_class
+}
+
 export type CourseClassUpdateRequest = Partial<CourseClassCreateRequest>;

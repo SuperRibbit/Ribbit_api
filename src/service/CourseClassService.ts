@@ -8,13 +8,13 @@ export class CourseClassService {
 
     async findById(id: number | undefined): Promise<CourseClassGetResponse> {
         if(!id){
-            throw new Error("Insira um curso válido");
+            throw new Error("Insira um id de aula válido");
         }
 
         const courseClass = await this.courseClassRepository.findById(id);
         
         if(!courseClass){
-            throw new Error("Curso não encontrado");
+            throw new Error(`Nenhuma aula encontrada com o ID ${id}`);
         }
 
         const materials = await this.courseClassRepository.findMaterialsById(id);

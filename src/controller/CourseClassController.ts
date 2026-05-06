@@ -1,5 +1,5 @@
 import { Body, Post, Route, Security, SuccessResponse, Response, Tags, Controller, Get, Path, Put, Delete } from "tsoa";
-import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassGetResponse, CourseClassResponse, CourseClassUpdateRequest } from "../dto/CourseClassDto.js";
+import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassGetResponse, CourseClassResponse, CourseClassUpdateRequest, CourseClassUpdateResponse } from "../dto/CourseClassDto.js";
 import { CourseClassService } from "../service/CourseClassService.js";
 
 
@@ -38,7 +38,7 @@ export class CourseClassController extends Controller{
     @Response("400", "Erro ao atualizar a aula")
     @Response("404", "Aula não encontrada")
     @Security("bearerAuth", ["prof"])
-    public async updateCourseClass(@Path() id: number, @Body() requestBody: CourseClassUpdateRequest): Promise<CourseClassResponse>{
+    public async updateCourseClass(@Path() id: number, @Body() requestBody: CourseClassUpdateRequest): Promise<CourseClassUpdateResponse>{
         const courseClass = await this.courseClassService.updateCourseClass(id, requestBody);
 
         if(!courseClass){
@@ -46,7 +46,10 @@ export class CourseClassController extends Controller{
             throw new Error("Aula não encontrada para atualização");
         }
         this.setStatus(200);
-        return courseClass;
+        return {
+            message: "Aula atualizada com sucesso!",
+            class: courseClass
+        }
     }
 
     @Delete("{id}")
