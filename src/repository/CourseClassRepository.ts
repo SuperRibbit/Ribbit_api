@@ -15,8 +15,8 @@ export class CourseClassRepository {
         return await prisma.course_class.findUnique({ where: { class_id } });
     }
 
-    async findByTitle(title: string): Promise<Course_class | null>{
-        return await prisma.course_class.findFirst({ where: { title }})
+    async findByTitle(title: string): Promise<Course_class | null> {
+        return await prisma.course_class.findFirst({ where: { title } })
     }
 
     async createCourseClass(courseClassData: Prisma.Course_classCreateInput): Promise<Course_class> {
@@ -26,14 +26,20 @@ export class CourseClassRepository {
     }
 
     async updateCourseClass(class_id: number, courseClassData: Prisma.Course_classUpdateInput): Promise<Course_class> {
-        const update = await prisma.course_class.update({ where: { class_id }, data: courseClassData});
+        const update = await prisma.course_class.update({ where: { class_id }, data: courseClassData });
         console.log("Aula atualizada com sucesso: ", update);
         return update;
     }
 
     async deleteById(class_id: number): Promise<Course_class> {
-        const deleted = await prisma.course_class.delete({ where: { class_id }});
+        const deleted = await prisma.course_class.delete({ where: { class_id } });
         console.log("Aula removida com sucesso: ", deleted);
         return deleted;
+    }
+
+    async findByModuleAndOrder(fk_module: number, index_order: number): Promise<Course_class | null> {
+        return await prisma.course_class.findUnique({
+            where: { fk_module_index_order: { fk_module, index_order } }
+        });
     }
 }

@@ -21,9 +21,9 @@ export class CourseClassService {
 
     async createCourseClass(courseClassData: any): Promise<Course_class | null>{
         const { title, description, index_order, fk_module} = courseClassData;
-        const existingCourseClass = await this.courseClassRepository.findByTitle(title);
+        const existingCourseClass = await this.courseClassRepository.findByModuleAndOrder(fk_module, index_order);
         if (existingCourseClass != null) {
-            throw new Error("Aula já cadastrada")
+            throw new Error(`Já existe uma aula na posição ${index_order} deste módulo. Escolha outra ordem ou reordene as aulas existentes.`);
         }
 
         const Course_classCreateInput: Prisma.Course_classCreateInput = {
