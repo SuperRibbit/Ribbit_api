@@ -54,7 +54,7 @@ export class AuthService {
       const secret = JWT_SECRET + user.password_hash;
       const token = jwt.sign({ id: user.user_uuid, email: user.email }, secret, { expiresIn: '15m' });
 
-      await this.emailService.sendPasswordResetEmail(user.email, token);
+      this.emailService.sendPasswordResetEmail(user.email, token);
     }
   }
 

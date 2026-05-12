@@ -3,13 +3,18 @@ import nodemailer from "nodemailer";
 export class EmailService {
   private transporter;
 
-  constructor() {
+ constructor() {
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false
+      }
     });
   }
 
@@ -41,7 +46,6 @@ export class EmailService {
     };
 
     try {
-      console.log("Enviando Email ao usuario: ", toEmail);
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error("Erro ao enviar e-mail:", error);
