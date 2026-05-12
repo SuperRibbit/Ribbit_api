@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { UserRepository } from "../repository/UserRepository.js";
 import type { User } from "../generated/prisma/index.js";
 import { AppError } from "../utils/AppError.js";
+import { EmailService } from "./EmailService.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supercraft";
 
@@ -13,6 +14,7 @@ interface LoginServiceResponse {
 
 export class AuthService {
   private userRepository = UserRepository.getInstance();
+  private emailService = new EmailService();
 
   async login(loginData: any): Promise<LoginServiceResponse> {
     const { email, password } = loginData;
@@ -52,9 +54,7 @@ export class AuthService {
       const secret = JWT_SECRET + user.password_hash;
       const token = jwt.sign({ id: user.user_uuid, email: user.email }, secret, { expiresIn: '15m' });
 
-      // Substituir posteriomente com envio do email
-      const resetLink = `http://localhost:5173/reset-password?token=${token}`;
-      console.log(`[MOCK EMAIL] Link de recuperação para ${user.email}: \n${resetLink}`);
+      await this.emailService.sendPasswordResetEmail(user.email, token);
     }
   }
 
