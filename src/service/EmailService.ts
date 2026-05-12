@@ -14,8 +14,9 @@ export class EmailService {
       },
       tls: {
         rejectUnauthorized: false
-      }
-    });
+      },
+      family: 4
+    }as any);
   }
 
   async sendPasswordResetEmail(toEmail: string, token: string): Promise<void> {
