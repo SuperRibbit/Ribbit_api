@@ -1,7 +1,7 @@
 import { Body, Post, Route, Security, SuccessResponse, Response, Tags, Controller, Get, Path, Put, Delete } from "tsoa";
 import type { CourseClassCreatedResponse, CourseClassCreateRequest, CourseClassGetResponse, CourseClassResponse, CourseClassUpdateRequest, CourseClassUpdateResponse } from "../dto/CourseClassDto.js";
 import { CourseClassService } from "../service/CourseClassService.js";
-
+import { AppError } from "../utils/AppError.js";
 
 @Route("/ribbit/classes")
 @Tags("CourseClass")
@@ -17,7 +17,7 @@ export class CourseClassController extends Controller{
 
         if (!courseClass) {
             this.setStatus(400);
-            throw new Error("Erro ao criar aula");
+            throw new AppError("Erro ao criar aula");
         }
         this.setStatus(201);
         return {
@@ -43,7 +43,7 @@ export class CourseClassController extends Controller{
 
         if(!courseClass){
             this.setStatus(404);
-            throw new Error("Aula não encontrada para atualização");
+            throw new AppError("Aula não encontrada para atualização");
         }
         this.setStatus(200);
         return {
