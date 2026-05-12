@@ -43,4 +43,11 @@ export class UserRepository{
         console.log("Usuário removido com sucesso: ", deletedUser);
         return deletedUser;
     }
+
+  async updatePassword(user_uuid: string, new_password_hash: string) {
+    return await prisma.user.update({
+      where: { user_uuid },
+      data: { password_hash: new_password_hash }
+    });
+  }
 }
