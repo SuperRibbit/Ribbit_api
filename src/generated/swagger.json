@@ -493,6 +493,182 @@
 			},
 			"UserUpdateRequest": {
 				"$ref": "#/components/schemas/Partial_Pick_User.full_name-or-avatar_url__"
+			},
+			"CourseClassCreatedResponse": {
+				"properties": {
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"class_id",
+					"message"
+				],
+				"type": "object"
+			},
+			"CourseClassCreateRequest": {
+				"properties": {
+					"fk_module": {
+						"type": "number",
+						"format": "double"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"fk_module",
+					"index_order",
+					"description",
+					"title"
+				],
+				"type": "object"
+			},
+			"ClassMaterial": {
+				"properties": {
+					"file_type": {
+						"type": "string",
+						"nullable": true
+					},
+					"file_url": {
+						"type": "string",
+						"nullable": true
+					},
+					"display_name": {
+						"type": "string"
+					},
+					"file_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"file_type",
+					"file_url",
+					"display_name",
+					"file_id"
+				],
+				"type": "object"
+			},
+			"CourseClassGetResponse": {
+				"properties": {
+					"materials": {
+						"items": {
+							"$ref": "#/components/schemas/ClassMaterial"
+						},
+						"type": "array"
+					},
+					"fk_module": {
+						"type": "number",
+						"format": "double"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"materials",
+					"fk_module",
+					"index_order",
+					"description",
+					"title",
+					"class_id"
+				],
+				"type": "object"
+			},
+			"DefaultSelection_Prisma._36_Course_classPayload_": {
+				"properties": {
+					"fk_module": {
+						"type": "number",
+						"format": "double"
+					},
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"fk_module",
+					"class_id",
+					"index_order",
+					"description",
+					"title"
+				],
+				"type": "object"
+			},
+			"Course_class": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_Course_classPayload_",
+				"description": "Model Course_class"
+			},
+			"CourseClassUpdateResponse": {
+				"properties": {
+					"class": {
+						"$ref": "#/components/schemas/Course_class"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"class",
+					"message"
+				],
+				"type": "object"
+			},
+			"Partial_CourseClassCreateRequest_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"fk_module": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"CourseClassUpdateRequest": {
+				"$ref": "#/components/schemas/Partial_CourseClassCreateRequest_"
 			}
 		},
 		"securitySchemes": {
@@ -1803,6 +1979,170 @@
 						"required": true,
 						"schema": {
 							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/ribbit/classes": {
+			"post": {
+				"operationId": "CreateCourseClass",
+				"responses": {
+					"201": {
+						"description": "Criado",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseClassCreatedResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao criar aula"
+					}
+				},
+				"tags": [
+					"CourseClass"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseClassCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/classes/{id}": {
+			"get": {
+				"operationId": "FindById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseClassGetResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"CourseClass"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCourseClass",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CourseClassUpdateResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Erro ao atualizar a aula"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"CourseClass"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CourseClassUpdateRequest"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCourseClass",
+				"responses": {
+					"204": {
+						"description": "Aula deletada com sucesso"
+					},
+					"404": {
+						"description": "Aula não encontrada"
+					}
+				},
+				"tags": [
+					"CourseClass"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
