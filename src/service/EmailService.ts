@@ -3,9 +3,9 @@ import nodemailer from "nodemailer";
 export class EmailService {
   private transporter;
 
- constructor() {
+  constructor() {
     this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "142.250.0.108",
       port: 587,
       secure: false,
       requireTLS: true,
@@ -14,7 +14,6 @@ export class EmailService {
         pass: process.env.EMAIL_PASS,
       },
       tls: {
-        ciphers: "SSLv3",
         rejectUnauthorized: false
       }
     });
