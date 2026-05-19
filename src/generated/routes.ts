@@ -155,6 +155,21 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"module":{"ref":"Module","required":true},"message":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_Course_class.class_id-or-title-or-index_order_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"title":{"dataType":"string","required":true},"index_order":{"dataType":"double","required":true},"class_id":{"dataType":"double","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ModuleClassSummary": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_Course_class.class_id-or-title-or-index_order_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ModuleClassesResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"classes":{"dataType":"array","array":{"dataType":"refAlias","ref":"ModuleClassSummary"},"required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"module_id":{"dataType":"double","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProgressResponse": {
         "dataType": "refObject",
         "properties": {
@@ -730,6 +745,37 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateModule',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsModulesController_getModuleClasses: Record<string, TsoaRoute.ParameterSchema> = {
+                module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
+        };
+        app.get('/ribbit/modules/:module_id/classes',
+            authenticateMiddleware([{"bearerAuth":["prof","aluno"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController)),
+            ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.getModuleClasses)),
+
+            async function ModulesController_getModuleClasses(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsModulesController_getModuleClasses, request, response });
+
+                const controller = new ModulesController();
+
+              await templateService.apiHandler({
+                methodName: 'getModuleClasses',
                 controller,
                 response,
                 next,

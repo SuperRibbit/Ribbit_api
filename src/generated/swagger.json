@@ -303,6 +303,63 @@
 				],
 				"type": "object"
 			},
+			"Pick_Course_class.class_id-or-title-or-index_order_": {
+				"properties": {
+					"title": {
+						"type": "string"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"title",
+					"index_order",
+					"class_id"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"ModuleClassSummary": {
+				"$ref": "#/components/schemas/Pick_Course_class.class_id-or-title-or-index_order_"
+			},
+			"ModuleClassesResponse": {
+				"properties": {
+					"classes": {
+						"items": {
+							"$ref": "#/components/schemas/ModuleClassSummary"
+						},
+						"type": "array"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"module_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"classes",
+					"index_order",
+					"description",
+					"title",
+					"module_id"
+				],
+				"type": "object"
+			},
 			"ProgressResponse": {
 				"properties": {
 					"message": {
@@ -1477,6 +1534,48 @@
 						}
 					}
 				}
+			}
+		},
+		"/ribbit/modules/{module_id}/classes": {
+			"get": {
+				"operationId": "GetModuleClasses",
+				"responses": {
+					"200": {
+						"description": "Classes encontradas",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModuleClassesResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof",
+							"aluno"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/ribbit/progress": {

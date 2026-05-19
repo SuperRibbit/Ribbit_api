@@ -1,7 +1,8 @@
 import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, type TsoaResponse } from "tsoa";
 import { ModuleService } from "../service/ModuleService.js";
-import { type ModuleCreateRequest, type ModuleResponsePost, type ModuleResponsePut } from "../dto/ModuleDtos.js";
+import { type ModuleCreateRequest, type ModuleResponsePost, type ModuleResponsePut, type ModuleClassesResponse } from "../dto/ModuleDtos.js";
 import { AppError } from "../utils/AppError.js";
+import type { Module } from "../generated/prisma/index.js";
 
 @Route("ribbit/modules")
 @Tags("Modules")
@@ -63,6 +64,28 @@ export class ModulesController extends Controller {
         } catch (error: any) {
             this.setStatus(400);
             throw new AppError(error.message || "Erro ao atualizar módulo", 400);
+        }
+    }
+
+    @Get("{module_id}/classes")
+    @SuccessResponse("200", "Classes encontradas")
+    @Response("404", "Módulo não encontrado")
+    @Security("bearerAuth", ["prof", "aluno"])
+    public async getModuleClasses(@Path() module_id: number): Promise<ModuleClassesResponse> {
+        try {
+            const module = await this.moduleService.findById(module_id);
+            const classes = await this.moduleService.getModuleClasses(module_id);
+            this.setStatus(200);
+            return {
+                module_id: module.id_module,
+                title: module.title,
+                description: module.description,
+                index_order: module.index_order,
+                classes,
+            };
+        } catch (error: any) {
+            this.setStatus(404);
+            throw new AppError(error.message || "Classes não encontradas", 404);
         }
     }
 }
