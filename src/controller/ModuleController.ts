@@ -70,7 +70,7 @@ export class ModulesController extends Controller {
     @Get("{module_id}/classes")
     @SuccessResponse("200", "Classes encontradas")
     @Response("404", "Módulo não encontrado")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "aluno"])
     public async getModuleClasses(@Path() module_id: number): Promise<ModuleClassesResponse> {
         try {
             const module = await this.moduleService.findById(module_id);

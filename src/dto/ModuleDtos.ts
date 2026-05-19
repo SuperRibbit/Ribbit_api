@@ -10,12 +10,14 @@ export type ModuleResponsePut = {
     module: Module; 
 }
 
+export type ModuleClassSummary = Pick<Course_class, "class_id" | "title" | "index_order">;
+
 export type ModuleClassesResponse = {
     module_id: number;
     title: string;
     description: string;
     index_order: number;
-    classes: Course_class[];
+    classes: ModuleClassSummary[];
 }   
 
 export type ModuleCreateRequest = Pick<Module, "title" | "description" | "index_order" | "fk_course">;

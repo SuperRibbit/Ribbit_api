@@ -155,19 +155,19 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"module":{"ref":"Module","required":true},"message":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "DefaultSelection_Prisma._36_Course_classPayload_": {
+    "Pick_Course_class.class_id-or-title-or-index_order_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_module":{"dataType":"double","required":true},"class_id":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"title":{"dataType":"string","required":true},"index_order":{"dataType":"double","required":true},"class_id":{"dataType":"double","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Course_class": {
+    "ModuleClassSummary": {
         "dataType": "refAlias",
-        "type": {"ref":"DefaultSelection_Prisma._36_Course_classPayload_","validators":{}},
+        "type": {"ref":"Pick_Course_class.class_id-or-title-or-index_order_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ModuleClassesResponse": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"classes":{"dataType":"array","array":{"dataType":"refAlias","ref":"Course_class"},"required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"module_id":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"classes":{"dataType":"array","array":{"dataType":"refAlias","ref":"ModuleClassSummary"},"required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"module_id":{"dataType":"double","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProgressResponse": {
@@ -205,6 +205,16 @@ const models: TsoaRoute.Models = {
     "CourseClassGetResponse": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"materials":{"dataType":"array","array":{"dataType":"refAlias","ref":"ClassMaterial"},"required":true},"fk_module":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"class_id":{"dataType":"double","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DefaultSelection_Prisma._36_Course_classPayload_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"fk_module":{"dataType":"double","required":true},"class_id":{"dataType":"double","required":true},"index_order":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Course_class": {
+        "dataType": "refAlias",
+        "type": {"ref":"DefaultSelection_Prisma._36_Course_classPayload_","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CourseClassUpdateResponse": {
@@ -750,7 +760,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
         };
         app.get('/ribbit/modules/:module_id/classes',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","aluno"]}]),
             ...(fetchMiddlewares<RequestHandler>(ModulesController)),
             ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.getModuleClasses)),
 

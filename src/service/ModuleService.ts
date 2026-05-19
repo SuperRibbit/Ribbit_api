@@ -1,8 +1,8 @@
 import { ModuleRepository } from "../repository/ModuleRepository.js";
-import type { Prisma, Module, Course_class } from "../generated/prisma/index.js";
+import type { Prisma, Module } from "../generated/prisma/index.js";
 import { CourseService } from "./CourseService.js";
 import { AppError } from "../utils/AppError.js";
-import type { ModuleCreateRequest } from "../dto/ModuleDtos.js";
+import type { ModuleClassSummary } from "../dto/ModuleDtos.js";
 
 export class ModuleService {
     private moduleRepository = ModuleRepository.getInstance();
@@ -77,7 +77,7 @@ export class ModuleService {
         return module;
     }
 
-    async getModuleClasses(module_id: number): Promise<Course_class[]> {
+    async getModuleClasses(module_id: number): Promise<ModuleClassSummary[]> {
         await this.findById(module_id);
         return await this.moduleRepository.findClassesByModuleId(module_id);
     }
