@@ -5,6 +5,12 @@ const repoMocks = {
   findByEmail: jest.fn<(email: string) => Promise<User | null>>(),
 };
 
+await jest.unstable_mockModule("../../../service/EmailService.js", () => ({
+  EmailService: jest.fn().mockImplementation(() => ({
+    sendPasswordResetEmail: jest.fn(),
+  })),
+}));
+
 const bcryptCompare = jest.fn<(s: string, hash: string) => Promise<boolean>>();
 const jwtSign = jest.fn<(payload: any, secret: string, options: any) => string>();
 
