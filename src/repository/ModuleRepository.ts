@@ -1,5 +1,4 @@
-import type { Prisma } from "../generated/prisma/index.js";
-import type { Module } from "../generated/prisma/index.js";
+import type { Prisma, Module, Course_class } from "../generated/prisma/index.js";
 import { prisma } from "../server.js";
 
 export class ModuleRepository {
@@ -54,5 +53,12 @@ export class ModuleRepository {
         });
         console.log("Módulo atualizado com sucesso: ", module);
         return module;
+    }
+
+    async findClassesByModuleId(module_id: number): Promise<Course_class[]> {
+        return await prisma.course_class.findMany({
+            where: { fk_module: module_id },
+            orderBy: { index_order: "asc" },
+        });
     }
 }

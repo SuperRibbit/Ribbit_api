@@ -1,8 +1,8 @@
 import { ModuleRepository } from "../repository/ModuleRepository.js";
-import type { Prisma } from "../generated/prisma/index.js";
-import type { Module } from "../generated/prisma/index.js";
+import type { Prisma, Module, Course_class } from "../generated/prisma/index.js";
 import { CourseService } from "./CourseService.js";
 import { AppError } from "../utils/AppError.js";
+import type { ModuleCreateRequest } from "../dto/ModuleDtos.js";
 
 export class ModuleService {
     private moduleRepository = ModuleRepository.getInstance();
@@ -67,5 +67,18 @@ export class ModuleService {
         };
 
         return await this.moduleRepository.updateById(module_id, moduleUpdateInput);
+    }
+
+    async findById(module_id: number): Promise<Module> {
+        const module = await this.moduleRepository.findById(module_id);
+        if (!module) {
+            throw new AppError("Nenhum módulo encontrado com o ID " + module_id + ".", 404);
+        }
+        return module;
+    }
+
+    async getModuleClasses(module_id: number): Promise<Course_class[]> {
+        await this.findById(module_id);
+        return await this.moduleRepository.findClassesByModuleId(module_id);
     }
 }

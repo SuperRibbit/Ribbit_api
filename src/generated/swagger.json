@@ -303,6 +303,72 @@
 				],
 				"type": "object"
 			},
+			"DefaultSelection_Prisma._36_Course_classPayload_": {
+				"properties": {
+					"fk_module": {
+						"type": "number",
+						"format": "double"
+					},
+					"class_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"fk_module",
+					"class_id",
+					"index_order",
+					"description",
+					"title"
+				],
+				"type": "object"
+			},
+			"Course_class": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_Course_classPayload_",
+				"description": "Model Course_class"
+			},
+			"ModuleClassesResponse": {
+				"properties": {
+					"classes": {
+						"items": {
+							"$ref": "#/components/schemas/Course_class"
+						},
+						"type": "array"
+					},
+					"index_order": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"module_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"classes",
+					"index_order",
+					"description",
+					"title",
+					"module_id"
+				],
+				"type": "object"
+			},
 			"ProgressResponse": {
 				"properties": {
 					"message": {
@@ -436,40 +502,6 @@
 					"class_id"
 				],
 				"type": "object"
-			},
-			"DefaultSelection_Prisma._36_Course_classPayload_": {
-				"properties": {
-					"fk_module": {
-						"type": "number",
-						"format": "double"
-					},
-					"class_id": {
-						"type": "number",
-						"format": "double"
-					},
-					"index_order": {
-						"type": "number",
-						"format": "double"
-					},
-					"description": {
-						"type": "string"
-					},
-					"title": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"fk_module",
-					"class_id",
-					"index_order",
-					"description",
-					"title"
-				],
-				"type": "object"
-			},
-			"Course_class": {
-				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_Course_classPayload_",
-				"description": "Model Course_class"
 			},
 			"CourseClassUpdateResponse": {
 				"properties": {
@@ -1477,6 +1509,47 @@
 						}
 					}
 				}
+			}
+		},
+		"/ribbit/modules/{module_id}/classes": {
+			"get": {
+				"operationId": "GetModuleClasses",
+				"responses": {
+					"200": {
+						"description": "Classes encontradas",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ModuleClassesResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Módulo não encontrado"
+					}
+				},
+				"tags": [
+					"Modules"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"prof"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "module_id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/ribbit/progress": {
