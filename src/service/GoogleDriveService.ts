@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import fs from "fs";
-
+import { Readable } from "stream"; 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN!;
@@ -21,16 +21,20 @@ export class GoogleDriveService {
     this.drive = google.drive({ version: "v3", auth: oauth2Client });
   }
 
-  async uploadFile(filePath: string, fileName: string): Promise<string> {
+  async uploadFile(filePath: string | Buffer, fileName: string,mimeType: string = "application/pdf"): Promise<string> {
     try {
       const fileMetadata = {
         name: fileName,
         parents: [FOLDER_ID],
       };
       
+      const bodyStream = typeof filePath === "string" 
+        ? fs.createReadStream(filePath) 
+        : Readable.from(filePath);
+
       const media = {
-        mimeType: "application/pdf",
-        body: fs.createReadStream(filePath),
+        mimeType: mimeType,
+        body: bodyStream,
       };
 
       const response = await this.drive.files.create({

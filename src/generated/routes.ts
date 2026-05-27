@@ -377,11 +377,20 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_createCourse: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string","required":true},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string","required":true}}},
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                title: {"in":"formData","name":"title","required":true,"dataType":"string"},
+                slug: {"in":"formData","name":"slug","required":true,"dataType":"string"},
+                description: {"in":"formData","name":"description","dataType":"string"},
+                banner: {"in":"formData","name":"banner","dataType":"file"},
         };
         app.post('/ribbit/courses',
             authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            upload.fields([
+                {
+                    name: "banner",
+                    maxCount: 1
+                }
+            ]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.createCourse)),
 

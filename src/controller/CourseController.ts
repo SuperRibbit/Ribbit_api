@@ -1,4 +1,4 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, Query, SuccessResponse, Response, Request, Security, type TsoaResponse } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, Query, SuccessResponse, Response, Request, Security, type TsoaResponse, UploadedFile, FormField } from "tsoa";
 import type { AuthRequest } from "../types/express.js";
 import { CourseService } from "../service/CourseService.js";
 import type { Prisma } from "../generated/prisma/index.js";
@@ -28,13 +28,20 @@ export class CourseController extends Controller{
   @Response("409", "Slug já em uso")
   @Security("bearerAuth", ["prof"])
   public async createCourse(
-    @Body() body: { title: string; description?: string; banner_url?: string; slug: string },
-    @Request() req: AuthRequest
+    @Request() req: AuthRequest,
+    @FormField() title: string,
+    @FormField() slug: string,
+    @FormField() description?: string,
+    @UploadedFile() banner?: Express.Multer.File
   ) {
     const teacherUuid = req.user!.id;
-    console.log("req.user:", req.user);
-    console.log("teacherUuid:", teacherUuid);
-    const course = await this.courseService.createCourse(body as Prisma.CourseCreateInput, teacherUuid);
+    
+    const course = await this.courseService.createCourse(
+      { title, slug, description },
+      teacherUuid,
+      banner
+    );
+    
     this.setStatus(201);
     return course;
   }

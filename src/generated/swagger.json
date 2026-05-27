@@ -880,27 +880,28 @@
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
+								"type": "object",
 								"properties": {
-									"slug": {
+									"title": {
 										"type": "string"
 									},
-									"banner_url": {
+									"slug": {
 										"type": "string"
 									},
 									"description": {
 										"type": "string"
 									},
-									"title": {
-										"type": "string"
+									"banner": {
+										"type": "string",
+										"format": "binary"
 									}
 								},
 								"required": [
-									"slug",
-									"title"
-								],
-								"type": "object"
+									"title",
+									"slug"
+								]
 							}
 						}
 					}
