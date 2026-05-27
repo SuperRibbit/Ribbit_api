@@ -1,9 +1,11 @@
 import type { Course, Prisma } from "../generated/prisma/index.js";
 import { CourseRepository } from "../repository/CourseRepository.js";
 import { AppError } from "../utils/AppError.js";
-
+import { GoogleDriveService } from "./GoogleDriveService.js";
+import fs from "fs";
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
+  private googleDriveService = new GoogleDriveService();
 
   async findAll(search?: string) {
     return await this.courseRepository.findAll(search);
@@ -49,10 +51,25 @@ export class CourseService {
   };
 }
 
-  async createCourse(courseData: Prisma.CourseCreateInput, teacherUuid: string) {
+  async createCourse(courseData: { title: string; slug: string; description?: string }, teacherUuid: string,bannerFile?: Express.Multer.File) {
+    let banner_url = undefined;
     try {
+      if (bannerFile) {
+        const fileData = bannerFile.path || bannerFile.buffer;
+          if (!fileData) {
+            throw new AppError("Arquivo recebido, mas os dados estão vazios (sem path e sem buffer). Verifique o envio no Postman.", 400);
+         }
+          console.log("DADOS DO ARQUIVO RECEBIDO:", bannerFile);
+
+          banner_url = await this.googleDriveService.uploadFile(
+          fileData,
+          bannerFile.originalname || "imagem",
+          bannerFile.mimetype || "image/jpg"
+        );
+      }
       const course = await this.courseRepository.createCourse({
         ...courseData,
+        banner_url,
         User: { connect: { user_uuid: teacherUuid } },
       });
 
@@ -67,6 +84,10 @@ export class CourseService {
         );
       }
       throw error;
+    }finally {
+      if (bannerFile && bannerFile.path && fs.existsSync(bannerFile.path)) {
+        fs.unlinkSync(bannerFile.path);
+      }
     }
   }
 

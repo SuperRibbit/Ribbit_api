@@ -1,3 +1,4 @@
+import type { CreateCourseDTO } from "../dto/CourseDtos.js";
 import type { Prisma } from "../generated/prisma/index.js";
 import { prisma } from "../server.js";
 
@@ -60,9 +61,9 @@ export class CourseRepository {
                 title: true,
                 Student_progress: studentId
                   ? {
-                      where: { student_id: studentId },
-                      select: { progress_id: true },
-                    }
+                    where: { student_id: studentId },
+                    select: { progress_id: true },
+                  }
                   : false,
               },
             },
@@ -76,8 +77,13 @@ export class CourseRepository {
     return await prisma.course.findFirst({ where: { slug } });
   }
 
-  async createCourse(data: Prisma.CourseCreateInput) {
-    return await prisma.course.create({ data, select: { id_course: true } });
+  async createCourse(data: CreateCourseDTO) {
+    return await prisma.course.create({
+      data: {
+        ...data,
+        description: data.description || "",
+      }, select: { id_course: true }
+    });
   }
 
   async updateCourse(courseId: number, data: Prisma.CourseUpdateInput) {
