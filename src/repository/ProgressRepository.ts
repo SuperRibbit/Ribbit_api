@@ -1,6 +1,15 @@
 import { prisma } from "../server.js";
 
 export class ProgressRepository {
+  private static instance: ProgressRepository;
+
+  static getInstance(): ProgressRepository {
+    if (!this.instance) {
+      this.instance = new ProgressRepository();
+    }
+    return this.instance;
+  }
+
   async findClassById(class_id: number) {
     return await prisma.course_class.findUnique({
       where: { class_id },
