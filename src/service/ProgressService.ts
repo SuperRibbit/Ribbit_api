@@ -2,7 +2,7 @@ import { ProgressRepository } from "../repository/ProgressRepository.js";
 import { AppError } from "../utils/AppError.js";
 
 export class ProgressService {
-  private repository = new ProgressRepository();
+  private repository = ProgressRepository.getInstance();
 
   async markClassAsCompleted(studentId: string, classId: number): Promise<number> {
     
