@@ -16,7 +16,7 @@ export class EnrollmentService {
             }
         } catch (error: any) {
             if (error.code === "P2003") {
-              throw new AppError(`Curso com ID ${courseId} não encontrado.`);
+              throw new AppError(`Curso com ID ${courseId} não encontrado.`, 404);
             }
             throw error;
         }
@@ -44,7 +44,7 @@ export class EnrollmentService {
           );
         } catch (error: any) {
           if (error.code === "P2025") {
-            throw new AppError("Você não possui matrícula ativa neste curso.");
+            throw new AppError("Você não possui matrícula ativa neste curso.", 404);
           }
           throw error;
         }
