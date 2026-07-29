@@ -105,6 +105,7 @@ model User {
 }
 
 enum user_role_enum {
+  admin
   prof
   aluno
 
