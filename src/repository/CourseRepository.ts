@@ -35,6 +35,27 @@ export class CourseRepository {
     };
   }
 
+  async findByUser(userId: string) {
+    const courses = await prisma.course.findMany({
+      where: {
+        fk_teacher: userId,
+      },
+      select: {
+        id_course: true,
+        title: true,
+        description: true,
+        banner_url: true,
+        slug: true,
+        User: { select: { full_name: true, avatar_url: true } },
+      },
+    });
+
+    return {
+      total_courses: courses.length,
+      courses: courses.map(({ User, ...rest }) => ({ ...rest, teacher: User })),
+    };
+  }
+
   async findById(courseId: number, studentId?: string) {
     return await prisma.course.findUnique({
       where: { id_course: courseId },

@@ -15,6 +15,12 @@ export class CourseController extends Controller{
     return await this.courseService.findAll(search);
   }
 
+  @Get("user/{userId}")
+  @Security("bearerAuth")
+  public async findByUser(@Path() userId: string) {
+    return await this.courseService.findByUser(userId);
+  }
+
   @Get("{courseId}")
   @Response("404", "Curso não encontrado")
   @Security("bearerAuth")

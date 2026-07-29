@@ -908,6 +908,98 @@
 				}
 			}
 		},
+		"/ribbit/courses/user/{userId}": {
+			"get": {
+				"operationId": "FindByUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"courses": {
+											"items": {
+												"properties": {
+													"slug": {
+														"type": "string"
+													},
+													"banner_url": {
+														"type": "string"
+													},
+													"description": {
+														"type": "string"
+													},
+													"title": {
+														"type": "string"
+													},
+													"id_course": {
+														"type": "number",
+														"format": "double"
+													},
+													"teacher": {
+														"properties": {
+															"avatar_url": {
+																"type": "string"
+															},
+															"full_name": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"avatar_url",
+															"full_name"
+														],
+														"type": "object"
+													}
+												},
+												"required": [
+													"slug",
+													"banner_url",
+													"description",
+													"title",
+													"id_course",
+													"teacher"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"total_courses": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"courses",
+										"total_courses"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Courses"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/ribbit/courses/{courseId}": {
 			"get": {
 				"operationId": "FindById",

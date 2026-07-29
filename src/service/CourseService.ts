@@ -11,6 +11,10 @@ export class CourseService {
     return await this.courseRepository.findAll(search);
   }
 
+  async findByUser(userId: string) {
+    return await this.courseRepository.findByUser(userId);
+  }
+
   async findById(courseId: number, studentId?: string) {
   const course = await this.courseRepository.findById(courseId, studentId);
 

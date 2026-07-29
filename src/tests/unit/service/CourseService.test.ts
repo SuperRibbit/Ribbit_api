@@ -3,6 +3,7 @@ import type { Mock } from "jest-mock";
 
 const repoMocks = {
   findAll: jest.fn() as Mock<(...args: any[]) => any>,
+  findByUser: jest.fn() as Mock<(...args: any[]) => any>,
   findById: jest.fn() as Mock<(...args: any[]) => any>,
   createCourse: jest.fn() as Mock<(...args: any[]) => any>,
   updateCourse: jest.fn() as Mock<(...args: any[]) => any>,
@@ -14,6 +15,7 @@ await jest.unstable_mockModule("../../../repository/CourseRepository.js", () => 
   CourseRepository: {
     getInstance: () => ({
       findAll: repoMocks.findAll,
+      findByUser: repoMocks.findByUser,
       findById: repoMocks.findById,
       createCourse: repoMocks.createCourse,
       updateCourse: repoMocks.updateCourse,
@@ -51,6 +53,28 @@ describe("CourseService", () => {
     it("deve propagar erro se o repositório falhar", async () => {
       repoMocks.findAll.mockRejectedValue(new Error("Database error"));
       await expect(service.findAll()).rejects.toThrow("Database error");
+    });
+  });
+
+  describe("findByUser", () => {
+    it("deve retornar os cursos do usuário", async () => {
+      const userId = "550e8400-e29b-41d4-a716-446655440000";
+      const mockCourses = {
+        total_courses: 1,
+        courses: [{ id_course: 1, title: "Curso A" }],
+      };
+      repoMocks.findByUser.mockResolvedValue(mockCourses);
+
+      const result = await service.findByUser(userId);
+
+      expect(repoMocks.findByUser).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(mockCourses);
+    });
+
+    it("deve propagar erro se o repositório falhar", async () => {
+      repoMocks.findByUser.mockRejectedValue(new Error("Database error"));
+
+      await expect(service.findByUser("user-id")).rejects.toThrow("Database error");
     });
   });
 
