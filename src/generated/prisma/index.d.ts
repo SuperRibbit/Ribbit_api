@@ -55,7 +55,8 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 export namespace $Enums {
   export const user_role_enum: {
   prof: 'prof',
-  aluno: 'aluno'
+  aluno: 'aluno',
+  admin: 'admin'
 };
 
 export type user_role_enum = (typeof user_role_enum)[keyof typeof user_role_enum]
@@ -2488,6 +2489,11 @@ export namespace Prisma {
      * Skip the first `n` Class_files.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Class_files.
+     */
     distinct?: Class_fileScalarFieldEnum | Class_fileScalarFieldEnum[]
   }
 
@@ -3603,6 +3609,11 @@ export namespace Prisma {
      * Skip the first `n` Courses.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Courses.
+     */
     distinct?: CourseScalarFieldEnum | CourseScalarFieldEnum[]
   }
 
@@ -4761,6 +4772,11 @@ export namespace Prisma {
      * Skip the first `n` Course_classes.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Course_classes.
+     */
     distinct?: Course_classScalarFieldEnum | Course_classScalarFieldEnum[]
   }
 
@@ -5917,6 +5933,11 @@ export namespace Prisma {
      * Skip the first `n` Enrollments.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Enrollments.
+     */
     distinct?: EnrollmentScalarFieldEnum | EnrollmentScalarFieldEnum[]
   }
 
@@ -7023,6 +7044,11 @@ export namespace Prisma {
      * Skip the first `n` Modules.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Modules.
+     */
     distinct?: ModuleScalarFieldEnum | ModuleScalarFieldEnum[]
   }
 
@@ -8138,6 +8164,11 @@ export namespace Prisma {
      * Skip the first `n` Student_progresses.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Student_progresses.
+     */
     distinct?: Student_progressScalarFieldEnum | Student_progressScalarFieldEnum[]
   }
 
@@ -9226,6 +9257,11 @@ export namespace Prisma {
      * Skip the first `n` Users.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 

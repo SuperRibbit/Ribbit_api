@@ -105,9 +105,9 @@ model User {
 }
 
 enum user_role_enum {
-  admin
   prof
   aluno
+  admin
 
   @@schema("ribbit")
 }

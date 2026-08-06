@@ -207,7 +207,8 @@ exports.Prisma.NullsOrder = {
 };
 exports.user_role_enum = exports.$Enums.user_role_enum = {
   prof: 'prof',
-  aluno: 'aluno'
+  aluno: 'aluno',
+  admin: 'admin'
 };
 
 exports.Prisma.ModelName = {

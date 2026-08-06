@@ -11,7 +11,7 @@ export class CourseClassController extends Controller{
     @Post()
     @SuccessResponse(201, "Criado")
     @Response("400", "Erro ao criar aula")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async createCourseClass(@Body() requestBody: CourseClassCreateRequest): Promise<CourseClassCreatedResponse> {
         const courseClass = await this.courseClassService.createCourseClass(requestBody);
 
@@ -37,7 +37,7 @@ export class CourseClassController extends Controller{
     @Put("{id}")
     @Response("400", "Erro ao atualizar a aula")
     @Response("404", "Aula não encontrada")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async updateCourseClass(@Path() id: number, @Body() requestBody: CourseClassUpdateRequest): Promise<CourseClassUpdateResponse>{
         const courseClass = await this.courseClassService.updateCourseClass(id, requestBody);
 
@@ -55,7 +55,7 @@ export class CourseClassController extends Controller{
     @Delete("{id}")
     @SuccessResponse("204", "Aula deletada com sucesso")
     @Response("404", "Aula não encontrada")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async deleteCourseClass(@Path() id: number): Promise<void>{
         await this.courseClassService.deleteCourseClass(id);
         this.setStatus(204);

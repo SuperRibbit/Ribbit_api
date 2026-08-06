@@ -18,7 +18,7 @@ export class ClassFileController extends Controller {
   @SuccessResponse("201", "PDF enviado e salvo com sucesso!")
   @Response("400", "Erro de validação")
   @Response("404", "Aula não encontrada")
-  @Security("bearerAuth", ["prof"]) 
+  @Security("bearerAuth", ["prof", "admin"]) 
   public async uploadClassPDF(
     @UploadedFile() file: Express.Multer.File,
     @FormField() class_id: number,             
@@ -67,7 +67,7 @@ export class ClassFileController extends Controller {
   @SuccessResponse("201", "Link salvo com sucesso!")
   @Response("400", "Dados inválidos")
   @Response("404", "Aula não encontrada")
-  @Security("bearerAuth", ["prof"]) 
+  @Security("bearerAuth", ["prof", "admin"]) 
   public async uploadVideoLink(
     @Body() requestBody: UploadVideoLinkRequest
   ): Promise<ClassFileActionResponse> {
@@ -101,7 +101,7 @@ export class ClassFileController extends Controller {
   @Delete("{file_id}")
   @SuccessResponse("204", "No Content")
   @Response("404", "Arquivo não encontrado")
-  @Security("bearerAuth", ["prof"]) 
+  @Security("bearerAuth", ["prof", "admin"]) 
   public async deleteFile(
     @Path() file_id: number
   ): Promise<void> {
