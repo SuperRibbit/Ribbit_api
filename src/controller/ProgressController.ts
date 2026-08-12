@@ -10,7 +10,7 @@ export class ProgressController extends Controller {
   private progressService = new ProgressService();
 
   @Post()
-  @Security("bearerAuth", ["aluno", "prof"])
+  @Security("bearerAuth", ["aluno", "prof", "admin"])
   @SuccessResponse("201", "Criado")
   @Response("400", "Erro de validação")
   @Response("404", "Aula não encontrada")
@@ -36,7 +36,7 @@ export class ProgressController extends Controller {
   }
 
   @Delete("{class_id}")
-  @Security("bearerAuth", ["aluno", "prof"])
+  @Security("bearerAuth", ["aluno", "prof", "admin"])
   @SuccessResponse("200", "Conclusão removida com sucesso")
   @Response("404", "Registro não encontrado")
   public async removeClassCompletion(

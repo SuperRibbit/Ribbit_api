@@ -31,8 +31,9 @@ export function expressAuthentication(
           reject(new AppError("Token inválido!",401));
         } else {
           if (scopes && scopes.length > 0) {
-            if (!scopes.includes(decoded.role)) {
-              reject(new AppError("Acesso negado! Apenas professores podem realizar esta ação.",403));
+            const hasAccess = decoded.role === "admin" || scopes.includes(decoded.role);
+            if (!hasAccess) {
+              reject(new AppError("Acesso negado! Você não tem permissão para realizar esta ação.", 403));
               return;
             }
           }

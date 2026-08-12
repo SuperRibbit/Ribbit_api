@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import fs from "fs";
-import { Readable } from "stream"; 
+import { Readable } from "stream";
+import { AppError } from "../utils/AppError.js";
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
 const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN!;
@@ -57,6 +58,32 @@ export class GoogleDriveService {
     } catch (error: any) {
       console.error("Erro detalhado do Google Drive:", error.response?.data?.error || error.message);
       throw new Error("Falha ao enviar arquivo para a nuvem.");
+    }
+  }
+
+  async uploadMulterFile(
+    file: Express.Multer.File,
+    defaultFileName: string,
+    mimeType = "image/jpeg"
+  ): Promise<string> {
+    const fileData = file.path || file.buffer;
+    if (!fileData) {
+      throw new AppError(
+        "Arquivo recebido, mas os dados estão vazios (sem path e sem buffer). Verifique o envio no Postman.",
+        400
+      );
+    }
+
+    try {
+      return await this.uploadFile(
+        fileData,
+        file.originalname || defaultFileName,
+        file.mimetype || mimeType
+      );
+    } finally {
+      if (file.path && fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ export class ModulesController extends Controller {
     @Post()
     @SuccessResponse("201", "Criado")
     @Response("400", "Erro ao criar módulo")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async createModule(@Body() requestBody: ModuleCreateRequest): Promise<ModuleResponsePost> {
         try {
             const module = await this.moduleService.createModule(requestBody);
@@ -33,7 +33,7 @@ export class ModulesController extends Controller {
     @Delete("{module_id}")
     @SuccessResponse("204", "Deletado")
     @Response("404", "Módulo não encontrado")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async deleteModule(@Path() module_id: number): Promise<void> {
         try {
             await this.moduleService.deleteModule(module_id);
@@ -48,7 +48,7 @@ export class ModulesController extends Controller {
     @SuccessResponse("200", "Atualizado")
     @Response("404", "Módulo não encontrado")
     @Response("400", "Erro ao atualizar módulo")
-    @Security("bearerAuth", ["prof"])
+    @Security("bearerAuth", ["prof", "admin"])
     public async updateModule(@Path() module_id: number, @Body() requestBody: ModuleCreateRequest): Promise<ModuleResponsePut> {
         try {
             const module = await this.moduleService.updateModule(module_id, requestBody);
@@ -70,7 +70,7 @@ export class ModulesController extends Controller {
     @Get("{module_id}/classes")
     @SuccessResponse("200", "Classes encontradas")
     @Response("404", "Módulo não encontrado")
-    @Security("bearerAuth", ["prof", "aluno"])
+    @Security("bearerAuth", ["prof", "aluno", "admin"])
     public async getModuleClasses(@Path() module_id: number): Promise<ModuleClassesResponse> {
         try {
             const module = await this.moduleService.findById(module_id);

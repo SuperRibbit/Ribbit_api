@@ -1,8 +1,7 @@
-import type { Course, Prisma } from "../generated/prisma/index.js";
+import type { Course } from "../generated/prisma/index.js";
 import { CourseRepository } from "../repository/CourseRepository.js";
 import { AppError } from "../utils/AppError.js";
 import { GoogleDriveService } from "./GoogleDriveService.js";
-import fs from "fs";
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
   private googleDriveService = new GoogleDriveService();
@@ -55,22 +54,16 @@ export class CourseService {
   };
 }
 
-  async createCourse(courseData: { title: string; slug: string; description?: string }, teacherUuid: string,bannerFile?: Express.Multer.File) {
-    let banner_url = undefined;
+  async createCourse(
+    courseData: { title: string; slug: string; description?: string },
+    teacherUuid: string,
+    bannerFile?: Express.Multer.File
+  ) {
     try {
-      if (bannerFile) {
-        const fileData = bannerFile.path || bannerFile.buffer;
-          if (!fileData) {
-            throw new AppError("Arquivo recebido, mas os dados estão vazios (sem path e sem buffer). Verifique o envio no Postman.", 400);
-         }
-          console.log("DADOS DO ARQUIVO RECEBIDO:", bannerFile);
+      const banner_url = bannerFile
+        ? await this.googleDriveService.uploadMulterFile(bannerFile, "banner")
+        : undefined;
 
-          banner_url = await this.googleDriveService.uploadFile(
-          fileData,
-          bannerFile.originalname || "imagem",
-          bannerFile.mimetype || "image/jpg"
-        );
-      }
       const course = await this.courseRepository.createCourse({
         ...courseData,
         banner_url,
@@ -88,19 +81,23 @@ export class CourseService {
         );
       }
       throw error;
-    }finally {
-      if (bannerFile && bannerFile.path && fs.existsSync(bannerFile.path)) {
-        fs.unlinkSync(bannerFile.path);
-      }
     }
   }
 
-  async updateCourse(courseId: number, courseData: Prisma.CourseUpdateInput) {
+  async updateCourse(
+    courseId: number,
+    courseData: { title?: string; description?: string; slug?: string },
+    bannerFile?: Express.Multer.File
+  ) {
     try {
-      const updated = await this.courseRepository.updateCourse(
-        courseId,
-        courseData,
-      );
+      const banner_url = bannerFile
+        ? await this.googleDriveService.uploadMulterFile(bannerFile, "banner")
+        : undefined;
+
+      const updated = await this.courseRepository.updateCourse(courseId, {
+        ...courseData,
+        ...(banner_url !== undefined && { banner_url }),
+      });
       return {
         message: "Informações do curso atualizadas com sucesso!",
         course: updated,

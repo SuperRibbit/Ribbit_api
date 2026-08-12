@@ -33,7 +33,7 @@ const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, 
 const models: TsoaRoute.Models = {
     "_36_Enums.user_role_enum": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["prof"]},{"dataType":"enum","enums":["aluno"]},{"dataType":"enum","enums":["admin"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.user_uuid-or-full_name-or-role-or-avatar_url_": {
@@ -415,7 +415,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 banner: {"in":"formData","name":"banner","dataType":"file"},
         };
         app.post('/ribbit/courses',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             upload.fields([
                 {
                     name: "banner",
@@ -450,10 +450,19 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_updateCourse: Record<string, TsoaRoute.ParameterSchema> = {
                 courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"slug":{"dataType":"string"},"banner_url":{"dataType":"string"},"description":{"dataType":"string"},"title":{"dataType":"string"}}},
+                title: {"in":"formData","name":"title","dataType":"string"},
+                description: {"in":"formData","name":"description","dataType":"string"},
+                slug: {"in":"formData","name":"slug","dataType":"string"},
+                banner: {"in":"formData","name":"banner","dataType":"file"},
         };
         app.put('/ribbit/courses/:courseId',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
+            upload.fields([
+                {
+                    name: "banner",
+                    maxCount: 1
+                }
+            ]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.updateCourse)),
 
@@ -484,7 +493,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
         };
         app.delete('/ribbit/courses/:courseId',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseController)),
             ...(fetchMiddlewares<RequestHandler>(CourseController.prototype.deleteById)),
 
@@ -607,7 +616,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 display_name: {"in":"formData","name":"display_name","required":true,"dataType":"string"},
         };
         app.post('/ribbit/files/pdf',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             upload.fields([
                 {
                     name: "file",
@@ -644,7 +653,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
         };
         app.post('/ribbit/files/link',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.uploadVideoLink)),
 
@@ -675,7 +684,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 file_id: {"in":"path","name":"file_id","required":true,"dataType":"double"},
         };
         app.delete('/ribbit/files/:file_id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController)),
             ...(fetchMiddlewares<RequestHandler>(ClassFileController.prototype.deleteFile)),
 
@@ -706,7 +715,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
         };
         app.post('/ribbit/modules',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ModulesController)),
             ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.createModule)),
 
@@ -737,7 +746,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
         };
         app.delete('/ribbit/modules/:module_id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ModulesController)),
             ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.deleteModule)),
 
@@ -769,7 +778,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
         };
         app.put('/ribbit/modules/:module_id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ModulesController)),
             ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.updateModule)),
 
@@ -800,7 +809,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
         };
         app.get('/ribbit/modules/:module_id/classes',
-            authenticateMiddleware([{"bearerAuth":["prof","aluno"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","aluno","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ModulesController)),
             ...(fetchMiddlewares<RequestHandler>(ModulesController.prototype.getModuleClasses)),
 
@@ -832,7 +841,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CompleteClassRequest"},
         };
         app.post('/ribbit/progress',
-            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["aluno","prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ProgressController)),
             ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.completeClass)),
 
@@ -864,7 +873,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 class_id: {"in":"path","name":"class_id","required":true,"dataType":"double"},
         };
         app.delete('/ribbit/progress/:class_id',
-            authenticateMiddleware([{"bearerAuth":["aluno","prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["aluno","prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(ProgressController)),
             ...(fetchMiddlewares<RequestHandler>(ProgressController.prototype.removeClassCompletion)),
 
@@ -1022,7 +1031,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseClassCreateRequest"},
         };
         app.post('/ribbit/classes',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController)),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController.prototype.createCourseClass)),
 
@@ -1085,7 +1094,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseClassUpdateRequest"},
         };
         app.put('/ribbit/classes/:id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController)),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController.prototype.updateCourseClass)),
 
@@ -1116,7 +1125,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
         };
         app.delete('/ribbit/classes/:id',
-            authenticateMiddleware([{"bearerAuth":["prof"]}]),
+            authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController)),
             ...(fetchMiddlewares<RequestHandler>(CourseClassController.prototype.deleteCourseClass)),
 

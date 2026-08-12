@@ -1,8 +1,6 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, Query, SuccessResponse, Response, Request, Security, type TsoaResponse, UploadedFile, FormField } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Path, Query, SuccessResponse, Response, Request, Security, UploadedFile, FormField } from "tsoa";
 import type { AuthRequest } from "../types/express.js";
 import { CourseService } from "../service/CourseService.js";
-import type { Prisma } from "../generated/prisma/index.js";
-import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/courses")
 @Tags("Courses")
@@ -32,7 +30,7 @@ export class CourseController extends Controller{
   @Post()
   @SuccessResponse("201", "Criado")
   @Response("409", "Slug já em uso")
-  @Security("bearerAuth", ["prof"])
+  @Security("bearerAuth", ["prof", "admin"])
   public async createCourse(
     @Request() req: AuthRequest,
     @FormField() title: string,
@@ -55,18 +53,25 @@ export class CourseController extends Controller{
   @Put("{courseId}")
   @Response("404", "Curso não encontrado")
   @Response("409", "Slug já em uso")
-  @Security("bearerAuth", ["prof"])
+  @Security("bearerAuth", ["prof", "admin"])
   public async updateCourse(
     @Path() courseId: number,
-    @Body() body: { title?: string; description?: string; banner_url?: string; slug?: string }
+    @FormField() title?: string,
+    @FormField() description?: string,
+    @FormField() slug?: string,
+    @UploadedFile() banner?: Express.Multer.File
   ) {
-    return await this.courseService.updateCourse(courseId, body as Prisma.CourseUpdateInput);
+    return await this.courseService.updateCourse(
+      courseId,
+      { title, description, slug },
+      banner
+    );
   }
 
   @Delete("{courseId}")
   @SuccessResponse("204", "Deletado com sucesso")
   @Response("404", "Curso não encontrado")
-  @Security("bearerAuth", ["prof"])
+  @Security("bearerAuth", ["prof", "admin"])
   public async deleteById(@Path() courseId: number): Promise<void> {
     await this.courseService.deleteById(courseId);
     this.setStatus(204);
