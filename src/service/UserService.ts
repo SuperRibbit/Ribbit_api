@@ -59,6 +59,10 @@ export class UserService {
       throw new AppError("Usuário não encontrado", 404);
     }
 
+    if (typeof userData.avatar_url === "string" && userData.avatar_url.length > 500) {
+      throw new AppError("URL do avatar inválida.", 400);
+    }
+
     if (userData.password_hash && typeof userData.password_hash === 'string') {
       const salt = await bcrypt.genSalt(10);
       userData.password_hash = await bcrypt.hash(userData.password_hash, salt);
