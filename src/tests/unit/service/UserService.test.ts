@@ -162,6 +162,50 @@ describe("UserService", () => {
     });
   });
 
+  describe("updateUserByAdmin", () => {
+    it("deve editar um usuário com role aluno com sucesso", async () => {
+      const mockUser: User = {
+        user_uuid: VALID_UUID,
+        email: "aluno@test.com",
+        full_name: "Aluno",
+        role: "aluno" as any,
+        avatar_url: null,
+        password_hash: "hp",
+        created_at: new Date()
+      };
+      repoMocks.findById.mockResolvedValue(mockUser);
+      repoMocks.updateUser.mockResolvedValue({ ...mockUser, full_name: "Novo Nome" });
+
+      const result = await userService.updateUserByAdmin(VALID_UUID, { full_name: "Novo Nome" });
+      expect(repoMocks.findById).toHaveBeenCalledWith(VALID_UUID);
+      expect(repoMocks.updateUser).toHaveBeenCalledWith(VALID_UUID, { full_name: "Novo Nome" });
+      expect(result.full_name).toBe("Novo Nome");
+    });
+
+    it("deve lançar erro se o usuário não for um aluno", async () => {
+      const mockProf: User = {
+        user_uuid: VALID_UUID,
+        email: "prof@test.com",
+        full_name: "Prof",
+        role: "prof" as any,
+        avatar_url: null,
+        password_hash: "hp",
+        created_at: new Date()
+      };
+      repoMocks.findById.mockResolvedValue(mockProf);
+
+      await expect(userService.updateUserByAdmin(VALID_UUID, { full_name: "X" }))
+        .rejects.toThrow("Não é possível editar este usuário, pois ele não é um aluno.");
+      expect(repoMocks.updateUser).not.toHaveBeenCalled();
+    });
+
+    it("deve lançar erro se o usuário não for encontrado", async () => {
+      repoMocks.findById.mockResolvedValue(null);
+      await expect(userService.updateUserByAdmin(VALID_UUID, { full_name: "X" }))
+        .rejects.toThrow("Usuário não encontrado");
+    });
+  });
+
   describe("deleteById", () => {
     it("deve deletar com sucesso", async () => {
       repoMocks.deleteById.mockResolvedValue({ user_uuid: VALID_UUID } as User);

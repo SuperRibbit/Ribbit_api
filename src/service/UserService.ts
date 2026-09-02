@@ -49,6 +49,16 @@ export class UserService {
     return await this.userRepository.createUser(userCreateInput);
   }
 
+  async updateUserByAdmin(user_uuid: string, userData: Prisma.UserUpdateInput): Promise<User | null> {
+    const user = await this.findById(user_uuid);
+
+    if (user.role !== "aluno") {
+      throw new AppError("Não é possível editar este usuário, pois ele não é um aluno.", 400);
+    }
+
+    return await this.updateUser(user_uuid, userData);
+  }
+
   async updateUser(id: string | undefined, userData: Prisma.UserUpdateInput): Promise<User | null> {
     if (!id) {
       throw new AppError("Usuário não encontrado", 404);
