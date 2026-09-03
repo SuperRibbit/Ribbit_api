@@ -92,6 +92,28 @@ export class UserController extends Controller {
     };
   }
 
+  @Put("{user_uuid}")
+  @Security("bearerAuth", ["admin"])
+  @SuccessResponse("200", "Aluno atualizado com sucesso")
+  @Response("404", "Usuário não encontrado")
+  public async updateUserByAdmin(
+    @Path() user_uuid: string,
+    @Body() requestBody: UserUpdateRequest
+  ): Promise<UserUpdatedResponse> {
+    const user = await this.userService.updateUserByAdmin(user_uuid, requestBody);
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado.", 404);
+    }
+
+    const { password_hash, ...updatedUser } = user;
+
+    return {
+      message: "Aluno atualizado com sucesso!",
+      user: updatedUser
+    };
+  }
+
   @Delete("me")
   @Security("bearerAuth")
   @SuccessResponse("204", "No Content")

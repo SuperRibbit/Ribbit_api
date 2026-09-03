@@ -2355,6 +2355,54 @@
 						}
 					}
 				]
+			},
+			"put": {
+				"operationId": "UpdateUserByAdmin",
+				"responses": {
+					"200": {
+						"description": "Aluno atualizado com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserUpdatedResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuário não encontrado"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "user_uuid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				}
 			}
 		}
 	},
