@@ -5,6 +5,7 @@ const repoMocks = {
   findAll: jest.fn() as Mock<(...args: any[]) => any>,
   findByUser: jest.fn() as Mock<(...args: any[]) => any>,
   findById: jest.fn() as Mock<(...args: any[]) => any>,
+  findOwnerById: jest.fn() as Mock<(...args: any[]) => any>,
   createCourse: jest.fn() as Mock<(...args: any[]) => any>,
   updateCourse: jest.fn() as Mock<(...args: any[]) => any>,
   deleteById: jest.fn() as Mock<(...args: any[]) => any>,
@@ -17,6 +18,7 @@ await jest.unstable_mockModule("../../../repository/CourseRepository.js", () => 
       findAll: repoMocks.findAll,
       findByUser: repoMocks.findByUser,
       findById: repoMocks.findById,
+      findOwnerById: repoMocks.findOwnerById,
       createCourse: repoMocks.createCourse,
       updateCourse: repoMocks.updateCourse,
       deleteById: repoMocks.deleteById,
@@ -211,47 +213,129 @@ describe("CourseService", () => {
   });
 
   describe("updateCourse", () => {
-    it("deve atualizar o curso com sucesso", async () => {
+    it("deve permitir que o professor atualize o próprio curso", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       repoMocks.updateCourse.mockResolvedValue({ id_course: 1, title: "Novo" });
       
-      const result = await service.updateCourse(1, { title: "Novo" });
+      const result = await service.updateCourse(
+        1,
+        { title: "Novo" },
+        { id: "teacher-uuid", role: "prof" }
+      );
 
+      expect(repoMocks.findOwnerById).toHaveBeenCalledWith(1);
       expect(repoMocks.updateCourse).toHaveBeenCalledWith(1, { title: "Novo" });
       expect(result.course.title).toBe("Novo");
     });
 
+    it("deve impedir que o professor atualize o curso de outro professor", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "owner-uuid" });
+
+      await expect(service.updateCourse(
+        1,
+        { title: "Novo" },
+        { id: "other-teacher-uuid", role: "prof" }
+      )).rejects.toMatchObject({
+        message: "Você não tem permissão para modificar este curso.",
+        statusCode: 403,
+      });
+      expect(repoMocks.updateCourse).not.toHaveBeenCalled();
+    });
+
+    it("deve permitir que o admin atualize qualquer curso", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "owner-uuid" });
+      repoMocks.updateCourse.mockResolvedValue({ id_course: 1, title: "Novo" });
+
+      await service.updateCourse(
+        1,
+        { title: "Novo" },
+        { id: "admin-uuid", role: "admin" }
+      );
+
+      expect(repoMocks.updateCourse).toHaveBeenCalledWith(1, { title: "Novo" });
+    });
+
+    it("deve lançar erro se o curso não existir antes da autorização", async () => {
+      repoMocks.findOwnerById.mockResolvedValue(null);
+
+      await expect(service.updateCourse(
+        999,
+        {},
+        { id: "teacher-uuid", role: "prof" }
+      )).rejects.toMatchObject({ statusCode: 404 });
+      expect(repoMocks.updateCourse).not.toHaveBeenCalled();
+    });
+
     it("deve lançar erro se o curso não existir na atualização (P2025)", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       const error = new Error() as any;
       error.code = "P2025";
       repoMocks.updateCourse.mockRejectedValue(error);
 
-      await expect(service.updateCourse(999, {})).rejects.toThrow("Curso não encontrado.");
+      await expect(service.updateCourse(
+        999,
+        {},
+        { id: "teacher-uuid", role: "prof" }
+      )).rejects.toThrow("Curso não encontrado.");
     });
 
     it("deve propagar outros erros na atualização", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       repoMocks.updateCourse.mockRejectedValue(new Error("Update failed"));
-      await expect(service.updateCourse(1, {})).rejects.toThrow("Update failed");
+      await expect(service.updateCourse(
+        1,
+        {},
+        { id: "teacher-uuid", role: "prof" }
+      )).rejects.toThrow("Update failed");
     });
   });
 
   describe("deleteById", () => {
-    it("deve deletar o curso com sucesso", async () => {
+    it("deve permitir que o professor delete o próprio curso", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       repoMocks.deleteById.mockResolvedValue(undefined);
-      await service.deleteById(1);
+      await service.deleteById(1, { id: "teacher-uuid", role: "prof" });
+      expect(repoMocks.deleteById).toHaveBeenCalledWith(1);
+    });
+
+    it("deve impedir que o professor delete o curso de outro professor", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "owner-uuid" });
+
+      await expect(service.deleteById(
+        1,
+        { id: "other-teacher-uuid", role: "prof" }
+      )).rejects.toMatchObject({ statusCode: 403 });
+      expect(repoMocks.deleteById).not.toHaveBeenCalled();
+    });
+
+    it("deve permitir que o admin delete qualquer curso", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "owner-uuid" });
+      repoMocks.deleteById.mockResolvedValue(undefined);
+
+      await service.deleteById(1, { id: "admin-uuid", role: "admin" });
+
       expect(repoMocks.deleteById).toHaveBeenCalledWith(1);
     });
 
     it("deve lançar erro se o curso não existir na deleção (P2025)", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       const error = new Error() as any;
       error.code = "P2025";
       repoMocks.deleteById.mockRejectedValue(error);
 
-      await expect(service.deleteById(999)).rejects.toThrow("Curso não encontrado.");
+      await expect(service.deleteById(
+        999,
+        { id: "teacher-uuid", role: "prof" }
+      )).rejects.toThrow("Curso não encontrado.");
     });
 
     it("deve propagar outros erros na deleção", async () => {
+      repoMocks.findOwnerById.mockResolvedValue({ fk_teacher: "teacher-uuid" });
       repoMocks.deleteById.mockRejectedValue(new Error("Delete failed"));
-      await expect(service.deleteById(1)).rejects.toThrow("Delete failed");
+      await expect(service.deleteById(
+        1,
+        { id: "teacher-uuid", role: "prof" }
+      )).rejects.toThrow("Delete failed");
     });
   });
 });

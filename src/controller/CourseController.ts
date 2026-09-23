@@ -51,11 +51,13 @@ export class CourseController extends Controller{
   }
 
   @Put("{courseId}")
+  @Response("403", "Sem permissão para modificar este curso")
   @Response("404", "Curso não encontrado")
   @Response("409", "Slug já em uso")
   @Security("bearerAuth", ["prof", "admin"])
   public async updateCourse(
     @Path() courseId: number,
+    @Request() req: AuthRequest,
     @FormField() title?: string,
     @FormField() description?: string,
     @FormField() slug?: string,
@@ -64,16 +66,24 @@ export class CourseController extends Controller{
     return await this.courseService.updateCourse(
       courseId,
       { title, description, slug },
+      { id: req.user!.id, role: req.user!.role },
       banner
     );
   }
 
   @Delete("{courseId}")
   @SuccessResponse("204", "Deletado com sucesso")
+  @Response("403", "Sem permissão para excluir este curso")
   @Response("404", "Curso não encontrado")
   @Security("bearerAuth", ["prof", "admin"])
-  public async deleteById(@Path() courseId: number): Promise<void> {
-    await this.courseService.deleteById(courseId);
+  public async deleteById(
+    @Path() courseId: number,
+    @Request() req: AuthRequest
+  ): Promise<void> {
+    await this.courseService.deleteById(
+      courseId,
+      { id: req.user!.id, role: req.user!.role }
+    );
     this.setStatus(204);
   }
 }

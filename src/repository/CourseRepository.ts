@@ -98,6 +98,13 @@ export class CourseRepository {
     return await prisma.course.findFirst({ where: { slug } });
   }
 
+  async findOwnerById(courseId: number) {
+    return await prisma.course.findUnique({
+      where: { id_course: courseId },
+      select: { fk_teacher: true },
+    });
+  }
+
   async createCourse(data: CreateCourseDTO) {
     return await prisma.course.create({
       data: {

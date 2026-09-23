@@ -2,9 +2,23 @@ import type { Course } from "../generated/prisma/index.js";
 import { CourseRepository } from "../repository/CourseRepository.js";
 import { AppError } from "../utils/AppError.js";
 import { GoogleDriveService } from "./GoogleDriveService.js";
+
+type CourseRequester = { id: string; role: string };
+
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
   private googleDriveService = new GoogleDriveService();
+
+  private async ensureCanModifyCourse(courseId: number, requester: CourseRequester): Promise<void> {
+    const courseOwner = await this.courseRepository.findOwnerById(courseId);
+    if (!courseOwner) {
+      throw new AppError("Curso não encontrado.", 404);
+    }
+
+    if (requester.role !== "admin" && courseOwner.fk_teacher !== requester.id) {
+      throw new AppError("Você não tem permissão para modificar este curso.", 403);
+    }
+  }
 
   async findAll(search?: string) {
     return await this.courseRepository.findAll(search);
@@ -87,9 +101,12 @@ export class CourseService {
   async updateCourse(
     courseId: number,
     courseData: { title?: string; description?: string; slug?: string },
+    requester: CourseRequester,
     bannerFile?: Express.Multer.File
   ) {
     try {
+      await this.ensureCanModifyCourse(courseId, requester);
+
       const banner_url = bannerFile
         ? await this.googleDriveService.uploadMulterFile(bannerFile, "banner")
         : undefined;
@@ -110,8 +127,9 @@ export class CourseService {
     }
   }
 
-  async deleteById(courseId: number): Promise<void> {
+  async deleteById(courseId: number, requester: CourseRequester): Promise<void> {
     try {
+      await this.ensureCanModifyCourse(courseId, requester);
       await this.courseRepository.deleteById(courseId);
     } catch (error: any) {
       if (error.code === "P2025") {
