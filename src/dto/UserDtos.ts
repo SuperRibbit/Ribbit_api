@@ -9,6 +9,8 @@ export type UserCreateRequest = Pick<User, "email" | "full_name" | "role" > & {
 
 export type UserUpdateRequest = Partial<Pick<User, "full_name" | "avatar_url">>;
 
+export type UserRoleUpdateRequest = Pick<User, "role">;
+
 export interface UserCreatedResponse {
   message: string;
   user: UserResponse;

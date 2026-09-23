@@ -1,7 +1,7 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Patch, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request } from "tsoa";
 import * as express from "express";
 import { UserService } from "../service/UserService.js";
-import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserCreatedResponse, UserUpdatedResponse, UserPublicResponse } from "../dto/UserDtos.js";
+import type { UserResponse, UserCreateRequest, UserUpdateRequest, UserRoleUpdateRequest, UserCreatedResponse, UserUpdatedResponse, UserPublicResponse } from "../dto/UserDtos.js";
 import { AppError } from "../utils/AppError.js";
 
 @Route("ribbit/users")
@@ -110,6 +110,24 @@ export class UserController extends Controller {
 
     return {
       message: "Aluno atualizado com sucesso!",
+      user: updatedUser
+    };
+  }
+
+  @Patch("{user_uuid}/role")
+  @Security("bearerAuth", ["admin"])
+  @SuccessResponse("200", "Role atualizada com sucesso")
+  @Response("422", "Role inválida")
+  @Response("404", "Usuário não encontrado")
+  public async updateUserRole(
+    @Path() user_uuid: string,
+    @Body() requestBody: UserRoleUpdateRequest
+  ): Promise<UserUpdatedResponse> {
+    const user = await this.userService.updateUserRole(user_uuid, requestBody.role);
+    const { password_hash, ...updatedUser } = user;
+
+    return {
+      message: "Role do usuário atualizada com sucesso!",
       user: updatedUser
     };
   }

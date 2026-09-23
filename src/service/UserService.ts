@@ -1,4 +1,4 @@
-import { Prisma, type User } from "../generated/prisma/index.js";
+import { Prisma, type User, type user_role_enum } from "../generated/prisma/index.js";
 import { UserRepository } from "../repository/UserRepository.js";
 import bcrypt from "bcryptjs";
 import { AppError } from "../utils/AppError.js";
@@ -57,6 +57,22 @@ export class UserService {
     }
 
     return await this.updateUser(user_uuid, userData);
+  }
+
+  async updateUserRole(user_uuid: string, role: user_role_enum): Promise<User> {
+    const validRoles: user_role_enum[] = ["aluno", "prof", "admin"];
+    if (!validRoles.includes(role)) {
+      throw new AppError("Role inválida.", 400);
+    }
+
+    await this.findById(user_uuid);
+    const updatedUser = await this.userRepository.updateUser(user_uuid, { role });
+
+    if (!updatedUser) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    return updatedUser;
   }
 
   async updateUser(id: string | undefined, userData: Prisma.UserUpdateInput): Promise<User | null> {

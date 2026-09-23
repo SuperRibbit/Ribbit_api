@@ -727,6 +727,21 @@
 			},
 			"UserUpdateRequest": {
 				"$ref": "#/components/schemas/Partial_Pick_User.full_name-or-avatar_url__"
+			},
+			"Pick_User.role_": {
+				"properties": {
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.user_role_enum"
+					}
+				},
+				"required": [
+					"role"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserRoleUpdateRequest": {
+				"$ref": "#/components/schemas/Pick_User.role_"
 			}
 		},
 		"securitySchemes": {
@@ -1173,6 +1188,9 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
+					},
 					"404": {
 						"description": "Curso não encontrado"
 					},
@@ -1233,6 +1251,9 @@
 				"responses": {
 					"204": {
 						"description": "Deletado com sucesso"
+					},
+					"403": {
+						"description": "Sem permissão para excluir este curso"
 					},
 					"404": {
 						"description": "Curso não encontrado"
@@ -2399,6 +2420,59 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/ribbit/users/{user_uuid}/role": {
+			"patch": {
+				"operationId": "UpdateUserRole",
+				"responses": {
+					"200": {
+						"description": "Role atualizada com sucesso",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserUpdatedResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Usuário não encontrado"
+					},
+					"422": {
+						"description": "Role inválida"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"bearerAuth": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "user_uuid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserRoleUpdateRequest"
 							}
 						}
 					}

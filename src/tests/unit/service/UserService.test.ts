@@ -206,6 +206,43 @@ describe("UserService", () => {
     });
   });
 
+  describe("updateUserRole", () => {
+    it("deve atualizar a role de um usuário", async () => {
+      const existingUser = {
+        user_uuid: VALID_UUID,
+        email: "user@test.com",
+        full_name: "User",
+        role: "aluno",
+        avatar_url: null,
+        password_hash: "hp",
+        created_at: new Date()
+      } as User;
+      repoMocks.findById.mockResolvedValue(existingUser);
+      repoMocks.updateUser.mockResolvedValue({ ...existingUser, role: "prof" });
+
+      const result = await userService.updateUserRole(VALID_UUID, "prof");
+
+      expect(repoMocks.findById).toHaveBeenCalledWith(VALID_UUID);
+      expect(repoMocks.updateUser).toHaveBeenCalledWith(VALID_UUID, { role: "prof" });
+      expect(result.role).toBe("prof");
+    });
+
+    it("deve rejeitar uma role inválida", async () => {
+      await expect(userService.updateUserRole(VALID_UUID, "gerente"))
+        .rejects.toMatchObject({ message: "Role inválida.", statusCode: 400 });
+      expect(repoMocks.findById).not.toHaveBeenCalled();
+      expect(repoMocks.updateUser).not.toHaveBeenCalled();
+    });
+
+    it("deve lançar erro se o usuário não existir", async () => {
+      repoMocks.findById.mockResolvedValue(null);
+
+      await expect(userService.updateUserRole(VALID_UUID, "admin"))
+        .rejects.toThrow("Usuário não encontrado");
+      expect(repoMocks.updateUser).not.toHaveBeenCalled();
+    });
+  });
+
   describe("deleteById", () => {
     it("deve deletar com sucesso", async () => {
       repoMocks.deleteById.mockResolvedValue({ user_uuid: VALID_UUID } as User);

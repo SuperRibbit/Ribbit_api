@@ -295,6 +295,16 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"Partial_Pick_User.full_name-or-avatar_url__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.role_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role":{"ref":"_36_Enums.user_role_enum","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserRoleUpdateRequest": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.role_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"throw-on-extras","bodyCoercion":true});
 
@@ -450,6 +460,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_updateCourse: Record<string, TsoaRoute.ParameterSchema> = {
                 courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 title: {"in":"formData","name":"title","dataType":"string"},
                 description: {"in":"formData","name":"description","dataType":"string"},
                 slug: {"in":"formData","name":"slug","dataType":"string"},
@@ -491,6 +502,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseController_deleteById: Record<string, TsoaRoute.ParameterSchema> = {
                 courseId: {"in":"path","name":"courseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.delete('/ribbit/courses/:courseId',
             authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
@@ -1326,6 +1338,38 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateUserByAdmin',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_updateUserRole: Record<string, TsoaRoute.ParameterSchema> = {
+                user_uuid: {"in":"path","name":"user_uuid","required":true,"dataType":"string"},
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UserRoleUpdateRequest"},
+        };
+        app.patch('/ribbit/users/:user_uuid/role',
+            authenticateMiddleware([{"bearerAuth":["admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.updateUserRole)),
+
+            async function UserController_updateUserRole(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_updateUserRole, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'updateUserRole',
                 controller,
                 response,
                 next,
