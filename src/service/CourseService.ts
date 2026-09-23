@@ -3,13 +3,13 @@ import { CourseRepository } from "../repository/CourseRepository.js";
 import { AppError } from "../utils/AppError.js";
 import { GoogleDriveService } from "./GoogleDriveService.js";
 
-type CourseRequester = { id: string; role: string };
+export type CourseRequester = { id: string; role: string };
 
 export class CourseService {
   private courseRepository = CourseRepository.getInstance();
   private googleDriveService = new GoogleDriveService();
 
-  private async ensureCanModifyCourse(courseId: number, requester: CourseRequester): Promise<void> {
+  async ensureCanModifyCourse(courseId: number, requester: CourseRequester): Promise<void> {
     const courseOwner = await this.courseRepository.findOwnerById(courseId);
     if (!courseOwner) {
       throw new AppError("Curso não encontrado.", 404);

@@ -1405,6 +1405,9 @@
 					"400": {
 						"description": "Erro de validação"
 					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
+					},
 					"404": {
 						"description": "Aula não encontrada"
 					}
@@ -1468,6 +1471,9 @@
 					"400": {
 						"description": "Dados inválidos"
 					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
+					},
 					"404": {
 						"description": "Aula não encontrada"
 					}
@@ -1502,6 +1508,9 @@
 				"responses": {
 					"204": {
 						"description": "No Content"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					},
 					"404": {
 						"description": "Arquivo não encontrado"
@@ -1547,6 +1556,9 @@
 					},
 					"400": {
 						"description": "Erro ao criar módulo"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					}
 				},
 				"tags": [
@@ -1579,6 +1591,9 @@
 				"responses": {
 					"204": {
 						"description": "Deletado"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					},
 					"404": {
 						"description": "Módulo não encontrado"
@@ -1622,6 +1637,9 @@
 					},
 					"400": {
 						"description": "Erro ao atualizar módulo"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					},
 					"404": {
 						"description": "Módulo não encontrado"
@@ -2057,6 +2075,9 @@
 					},
 					"400": {
 						"description": "Erro ao criar aula"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					}
 				},
 				"tags": [
@@ -2097,6 +2118,9 @@
 							}
 						}
 					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
+					},
 					"404": {
 						"description": "Aula não encontrada"
 					}
@@ -2136,6 +2160,9 @@
 					},
 					"400": {
 						"description": "Erro ao atualizar a aula"
+					},
+					"403": {
+						"description": "Sem permissão para modificar este curso"
 					},
 					"404": {
 						"description": "Aula não encontrada"

@@ -9,6 +9,10 @@ const repoMocks = {
   deleteById: jest.fn() as Mock<(...args: any[]) => any>,
 };
 
+const courseClassServiceMocks = {
+  ensureCanModifyCourseClass: jest.fn() as Mock<(...args: any[]) => any>,
+};
+
 // Mockando o repositório antes de importar o service
 await jest.unstable_mockModule("../../../repository/ClassFileRepository.js", () => ({
   ClassFileRepository: jest.fn().mockImplementation(() => ({
@@ -19,14 +23,22 @@ await jest.unstable_mockModule("../../../repository/ClassFileRepository.js", () 
   })),
 }));
 
+await jest.unstable_mockModule("../../../service/CourseClassService.js", () => ({
+  CourseClassService: class {
+    ensureCanModifyCourseClass = courseClassServiceMocks.ensureCanModifyCourseClass;
+  },
+}));
+
 // Importar o service
 const { ClassFileService } = await import("../../../service/ClassFileService.js");
 
 describe("ClassFileService", () => {
   let service: any;
+  const requester = { id: "teacher-uuid", role: "prof" };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    courseClassServiceMocks.ensureCanModifyCourseClass.mockReset();
     service = new ClassFileService();
   });
 
@@ -42,6 +54,17 @@ describe("ClassFileService", () => {
       repoMocks.findCourseClassById.mockResolvedValue(null);
       const result = await service.checkClassExists(999);
       expect(result).toBe(false);
+    });
+  });
+
+  describe("ensureCanModifyClass", () => {
+    it("deve propagar a proibição de acesso à aula", async () => {
+      courseClassServiceMocks.ensureCanModifyCourseClass.mockRejectedValue(
+        Object.assign(new Error("Sem permissão"), { statusCode: 403 })
+      );
+
+      await expect(service.ensureCanModifyClass(1, requester))
+        .rejects.toMatchObject({ statusCode: 403 });
     });
   });
 
@@ -137,29 +160,41 @@ describe("ClassFileService", () => {
 
   describe("deleteFileRecord", () => {
     it("deve deletar o registro quando ele existe", async () => {
-      repoMocks.findById.mockResolvedValue({ file_id: 10 });
+      repoMocks.findById.mockResolvedValue({ file_id: 10, class_id: 1 });
       repoMocks.deleteById.mockResolvedValue(undefined);
 
-      await service.deleteFileRecord(10);
+      await service.deleteFileRecord(10, requester);
 
       expect(repoMocks.findById).toHaveBeenCalledWith(10);
+      expect(courseClassServiceMocks.ensureCanModifyCourseClass).toHaveBeenCalledWith(1, requester);
       expect(repoMocks.deleteById).toHaveBeenCalledWith(10);
     });
 
     it("deve lançar erro 404 quando o arquivo não existe", async () => {
       repoMocks.findById.mockResolvedValue(null);
 
-      await expect(service.deleteFileRecord(999)).rejects.toThrow(
+      await expect(service.deleteFileRecord(999, requester)).rejects.toThrow(
         "O arquivo solicitado não existe ou já foi excluído"
       );
       expect(repoMocks.deleteById).not.toHaveBeenCalled();
     });
 
+    it("deve impedir a exclusão de arquivo de aula de outro professor", async () => {
+      repoMocks.findById.mockResolvedValue({ file_id: 10, class_id: 1 });
+      courseClassServiceMocks.ensureCanModifyCourseClass.mockRejectedValue(
+        Object.assign(new Error("Sem permissão"), { statusCode: 403 })
+      );
+
+      await expect(service.deleteFileRecord(10, requester))
+        .rejects.toMatchObject({ statusCode: 403 });
+      expect(repoMocks.deleteById).not.toHaveBeenCalled();
+    });
+
     it("deve propagar erro se a deleção falhar", async () => {
-      repoMocks.findById.mockResolvedValue({ file_id: 10 });
+      repoMocks.findById.mockResolvedValue({ file_id: 10, class_id: 1 });
       repoMocks.deleteById.mockRejectedValue(new Error("Database error"));
 
-      await expect(service.deleteFileRecord(10)).rejects.toThrow("Database error");
+      await expect(service.deleteFileRecord(10, requester)).rejects.toThrow("Database error");
     });
   });
 });

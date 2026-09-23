@@ -1,8 +1,15 @@
 import { ClassFileRepository } from "../repository/ClassFileRepository.js";
 import { AppError } from "../utils/AppError.js";
+import { CourseClassService } from "./CourseClassService.js";
+import type { CourseRequester } from "./CourseService.js";
 
 export class ClassFileService {
   private repository = new ClassFileRepository();
+  private courseClassService = new CourseClassService();
+
+  async ensureCanModifyClass(class_id: number, requester: CourseRequester): Promise<void> {
+    await this.courseClassService.ensureCanModifyCourseClass(class_id, requester);
+  }
 
   async checkClassExists(class_id: number): Promise<boolean> {
     const courseClass = await this.repository.findCourseClassById(class_id);
@@ -45,13 +52,14 @@ export class ClassFileService {
     });
   }
 
-  async deleteFileRecord(file_id: number): Promise<void> {
+  async deleteFileRecord(file_id: number, requester: CourseRequester): Promise<void> {
     const file = await this.repository.findById(file_id);
 
     if (!file) {
       throw new AppError("O arquivo solicitado não existe ou já foi excluído.", 404);
     }
 
+    await this.ensureCanModifyClass(file.class_id, requester);
     await this.repository.deleteById(file_id);
   }
 }

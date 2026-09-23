@@ -1,8 +1,9 @@
-import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, type TsoaResponse } from "tsoa";
+import { Route, Tags, Controller, Get, Post, Put, Delete, Body, Path, SuccessResponse, Response, Middlewares, Security, Request, type TsoaResponse } from "tsoa";
 import { ModuleService } from "../service/ModuleService.js";
 import { type ModuleCreateRequest, type ModuleResponsePost, type ModuleResponsePut, type ModuleClassesResponse } from "../dto/ModuleDtos.js";
 import { AppError } from "../utils/AppError.js";
 import type { Module } from "../generated/prisma/index.js";
+import type { AuthRequest } from "../types/express.js";
 
 @Route("ribbit/modules")
 @Tags("Modules")
@@ -12,10 +13,17 @@ export class ModulesController extends Controller {
     @Post()
     @SuccessResponse("201", "Criado")
     @Response("400", "Erro ao criar módulo")
+    @Response("403", "Sem permissão para modificar este curso")
     @Security("bearerAuth", ["prof", "admin"])
-    public async createModule(@Body() requestBody: ModuleCreateRequest): Promise<ModuleResponsePost> {
+    public async createModule(
+        @Request() req: AuthRequest,
+        @Body() requestBody: ModuleCreateRequest
+    ): Promise<ModuleResponsePost> {
         try {
-            const module = await this.moduleService.createModule(requestBody);
+            const module = await this.moduleService.createModule(
+                requestBody,
+                { id: req.user!.id, role: req.user!.role }
+            );
             if (!module) {
                 this.setStatus(400);
                 throw new AppError("Erro ao criar módulo", 400);
@@ -26,6 +34,7 @@ export class ModulesController extends Controller {
                 moduleId: module.id_module
             };
         } catch (error: any) {
+            if (error instanceof AppError) throw error;
             throw new AppError(error.message || "Erro ao criar módulo", 400);
         }
     }
@@ -33,12 +42,20 @@ export class ModulesController extends Controller {
     @Delete("{module_id}")
     @SuccessResponse("204", "Deletado")
     @Response("404", "Módulo não encontrado")
+    @Response("403", "Sem permissão para modificar este curso")
     @Security("bearerAuth", ["prof", "admin"])
-    public async deleteModule(@Path() module_id: number): Promise<void> {
+    public async deleteModule(
+        @Path() module_id: number,
+        @Request() req: AuthRequest
+    ): Promise<void> {
         try {
-            await this.moduleService.deleteModule(module_id);
+            await this.moduleService.deleteModule(
+                module_id,
+                { id: req.user!.id, role: req.user!.role }
+            );
             this.setStatus(204);
         } catch (error: any) {
+            if (error instanceof AppError) throw error;
             this.setStatus(404);
             throw new AppError(error.message || "Módulo nao encontrado", 404);
         }
@@ -48,10 +65,19 @@ export class ModulesController extends Controller {
     @SuccessResponse("200", "Atualizado")
     @Response("404", "Módulo não encontrado")
     @Response("400", "Erro ao atualizar módulo")
+    @Response("403", "Sem permissão para modificar este curso")
     @Security("bearerAuth", ["prof", "admin"])
-    public async updateModule(@Path() module_id: number, @Body() requestBody: ModuleCreateRequest): Promise<ModuleResponsePut> {
+    public async updateModule(
+        @Path() module_id: number,
+        @Request() req: AuthRequest,
+        @Body() requestBody: ModuleCreateRequest
+    ): Promise<ModuleResponsePut> {
         try {
-            const module = await this.moduleService.updateModule(module_id, requestBody);
+            const module = await this.moduleService.updateModule(
+                module_id,
+                requestBody,
+                { id: req.user!.id, role: req.user!.role }
+            );
             if (!module) {
                 this.setStatus(404);
                 throw new AppError("Módulo não encontrado", 404);
@@ -62,6 +88,7 @@ export class ModulesController extends Controller {
                 module: module
             };
         } catch (error: any) {
+            if (error instanceof AppError) throw error;
             this.setStatus(400);
             throw new AppError(error.message || "Erro ao atualizar módulo", 400);
         }

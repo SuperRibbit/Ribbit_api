@@ -623,6 +623,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsClassFileController_uploadClassPDF: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 file: {"in":"formData","name":"file","required":true,"dataType":"file"},
                 class_id: {"in":"formData","name":"class_id","required":true,"dataType":"double"},
                 display_name: {"in":"formData","name":"display_name","required":true,"dataType":"string"},
@@ -662,6 +663,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsClassFileController_uploadVideoLink: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UploadVideoLinkRequest"},
         };
         app.post('/ribbit/files/link',
@@ -694,6 +696,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsClassFileController_deleteFile: Record<string, TsoaRoute.ParameterSchema> = {
                 file_id: {"in":"path","name":"file_id","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.delete('/ribbit/files/:file_id',
             authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
@@ -724,6 +727,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsModulesController_createModule: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
         };
         app.post('/ribbit/modules',
@@ -756,6 +760,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsModulesController_deleteModule: Record<string, TsoaRoute.ParameterSchema> = {
                 module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.delete('/ribbit/modules/:module_id',
             authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),
@@ -787,6 +792,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsModulesController_updateModule: Record<string, TsoaRoute.ParameterSchema> = {
                 module_id: {"in":"path","name":"module_id","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModuleCreateRequest"},
         };
         app.put('/ribbit/modules/:module_id',
@@ -1040,6 +1046,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseClassController_createCourseClass: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseClassCreateRequest"},
         };
         app.post('/ribbit/classes',
@@ -1103,6 +1110,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseClassController_updateCourseClass: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CourseClassUpdateRequest"},
         };
         app.put('/ribbit/classes/:id',
@@ -1135,6 +1143,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsCourseClassController_deleteCourseClass: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
         };
         app.delete('/ribbit/classes/:id',
             authenticateMiddleware([{"bearerAuth":["prof","admin"]}]),

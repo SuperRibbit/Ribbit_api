@@ -1,8 +1,9 @@
-import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body, Delete, Path } from "tsoa";
+import { Route, Tags, Controller, Post, FormField, UploadedFile, SuccessResponse, Response, Security, Body, Delete, Path, Request } from "tsoa";
 import { GoogleDriveService } from "../service/GoogleDriveService.js";
 import { ClassFileService } from "../service/ClassFileService.js";
 import type { ClassFileResponse, UploadVideoLinkRequest, ClassFileActionResponse } from "../dto/ClassFileDtos.js";
 import { AppError } from "../utils/AppError.js";
+import type { AuthRequest } from "../types/express.js";
 
 import fs from "fs";
 import path from "path";
@@ -18,8 +19,10 @@ export class ClassFileController extends Controller {
   @SuccessResponse("201", "PDF enviado e salvo com sucesso!")
   @Response("400", "Erro de validação")
   @Response("404", "Aula não encontrada")
+  @Response("403", "Sem permissão para modificar este curso")
   @Security("bearerAuth", ["prof", "admin"]) 
   public async uploadClassPDF(
+    @Request() req: AuthRequest,
     @UploadedFile() file: Express.Multer.File,
     @FormField() class_id: number,             
     @FormField() display_name: string
@@ -29,10 +32,10 @@ export class ClassFileController extends Controller {
       throw new AppError("O class_id é obrigatório.", 400);
     }
 
-    const classExists = await this.dbService.checkClassExists(class_id);
-    if (!classExists) {
-      throw new AppError(`Nenhuma aula encontrada com o ID ${class_id}. O upload foi cancelado.`, 404);
-    }
+    await this.dbService.ensureCanModifyClass(
+      class_id,
+      { id: req.user!.id, role: req.user!.role }
+    );
 
     const tempFilePath = path.join(os.tmpdir(), file.originalname || "upload.pdf");
     
@@ -67,17 +70,18 @@ export class ClassFileController extends Controller {
   @SuccessResponse("201", "Link salvo com sucesso!")
   @Response("400", "Dados inválidos")
   @Response("404", "Aula não encontrada")
+  @Response("403", "Sem permissão para modificar este curso")
   @Security("bearerAuth", ["prof", "admin"]) 
   public async uploadVideoLink(
+    @Request() req: AuthRequest,
     @Body() requestBody: UploadVideoLinkRequest
   ): Promise<ClassFileActionResponse> {
     
     const { class_id, url, display_name } = requestBody;
-    const classExists = await this.dbService.checkClassExists(class_id);
-
-    if (!classExists) {
-      throw new AppError(`Nenhuma aula encontrada com o ID ${class_id}. O upload do link foi cancelado.`, 404);
-    }
+    await this.dbService.ensureCanModifyClass(
+      class_id,
+      { id: req.user!.id, role: req.user!.role }
+    );
 
    try {
       const newLinkRecord = await this.dbService.saveLinkRecord({
@@ -101,11 +105,16 @@ export class ClassFileController extends Controller {
   @Delete("{file_id}")
   @SuccessResponse("204", "No Content")
   @Response("404", "Arquivo não encontrado")
+  @Response("403", "Sem permissão para modificar este curso")
   @Security("bearerAuth", ["prof", "admin"]) 
   public async deleteFile(
-    @Path() file_id: number
+    @Path() file_id: number,
+    @Request() req: AuthRequest
   ): Promise<void> {
-    await this.dbService.deleteFileRecord(file_id);
+    await this.dbService.deleteFileRecord(
+      file_id,
+      { id: req.user!.id, role: req.user!.role }
+    );
     this.setStatus(204);
   }
 }
